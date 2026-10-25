@@ -1,0 +1,67 @@
+** sch_path: /foss/designs/sg13cmos5l_dsa1_dig/schematic/xschem/sg13cmos5l_dsa1_dig_top.sch
+.subckt sg13cmos5l_dsa1_dig_top VDD VSS clk_PAD rst_n_PAD IOVSS IOVDD analog_PAD0 analog_PAD1 bidir_PAD0 bidir_PAD1 input_PAD0
++ input_PAD1 input_PAD2 input_PAD3 output_PAD0 output_PAD1 output_PAD2 output_PAD3 output_PAD4 output_PAD5 output_PAD6 output_PAD7 output_PAD8
++ output_PAD9 output_PAD10 output_PAD11 output_PAD12 output_PAD13 output_PAD14 output_PAD15 output_PAD16 output_PAD17
+*.PININFO output_PAD[0]:O VSS:B VDD:B IOVSS:B IOVDD:B input_PAD[0]:I rst_n_PAD:I clk_PAD:I analog_PAD[0]:B analog_PAD[1]:B
+*+ bidir_PAD[0]:B bidir_PAD[1]:B output_PAD[14]:O output_PAD[15]:O output_PAD[16]:O output_PAD[17]:O input_PAD[1]:I input_PAD[2]:I input_PAD[3]:I
+*+ output_PAD[1]:O output_PAD[2]:O output_PAD[3]:O output_PAD[4]:O output_PAD[5]:O output_PAD[6]:O output_PAD[7]:O output_PAD[8]:O output_PAD[9]:O
+*+ output_PAD[10]:O output_PAD[11]:O output_PAD[12]:O output_PAD[13]:O
+x1 VSS VDD IOVSS IOVDD miso output_PAD[0] sg13cmos5l_IOPadOut30mA
+x2 VSS VDD IOVSS IOVDD sg13cmos5l_IOPadVss
+x3 VSS VDD IOVSS IOVDD sg13cmos5l_IOPadVdd
+x4 VSS VDD IOVSS IOVDD sg13cmos5l_IOPadIOVss
+x5 VSS VDD IOVSS IOVDD sg13cmos5l_IOPadIOVdd
+x6 VSS VDD IOVSS IOVDD data_in_pad input_PAD[0] sg13cmos5l_IOPadIn
+x7 VSS VDD IOVSS IOVDD rst_n rst_n_PAD sg13cmos5l_IOPadIn
+x8 VSS VDD IOVSS IOVDD clk clk_PAD sg13cmos5l_IOPadIn
+x9 net1 net2 net3 IOVDD analog_PAD[0] net4 sg13cmos5l_IOPadAnalog
+* noconn analog_PAD[0]
+* noconn #net4
+x10 net5 net6 net7 IOVDD analog_PAD[1] net8 sg13cmos5l_IOPadAnalog
+* noconn analog_PAD[1]
+* noconn #net8
+x11 VSS VDD IOVSS IOVDD net9 VSS VSS bidir_PAD[0] sg13cmos5l_IOPadInOut30mA
+* noconn #net9
+x12 VSS VDD IOVSS IOVDD net10 VSS VSS bidir_PAD[1] sg13cmos5l_IOPadInOut30mA
+* noconn #net10
+x13 VSS VDD IOVSS IOVDD o_tst_ctrl[12] output_PAD[14] sg13cmos5l_IOPadOut30mA
+x14 VSS VDD IOVSS IOVDD o_tst_ctrl[13] output_PAD[15] sg13cmos5l_IOPadOut30mA
+x15 VSS VDD IOVSS IOVDD o_tst_ctrl[14] output_PAD[16] sg13cmos5l_IOPadOut30mA
+x16 VSS VDD IOVSS IOVDD o_tst_ctrl[15] output_PAD[17] sg13cmos5l_IOPadOut30mA
+x17 VSS VDD IOVSS IOVDD sclk input_PAD[1] sg13cmos5l_IOPadIn
+x18 VSS VDD IOVSS IOVDD mosi input_PAD[2] sg13cmos5l_IOPadIn
+x19 VSS VDD IOVSS IOVDD ss input_PAD[3] sg13cmos5l_IOPadIn
+x20 VSS VDD IOVSS IOVDD adc_conv output_PAD[1] sg13cmos5l_IOPadOut30mA
+x21 VSS VDD IOVSS IOVDD o_tst_ctrl[0] output_PAD[2] sg13cmos5l_IOPadOut30mA
+x22 VSS VDD IOVSS IOVDD o_tst_ctrl[1] output_PAD[3] sg13cmos5l_IOPadOut30mA
+x23 VSS VDD IOVSS IOVDD o_tst_ctrl[2] output_PAD[4] sg13cmos5l_IOPadOut30mA
+x24 VSS VDD IOVSS IOVDD o_tst_ctrl[3] output_PAD[5] sg13cmos5l_IOPadOut30mA
+x25 VSS VDD IOVSS IOVDD o_tst_ctrl[4] output_PAD[6] sg13cmos5l_IOPadOut30mA
+x26 VSS VDD IOVSS IOVDD o_tst_ctrl[5] output_PAD[7] sg13cmos5l_IOPadOut30mA
+x27 VSS VDD IOVSS IOVDD o_tst_ctrl[6] output_PAD[8] sg13cmos5l_IOPadOut30mA
+x28 VSS VDD IOVSS IOVDD o_tst_ctrl[7] output_PAD[9] sg13cmos5l_IOPadOut30mA
+x29 VSS VDD IOVSS IOVDD o_tst_ctrl[8] output_PAD[10] sg13cmos5l_IOPadOut30mA
+x30 VSS VDD IOVSS IOVDD o_tst_ctrl[9] output_PAD[11] sg13cmos5l_IOPadOut30mA
+x31 VSS VDD IOVSS IOVDD o_tst_ctrl[10] output_PAD[12] sg13cmos5l_IOPadOut30mA
+x32 VSS VDD IOVSS IOVDD o_tst_ctrl[11] output_PAD[13] sg13cmos5l_IOPadOut30mA
+x33 data_in_s1 net11 clk data_in_pad rst_n VDD VSS sg13cmos5l_dfrbp_1
+* noconn #net11
+x34 data_in_s2 net12 clk data_in_s1 rst_n VDD VSS sg13cmos5l_dfrbp_1
+* noconn #net12
+x35 data_in_s3 net13 clk data_in_s2 rst_n VDD VSS sg13cmos5l_dfrbp_1
+* noconn #net13
+x36 VDD VSS clk data_in_s3 mosi rst_n sclk ss adc_conv miso o_aux_ctrl0 o_aux_ctrl1 o_aux_ctrl2 o_aux_ctrl3 o_aux_ctrl4
++ o_aux_ctrl5 o_aux_ctrl6 o_aux_ctrl7 o_aux_ctrl8 o_aux_ctrl9 o_aux_ctrl10 o_aux_ctrl11 o_aux_ctrl12 o_aux_ctrl13 o_aux_ctrl14 o_aux_ctrl15
++ o_bias_cfg0 o_bias_cfg1 o_bias_cfg2 o_bias_cfg3 o_bias_cfg4 o_bias_cfg5 o_bias_cfg6 o_bias_cfg7 o_bias_cfg8 o_bias_cfg9 o_bias_cfg10
++ o_bias_cfg11 o_bias_cfg12 o_bias_cfg13 o_bias_cfg14 o_bias_cfg15 o_bias_cfg16 o_bias_cfg17 o_bias_cfg18 o_bias_cfg19 o_bias_cfg20 o_bias_cfg21
++ o_bias_cfg22 o_bias_cfg23 o_bias_cfg24 o_bias_cfg25 o_bias_cfg26 o_bias_cfg27 o_bias_cfg28 o_bias_cfg29 o_bias_cfg30 o_bias_cfg31 o_bias_cfg32
++ o_bias_cfg33 o_bias_cfg34 o_clk_cfg0 o_clk_cfg1 o_clk_cfg2 o_clk_cfg3 o_clk_cfg4 o_clk_cfg5 o_clk_cfg6 o_clk_cfg7 o_clk_cfg8 o_clk_cfg9
++ o_clk_cfg10 o_clk_cfg11 o_clk_cfg12 o_clk_cfg13 o_clk_cfg14 o_clk_cfg15 o_clk_cfg16 o_clk_cfg17 o_clk_cfg18 o_en_ctrl0 o_en_ctrl1 o_en_ctrl2
++ o_en_ctrl3 o_en_ctrl4 o_en_ctrl5 o_en_ctrl6 o_en_ctrl7 o_en_ctrl8 o_en_ctrl9 o_en_ctrl10 o_lf_cfg0 o_lf_cfg1 o_lf_cfg2 o_lf_cfg3 o_lf_cfg4
++ o_lf_cfg5 o_lf_cfg6 o_lf_cfg7 o_lf_cfg8 o_lf_cfg9 o_lf_cfg10 o_lf_cfg11 o_lf_cfg12 o_lf_cfg13 o_lf_cfg14 o_lf_cfg15 o_rst_ctrl_b0
++ o_rst_ctrl_b1 o_tst_ctrl0 o_tst_ctrl1 o_tst_ctrl2 o_tst_ctrl3 o_tst_ctrl4 o_tst_ctrl5 o_tst_ctrl6 o_tst_ctrl7 o_tst_ctrl8 o_tst_ctrl9
++ o_tst_ctrl10 o_tst_ctrl11 o_tst_ctrl12 o_tst_ctrl13 o_tst_ctrl14 o_tst_ctrl15 o_uwb_tx_cfg0 o_uwb_tx_cfg1 o_uwb_tx_cfg2 o_uwb_tx_cfg3
++ o_uwb_tx_cfg4 o_uwb_tx_cfg5 o_uwb_tx_cfg6 o_uwb_tx_cfg7 o_uwb_tx_cfg8 o_uwb_tx_cfg9 o_uwb_tx_cfg10 o_uwb_tx_cfg11 o_uwb_tx_cfg12 o_uwb_tx_cfg13
++ o_uwb_tx_cfg14 o_uwb_tx_cfg15 o_uwb_tx_cfg16 o_uwb_tx_cfg17 o_uwb_tx_cfg18 o_uwb_tx_cfg19 o_uwb_tx_cfg20 o_uwb_tx_cfg21 o_uwb_tx_cfg22
++ o_uwb_tx_cfg23 o_uwb_tx_cfg24 o_uwb_tx_cfg25 o_uwb_tx_cfg26 o_uwb_tx_cfg27 o_uwb_tx_cfg28 o_uwb_tx_cfg29 dsa1_dig_top
+.ends

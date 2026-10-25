@@ -1,0 +1,16 @@
+Fill isolation of layout/sg13cmos5l_dsa1_dig_top_logo_fill.gds.gz (top cell sg13cmos5l_dsa1_dig_top_logo_fill)
+
+| fill layer | fill shapes | touching drawn | drawn components joined | touching a via |
+|---|---|---|---|---|
+| Activ 1/22 | 34851 | 0 | 0 | 0 |
+| GatPoly 5/22 | 34851 | 0 | 0 | 0 |
+| Metal1 8/22 | 93855 | 0 | 0 | 0 |
+| Metal2 10/22 | 176905 | 0 | 0 | 0 |
+| Metal3 30/22 | 81815 | 0 | 0 | 0 |
+| Metal4 50/22 | 97727 | 164 | 0 | 0 |
+| TopMetal1 126/22 | 7243 | 0 | 0 | 0 |
+
+Fill poly or fill active crossing drawn active or poly: 0
+Fill poly on fill active, floating dummies: 34851
+
+PASS: the fill joins no two drawn shapes and touches no via

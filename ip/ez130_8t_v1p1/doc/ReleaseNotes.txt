@@ -1,0 +1,24 @@
+Tech Info
+------------------------------------------------------------------------
+Technology   : SG13CMOS5L (adapted from the SG13G2 release,
+               see sg13cmos5l_adaptation.md)
+Library      : EZ130 8T
+Revision     : v1.1
+Date         : ?? September 2026
+------------------------------------------------------------------------
+
+Release notes:
+
+v1.1-openblau:
+       lef/ez130_tech.lef retargeted from the SG13G2 metal stack to the
+       SG13CMOS5L one (Metal1 to Metal4 plus TopMetal1). No device or
+       pin changed. See doc/sg13cmos5l_adaptation.md.
+       gds/ez130_8t.gds: each cell's 235/4 boundary copied onto 189/4
+       (prBoundary.boundary) by scripts/add_prboundary.py.
+
+v1.1:  First public release of the library after optimizations performed
+       by the lecturers. The library contains 220 cells.
+v1.0:  Version compiled after all VLSI 5 students submitted their cells,
+       for a total of 216 cells.
+v0:    Initial version of the library with 39 cells, used as a starting 
+       point for the spring'25 ``VLSI 5'' course at ETH Zurich.

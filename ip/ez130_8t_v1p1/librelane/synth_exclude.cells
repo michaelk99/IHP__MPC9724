@@ -1,0 +1,19 @@
+# Excluded from synthesis only.
+#
+# The clock gates: synthesis inserts exactly one ICG type, named by
+# SYNTH_CLOCKGATE_POSEDGE_ICG, and nothing else may reach the netlist.
+# DFFMRQX2: scan flop, no scan chain in this design.
+#
+# DFFRQ2X*/DFFRQ4X* were excluded 2026-09-10 to 2026-09-14 for a broken
+# Verilog view (every Q simulated as x). The September 2026 drop fixed it, see
+# doc/sclqa_report.md.
+#
+# LibreLane's process_list_file takes '#' comments and blank lines.
+CGX1
+CGX2
+CGX3
+CGTSX1
+CGTSX1P5
+CGTSX2
+CGTSX3
+DFFMRQX2

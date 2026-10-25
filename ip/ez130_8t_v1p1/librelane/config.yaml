@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Harald Pretl, Johannes Kepler University
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# Description: LibreLane SCL config for EZ130 8T on SG13CMOS5L, read in place
+#
+# LibreLane looks for an SCL's config.tcl only inside $PDK_ROOT/$PDK, and
+# resolves dir:: against the DESIGN's directory, not this file's. So this
+# fragment is not passed as it is: ../scripts/librelane_scl.py rewrites every
+# dir:: below to this directory and prints the file to put FIRST on the
+# librelane command line:
+#
+#     cd <macro>/flow/librelane
+#     librelane $(python3 <repo>/ip/ez130_8t_v1p1/scripts/librelane_scl.py) config.yaml
+#
+# A design config using this must NOT set STD_CELL_LIBRARY: ez130_8t. Every step
+# re-reads the PDK config under that name and dies on one the PDK lacks. The
+# name stays the PDK default, and everything it implies is overridden here, so
+# a run WITHOUT this fragment silently loads the PDK library.
+#
+# Only what differs from the PDK's sg13cmos5l_stdcell is here. Corners, the
+# constraint defaults, PLACE_SITE and everything else come from the PDK config,
+# and the corner NAMES are the same in both, so a design can switch libraries
+# without touching STA_CORNERS or DEFAULT_CORNER.
+meta:
+  version: 2
+
+TECH_LEFS:
+  "nom_*": dir::../lef/ez130_tech.lef
+  "min_*": dir::../lef/ez130_tech.lef
+  "max_*": dir::../lef/ez130_tech.lef
+CELL_LEFS: [dir::../lef/ez130_8t.lef]
+CELL_GDS: [dir::../gds/ez130_8t.gds]
+CELL_VERILOG_MODELS: [dir::../verilog/ez130_8t.v]
+# EZ130 ships a CDL only, and netgen parses its M cards directly.
+CELL_SPICE_MODELS: [dir::../cdl/ez130_8t.cdl]
+CELL_CDLS: [dir::../cdl/ez130_8t.cdl]
+
+# No IO library: EZ130 ships core cells only.
+LIB:
+  nom_typ_1p20V_25C: [dir::../lib/ez130_8t_tt_1p20v_25c.lib]
+  nom_fast_1p32V_m40C: [dir::../lib/ez130_8t_ff_1p32v_m40c.lib]
+  nom_slow_1p08V_125C: [dir::../lib/ez130_8t_ss_1p08v_125c.lib]
+
+FP_TRACKS_INFO: dir::tracks.info
+SYNTH_EXCLUDED_CELL_FILE: dir::synth_exclude.cells
+PNR_EXCLUDED_CELL_FILE: dir::pnr_exclude.cells
+
+SYNTH_LATCH_MAP: dir::latch_map.v
+SYNTH_TRISTATE_MAP: dir::tribuff_map.v
+# FAX1 and HAX2 have two outputs and abc maps only single-output cells, so an
+# adder comes out as MIN3X* plus XOR2X1/XNOR2X*. rca_map.v expands $add/$sub
+# onto them instead, as a ripple carry, which is a timing choice. OPT-IN: it
+# runs only with SYNTH_ADDER_TYPE: RCA. Read its header first.
+SYNTH_RCA_MAP: dir::rca_map.v
+
+# NOT OPTIONAL. EZ130 cells carry no tie strip (INVX1 has two Activ polygons,
+# sg13cmos5l_inv_1 four), so the library ships WELLTAP instead. Without taps,
+# dco_switch_cap_decoder gave 13588 Magic and 170 KLayout markers, all
+# LU.a/LU.b, with routing, antenna and timing clean (2026-09-08). 20 um puts
+# every point within 10 um of a tap, half the rule.
+WELLTAP_CELL: WELLTAP
+FP_TAPCELL_DIST: 20
+
+# Role cells are matched to the PDK library by max_capacitance, NOT by the
+# digit, which is 3x weaker here (sg13cmos5l_buf_1 0.3 pF = BUFX3 0.315,
+# buf_4 1.2 = BUFX12 1.26, buf_8 2.4 = BUFX24 2.52, lgcp_1 = CGX3). Taking
+# BUFX8 for buf_8 put 329 ps of clock insertion inside the ICG (2026-09-08).
+SYNTH_DRIVING_CELL: BUFX12/Y
+SYNTH_CLK_DRIVING_CELL: BUFX12/Y
+SYNTH_BUFFER_CELL: BUFX3/A/Y
+SYNTH_TIEHI_CELL: TIEHI/Y
+SYNTH_TIELO_CELL: TIELO/Y
+
+FILL_CELLS: [FILLER1, FILLER2, FILLER4, FILLER8, FILLER16]
+DECAP_CELLS: [DECAP4, DECAP8, DECAP16, DECAP32]
+CELL_PAD_EXCLUDE: ["FILLER*", "DECAP*"]
+TRISTATE_CELLS: ["TBUFX*", "TINVX*"]
+
+# CELL/PIN: every LibreLane consumer splits on "/", and a bare name crashes
+# RUN_HEURISTIC_DIODE_INSERTION with "not enough values to unpack".
+DIODE_CELL: ANTENNA2/A
+
+# The rails are 0.32 um tall (VSS spans y -0.16..0.16), not the PDK's 0.44.
+PDN_RAIL_WIDTH: 0.32
+
+# BUFX12, NOT the capacitance-matched BUFX24: a clock leaf drives six or seven
+# CK pins, about 30 fF. Measured on four blocks: -14 to -33 % power, and
+# faster on three. BUFX6 is past the knee and does not route on dpll. BUFX24 is
+# not banned; the resizer still uses it on data paths.
+CTS_ROOT_BUFFER: BUFX12
+CTS_CLK_BUFFERS: [BUFX12, BUFX6, BUFX3]

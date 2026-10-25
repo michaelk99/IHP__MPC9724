@@ -1,0 +1,38 @@
+* SPDX-FileCopyrightText: 2026 Michael Koefinger
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+* sg13cmos5l_ip__clamp_vddvss: RC-triggered vdd-to-vss ESD supply clamp, the LVS reference
+* IHP's IOPadVdd clamp with its source on vss, the clamp NMOS 3 x 756 um. All thick oxide.
+
+.SUBCKT sg13cmos5l_ip__clamp_vddvss vdd vss iovdd iovss
+*.PININFO vdd:B vss:B iovdd:B iovss:B
+Mclamp vdd clamp_g vss vss sg13_hv_nmos w=2268u l=0.6u ng=252
+Mcap vss clamp_rc vss vss sg13_hv_nmos w=126u l=9.5u ng=14
+Minvn clamp_g clamp_rc vss vss sg13_hv_nmos w=108u l=0.5u ng=16
+Minvp clamp_g clamp_rc vdd vdd sg13_hv_pmos w=350u l=0.5u ng=50
+* trigger, 25 rppd 1 x 20 um in series, vdd to clamp_rc
+Rtrig1 vdd rt1 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig2 rt1 rt2 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig3 rt2 rt3 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig4 rt3 rt4 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig5 rt4 rt5 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig6 rt5 rt6 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig7 rt6 rt7 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig8 rt7 rt8 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig9 rt8 rt9 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig10 rt9 rt10 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig11 rt10 rt11 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig12 rt11 rt12 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig13 rt12 rt13 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig14 rt13 rt14 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig15 rt14 rt15 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig16 rt15 rt16 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig17 rt16 rt17 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig18 rt17 rt18 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig19 rt18 rt19 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig20 rt19 rt20 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig21 rt20 rt21 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig22 rt21 rt22 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig23 rt22 rt23 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig24 rt23 rt24 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+Rtrig25 rt24 clamp_rc 5.172k $SUB=vss $[rppd] w=1u l=20u b=0
+.ENDS

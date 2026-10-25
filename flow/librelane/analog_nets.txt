@@ -1,0 +1,10 @@
+# Nets that must touch only the listed instance pins, checked by scripts/check_analog_nets.py.
+# Names are the ones in the synthesized netlist. The core is flattened, so its gates carry the core instance as a prefix.
+vi:               vi_pad/padres dsm2/vi
+vcm:              vcm_pad/padres dsm2/vcm
+ibias_test:       ib_pad/padres dsm2/ibias_test
+dsm_clk_PAD2CORE: dsm_clk_pad/p2c dsm2/di_clk
+dsm_do_q:         dsm2/do_q do_q_pad/c2p
+dsm_do_q_b:       dsm2/do_q_b do_q_b_pad/c2p
+# The route from dsm2 to the gate is long enough for the antenna repair to add diodes, a diode to VSS is not a driver and not on VDD.
+dsm_do_q_dec:     dsm2/do_q_dec i_sg13cmos5l_dsa1_dig_core.u_dec_src_gate/A ANTENNA_*/A?

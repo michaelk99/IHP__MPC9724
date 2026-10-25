@@ -1,0 +1,16 @@
+{
+ "tag": "tapeout/v1.1.1",
+ "iovdd": 3.754121490254801e-08,
+ "vdd": 2.1454084641804466e-08,
+ "inventory": {
+  "sg13cmos5l_ip__clamp_vddvss": 1,
+  "sg13cmos5l_IOPadIn": 6,
+  "sg13cmos5l_IOPadAnalog": 2,
+  "sg13cmos5l_IOPadInOut30mA": 2,
+  "sg13cmos5l_IOPadIOVdd": 1,
+  "sg13cmos5l_IOPadIOVss": 1,
+  "sg13cmos5l_IOPadOut30mA": 18,
+  "sg13cmos5l_IOPadVdd": 1,
+  "sg13cmos5l_IOPadVss": 1
+ }
+}

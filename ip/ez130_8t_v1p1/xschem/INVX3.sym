@@ -1,0 +1,33 @@
+v {xschem version=3.4.4 file_version=1.2
+* SPDX-FileCopyrightText: 2026 Harald Pretl, Johannes Kepler University
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+* Description: xschem symbol for the EZ130 8T cell INVX3
+*
+* Derived from the PDK stdcell symbol of the cell this one replaces. EZ130
+* subcircuits carry SIX ports, A [B] VDD VNW VPW VSS Y: unlike the PDK
+* library they expose both well terminals, so the template ties VNW to VDD
+* and VPW to VSS, which is how the layout ties them.
+}
+G {}
+K {type=primitive
+function1="0 ~"
+format="@name @@A @VDD @VNW @VPW @VSS @@Y INVX3"
+template="name=x1 VDD=VDD VSS=VSS VNW=VDD VPW=VSS "
+extra="VDD VSS VNW VPW"
+highlight=true
+}
+V {}
+S {}
+E {}
+L 4 -20 -20 -20 20 {}
+L 4 -20 -20 20 0 {}
+L 4 -20 20 20 0 {}
+L 4 30 0 40 0 {}
+L 4 -40 0 -20 0 {}
+B 5 -42.5 -2.5 -37.5 2.5 {name=A dir=in goto=1 propag=1}
+B 5 37.5 -2.5 42.5 2.5 {name=Y dir=out }
+A 4 25 0 5 180 360 {}
+T {A} -35 -14 0 0 0.2 0.2 {}
+T {Y} 36.25 -14 0 1 0.2 0.2 {}
+T {@name} 2.5 15 0 0 0.2 0.2 {}
+T {@symname} -7.5 -25 0 0 0.2 0.2 {}

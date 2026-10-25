@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you base your work on it, please cite it as below."
+authors:
+- family-names: Koefinger
+  given-names: Michael
+  affiliation: "Johannes Kepler University, Institute for Integrated Circuits and Quantum Computing"
+title: "GitHub Repository for the DSADC1 digital back-end chip on the ihp-sg13cmos5l Open-PDK."
+abstract: "Tapeout repository of the DSADC1 digital back end on IHP SG13CMOS5L: a 1.6 mm die in QFN32 carrying one macro with the 128x decimation filter, an SPI slave and the configuration register file, hardened with LibreLane on the EZ130 8T standard cells."
+keywords:
+  - IHP SG13CMOS5L
+  - delta-sigma ADC
+  - decimation filter
+  - open-source silicon
+  - LibreLane
+version: 1.0.0
+date-released: "2026-09-24"
+url: https://github.com/michaelk99/sg13cmos5l_dsa1_dig
+repository-code: https://github.com/michaelk99/sg13cmos5l_dsa1_dig
+license-url: https://github.com/michaelk99/sg13cmos5l_dsa1_dig/blob/main/LICENSE
+references:
+  - type: software
+    title: "An Open-Source Analog-Mixed Signal Chip Design Template for the ihp-sg13cmos5l Open-PDK."
+    authors:
+      - family-names: Dorrer
+        given-names: Simon
+        orcid: https://orcid.org/0009-0001-5994-5477
+      - family-names: Pretl
+        given-names: Harald
+        orcid: https://orcid.org/0000-0003-1519-076X
+    url: https://github.com/iic-jku/ihp-sg13cmos5l-ams-chip-template
+    identifiers:
+      - type: doi
+        value: 10.5281/zenodo.22115134

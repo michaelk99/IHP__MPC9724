@@ -1,0 +1,84 @@
+140. Printing statistics.
+
+=== dsa1_dig_top ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+    10912        - wires
+    11049        - wire bits
+     1958        - public wires
+     2095        - public wire bits
+       16        - ports
+      153        - port bits
+    11043 1.22E+05 cells
+      644 4.54E+03   AND2X1
+      193  1634.17   AND3BX1
+        1    8.467   AND3BX2
+       55  465.696   AND3X2
+       18  177.811   AND4X2
+       21  207.446   AO211X2
+       72  711.245   AO21X2
+       19  241.315   AO22X2
+       21  237.082   AO31X2
+      248 2.45E+03   AOAI211X1
+      107   905.99   AOI211X1
+       27  228.614   AOI21BX1
+      501 3.54E+03   AOI21X1
+       49  484.042   AOI221X1
+       37  365.501   AOI22X1
+       77  651.974   AOI2B1X1
+        3   42.336   AOI2B2BX1
+        8   90.317   AOI2B2X1
+        1   12.701   AOI2BB2X1
+       71  601.171   AOI31X1
+      396 2.24E+03   BUFX3
+       26        -   CGX3
+     1503 3.39E+04   DFFQX1
+      343 9.68E+03   DFFRQX1
+      576 2.44E+03   INVX1
+      461 4.55E+03   MIN3X1
+       50   635.04   MUX2X1
+      139 1.57E+03   MUXI2X1
+      118  832.608   NAND2BX1
+      453 2.56E+03   NAND2X1
+        1    5.645   NAND2X1P5
+        9   88.906   NAND3BX1
+        1    9.878   NAND3BX2
+      156  1.1E+03   NAND3X1
+        1    11.29   NAND4BX1
+       10   98.784   NAND4X2
+      260  1834.56   NOR2BX1
+        1    7.056   NOR2BX2
+      923  5210.15   NOR2X1
+        3   16.934   NOR2X2
+       16  135.475   NOR3BX1
+        1    8.467   NOR3BX1P5
+      287 2.03E+03   NOR3X1
+        1    9.878   NOR4X2
+       35  345.744   OA211X2
+      110  931.392   OA21X2
+       84  711.245   OAI211X1
+      420  2963.52   OAI21X1
+        1    7.056   OAI21X2
+       15  169.344   OAI221X1
+       11  108.662   OAI22X1
+        3   42.336   OAI2B2BX1
+       22  217.325   OAI31X1
+      206  2034.95   OAOI211X1
+       12  118.541   OAOI211X2
+       87  613.872   OR2X2
+       93   787.45   OR3BX1
+        1    8.467   OR3BX2
+       23  194.746   OR3X2
+        2   19.757   OR4X1
+      944  9325.21   XNOR2X1
+      529 1.12E+04   XNOR3X1
+      494  4879.93   XOR2X1
+       43  910.224   XOR3X1
+
+   Area for cell type \CGX3 is unknown!
+
+   Chip area for module '\dsa1_dig_top': 122184.518400
+     of which used for sequential elements: 43617.369600 (35.70%)
+

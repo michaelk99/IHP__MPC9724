@@ -1,0 +1,59 @@
+/*
+ SPDX-FileCopyrightText: 2026 Michael Koefinger
+ SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+ sg13cmos5l_ip__clamp_vddvss: the cell and its supply pins, no timing, for every corner
+*/
+library (sg13cmos5l_ip__clamp_vddvss) {
+  delay_model : table_lookup;
+  capacitive_load_unit (1,pf);
+  current_unit : "1uA";
+  leakage_power_unit : "1pW";
+  pulling_resistance_unit : "1kohm";
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  voltage_map (vdd, 1.2);
+  voltage_map (iovdd, 3.3);
+  voltage_map (iovss, 0);
+  voltage_map (vss, 0);
+  default_cell_leakage_power : 0;
+  input_threshold_pct_fall : 50;
+  input_threshold_pct_rise : 50;
+  output_threshold_pct_fall : 50;
+  output_threshold_pct_rise : 50;
+  slew_derate_from_library : 1;
+  slew_lower_threshold_pct_fall : 10;
+  slew_lower_threshold_pct_rise : 10;
+  slew_upper_threshold_pct_fall : 90;
+  slew_upper_threshold_pct_rise : 90;
+  nom_process : 1;
+  nom_temperature : 25;
+  nom_voltage : 1.2;
+  operating_conditions (typ_1p2V_25C) {
+    process : 1;
+    temperature : 25;
+    voltage : 1.2;
+  }
+  default_operating_conditions : typ_1p2V_25C;
+  cell (sg13cmos5l_ip__clamp_vddvss) {
+    area : 21600;
+    pad_cell : true;
+    dont_touch : true;
+    dont_use : true;
+    pg_pin (vdd) {
+      pg_type : primary_power;
+      voltage_name : "vdd";
+    }
+    pg_pin (vss) {
+      pg_type : primary_ground;
+      voltage_name : "vss";
+    }
+    pg_pin (iovdd) {
+      pg_type : primary_power;
+      voltage_name : "iovdd";
+    }
+    pg_pin (iovss) {
+      pg_type : primary_ground;
+      voltage_name : "iovss";
+    }
+  }
+}

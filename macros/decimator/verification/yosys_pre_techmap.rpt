@@ -1,0 +1,45 @@
+117. Printing statistics.
+
+=== decimator_top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+     6297 wires
+     8920 wire bits
+      116 public wires
+     2739 public wire bits
+        5 ports
+       26 port bits
+     8866 cells
+      208   $_ANDNOT_
+     1223   $_AND_
+      239   $_MUX_
+     2216   $_NAND_
+       31   $_NOR_
+       56   $_NOT_
+      267   $_ORNOT_
+      809   $_OR_
+       25   $_SDFFCE_PN0P_
+       78   $_SDFFCE_PP0P_
+     1383   $_SDFF_PN0_
+        1   $_SDFF_PP0_
+     1266   $_XNOR_
+     1061   $_XOR_
+        3   CGX3
+
+   Area for cell type $_ANDNOT_ is unknown!
+   Area for cell type $_AND_ is unknown!
+   Area for cell type $_MUX_ is unknown!
+   Area for cell type $_NAND_ is unknown!
+   Area for cell type $_NOR_ is unknown!
+   Area for cell type $_NOT_ is unknown!
+   Area for cell type $_ORNOT_ is unknown!
+   Area for cell type $_OR_ is unknown!
+   Area for cell type $_SDFFCE_PN0P_ is unknown!
+   Area for cell type $_SDFFCE_PP0P_ is unknown!
+   Area for cell type $_SDFF_PN0_ is unknown!
+   Area for cell type $_SDFF_PP0_ is unknown!
+   Area for cell type $_XNOR_ is unknown!
+   Area for cell type $_XOR_ is unknown!
+   Area for cell type \CGX3 is unknown!
+

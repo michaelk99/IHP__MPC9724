@@ -1,0 +1,28 @@
+# Sign-off environment, written by scripts/signoff_env.sh
+date: 2026-10-08T23:50Z
+git: 0df5f3c43274c21c81d51179009248fb16571a27 on tapeout/v1.1.1, clean
+image: IIC-OSIC-TOOLS 2026.08, hpretl/iic-osic-tools@sha256:3c371645b19c6f6564dc8c7b21e39ad1c1833d274fe5b85639afe1ba9d7987e7
+architecture: x86_64
+PDK: ihp-sg13cmos5l, commit ff32f48c786afce89683767b120ac48adc76002b
+KLayout: 0.30.11
+Magic: 8.3.681
+Netgen: 1.5.323
+Yosys: 0.68 (git sha1 38e001a6f, Release, GNU /usr/bin/c++ 13.3.0)
+OpenROAD: 26Q3-1621-g21512b0ab
+LibreLane: 3.1.0.dev3
+Icarus: 14.0 (devel) (s20260301-391-g64f13540-dirty)
+GHDL: GHDL 7.0.0-dev (6.0.0.r449.gd71175c7) [Dunoon edition]
+EZ130 8T, read from outside the repo, md5:
+  1bdef25fe59a343a4898ec16fc388b77  gds/ez130_8t.gds
+  3b2f005641b4f7fea5c18b66d6528c82  lef/ez130_8t.lef
+  338a2896a7f7edc28388dd78be9c723d  lef/ez130_tech.lef
+  8c219c9a076dd731a599651ba3cc377a  cdl/ez130_8t.cdl
+  152a63d67fd4885e7b98633db289cc84  verilog/ez130_8t.v
+  f6095f9770bbff417cb9d6dc4cbe7383  lib/ez130_8t_tt_1p20v_25c.lib
+  d4ec3f053144afc9db2ca44f3d2caf54  lib/ez130_8t_ff_1p32v_m40c.lib
+  f65cb00e05cf667275dd9c916fcab083  lib/ez130_8t_ss_1p08v_125c.lib
+EZ130 DECAPHV, read from outside the repo, md5:
+  04e47280870471a56f529ef817013d09  gds/ez130_8t_decap_hv.gds
+  4a9dd7f9187bad4726c364a24be8c735  lef/ez130_8t_decap_hv.lef
+  a750ceb264c8bac2e76377586d7e7126  cdl/ez130_8t_decap_hv.cdl
+ESD chain (doc/esd_hbm.md): IIC-OSIC-TOOLS 2026.09, hpretl/iic-osic-tools@sha256:b87b3f1af9ba72d9486466ea777cf4248e96e20d9dba76d67259bc185db3859c, for kpex 0.4.4 and the IO netlist with substrate ties

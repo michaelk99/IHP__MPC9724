@@ -1,0 +1,37 @@
+* Extracted by KLayout with SG13CMOS5L LVS runset on : 08/10/2026 00:22
+
+.SUBCKT sg13cmos5l_ip__clamp_vddvss vdd vss
+M$1 vss \$3 vss vss sg13_hv_nmos L=9.5u W=126u AS=51.84p AD=51.84p PS=173.52u
++ PD=173.52u rfmode=0
+M$11 vss \$3 \$4 vss sg13_hv_nmos L=0.5u W=108u AS=38.88p AD=38.88p PS=133.02u
++ PD=133.02u rfmode=0
+M$31 vss \$4 vdd vss sg13_hv_nmos L=0.6u W=2268u AS=1040.04p AD=1040.04p
++ PS=2553.12u PD=2553.12u rfmode=0
+M$283 vdd \$3 \$4 vdd sg13_hv_pmos L=0.5u W=350u AS=116.48p AD=116.48p
++ PS=397.28u PD=397.28u rfmode=0
+R$333 \$3 \$18 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$334 \$12 \$18 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$335 \$12 \$19 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$336 \$13 \$19 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$337 \$13 \$20 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$338 \$14 \$20 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$339 \$14 \$21 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$340 \$15 \$21 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$341 \$15 \$22 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$342 \$16 \$22 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$343 \$16 \$23 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$344 \$17 \$23 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$345 \$17 \$24 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$346 vdd \$33 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$347 \$28 \$33 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$348 \$28 \$34 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$349 \$29 \$34 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$350 \$29 \$35 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$351 \$30 \$35 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$352 \$30 \$36 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$353 \$31 \$36 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$354 \$31 \$37 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$355 \$32 \$37 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$356 \$32 \$38 vss rppd w=1u l=20u ps=0u b=0 m=1
+R$357 \$24 \$38 vss rppd w=1u l=20u ps=0u b=0 m=1
+.ENDS sg13cmos5l_ip__clamp_vddvss

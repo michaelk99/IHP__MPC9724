@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2026 Simon Dorrer and Harald Pretl
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# The DSADC1 digital back end: the decimator of ../../decimator, the SPI slave
+# and the configuration register file. This is the block that goes on the chip.
+#
+# The EZ130 SCL is NOT selected with STD_CELL_LIBRARY. It lives outside this
+# repo and is read through the fragment that the Makefile puts FIRST on the
+# librelane command line (EZ130_DIR/scripts/librelane_scl.py). See
+# ../../decimator/flow/librelane/config.yaml for the full note.
+
+meta:
+  version: 3
+  flow: Classic
+  substituting_steps:
+    # Magic reports some overlaps which can be ignored
+    Checker.IllegalOverlap: null
+
+DESIGN_NAME: dsa1_dig_top
+# The clock-gated netlist from the yosys pre-pass. The VHDL goes through
+# ghdl synth first, so rtl-gen is a two-step target here.
+VERILOG_FILES: ["dir::../../rtl_gen/dsa1_dig_top_cg.v"]
+
+# Layout / Floorplan Rules
+# West column of the dsm2 die. 881 sites by 175 rows of the 0.42 x 3.36 um
+# CoreSite. The core is 5.04 um in from the sides and 13.44 um from top and
+# bottom, 202.0k um2, so 137.7k um2 of cells is 68 %. The 355 x 561 um outline
+# (75 %) failed detailed placement after global placement: the cell padding
+# below inflates the cells to over 90 % of the core.
+FP_SIZING: absolute
+DIE_AREA: [0, 0, 370.02, 588]
+PL_TARGET_DENSITY_PCT: 85
+GRT_ALLOW_CONGESTION: true
+RUN_MAGIC_DRC: true
+RUN_CTS: true
+FP_PIN_ORDER_CFG: dir::pin_order.cfg
+FP_PDN_MULTILAYER: false
+
+# One site of padding either side of every functional cell. Signal routing
+# starts at Metal2, so Metal1 carries only pin access and the router has no
+# freedom there. Without this the detailed router plateaus at a handful of
+# Metal1 spacing violations that move between runs and never clear.
+# These are totals, not per side: gpl.tcl and dpl_cell_pad.tcl both divide by 2
+# with integer division, so 1 silently becomes 0 per side.
+GPL_CELL_PADDING: 2
+DPL_CELL_PADDING: 2
+
+# CMOS5L stops at Metal4, there is no Metal5 or TopMetal2.
+RT_MAX_LAYER: Metal4
+
+SYNTH_STRATEGY: AREA 0
+SYNTH_ABC_BUFFERING: true
+SYNTH_SIZING: false
+
+# CGX1/2/3 are correct in silicon, only CGTSX* is inverted.
+SYNTH_CLOCKGATE_POSEDGE_ICG: "CGX3/E/CK/ECK"
+SYNTH_CLOCKGATE_MIN_WIDTH: 3
+
+# SDC, one file for both, so what is optimized is what is signed off.
+PNR_SDC_FILE: dir::dsa1_dig_top.sdc
+SIGNOFF_SDC_FILE: dir::dsa1_dig_top.sdc
+
+# Power / ground nets
+VDD_NETS: ["VDD"]
+GND_NETS: ["VSS"]
+VERILOG_POWER_DEFINE: "USE_POWER_PINS"
+
+# Two asynchronous clocks: the 65.536 kHz modulator clock and the 200 kHz SPI
+# clock. Both are constrained pessimistically, see the SDC.
+CLOCK_PORT: ["clk", "sclk"]
+CLOCK_PERIOD: 1000
+
+# EZ130 is characterised at three corners only.
+STA_CORNERS:
+  - nom_fast_1p32V_m40C
+  - nom_slow_1p08V_125C
+  - nom_typ_1p20V_25C
+DEFAULT_CORNER: nom_typ_1p20V_25C
+TIMING_VIOLATION_CORNERS: ["*"]
+
+# Decoupling: the thick-oxide DECAPHV cells only. With EZ130's own thin-oxide
+# DECAP* the fill was 76 % of this block's leakage on SG13G2, so the low-oxide
+# cells are not merely unused here, they are banned.
+#
+# DECAP_CELLS alone is not enough. The SCL fragment sets it to the four
+# thin-oxide cells and overriding it only steers the decap insertion step, so
+# the LV cells stay legal for anything else that might place one. Listing them
+# in EXTRA_EXCLUDED_CELLS takes them out of synthesis and placement outright.
+# The views come from the fragment the Makefile generates with
+# ../../scripts/decaphv_frag.py.
+DECAP_CELLS: ["DECAPHV32", "DECAPHV16", "DECAPHV8"]
+EXTRA_EXCLUDED_CELLS: ["BUFX1", "BUFX2", "DLY1X2", "DECAP4", "DECAP8", "DECAP16", "DECAP32"]
+CELL_PAD_EXCLUDE: ["FILLER*", "DECAP*", "DECAPHV*"]
+
+# Hold repair. Never let the setup uncertainty reach hold on these slow clocks.
+GRT_RESIZER_HOLD_SLACK_MARGIN: 0.01
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.02
+PL_RESIZER_HOLD_MAX_BUFFER_PCT: 100

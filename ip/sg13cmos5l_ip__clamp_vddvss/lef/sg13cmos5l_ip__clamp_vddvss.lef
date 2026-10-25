@@ -1,0 +1,178 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# Written by layout/clamp_gen.py, do not edit.
+
+VERSION 5.7 ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+
+MACRO sg13cmos5l_ip__clamp_vddvss
+    CLASS PAD SPACER ;
+    ORIGIN 0.000 0.000 ;
+    FOREIGN sg13cmos5l_ip__clamp_vddvss 0.000 0.000 ;
+    SIZE 120.000 BY 180.000 ;
+    SYMMETRY X Y R90 ;
+    SITE sg13cmos5l_ioSite ;
+  PIN iovdd
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 66.000 120.000 91.500 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 93.500 120.000 119.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 66.000 120.000 91.500 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 93.500 120.000 119.000 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 66.000 120.000 91.500 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 93.500 120.000 119.000 ;
+    END
+  END iovdd
+  PIN iovss
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 7.000 120.000 32.500 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 34.500 120.000 60.000 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 126.000 120.000 134.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 7.000 120.000 32.500 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 34.500 120.000 60.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 126.000 120.000 134.000 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 7.000 120.000 32.500 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 34.500 120.000 60.000 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 126.000 120.000 134.000 ;
+    END
+  END iovss
+  PIN vdd
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 160.000 120.000 178.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 140.000 120.000 155.800 ;
+    END
+  END vdd
+  PIN vss
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 140.000 7.600 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 10.400 140.000 12.400 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 15.200 140.000 18.600 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 21.400 140.000 23.400 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 26.200 140.000 53.800 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 56.600 140.000 58.600 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 61.400 140.000 64.800 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 67.600 140.000 69.600 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 72.400 140.000 93.800 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 96.600 140.000 98.600 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 101.400 140.000 104.800 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 107.600 140.000 109.600 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 112.400 140.000 120.000 148.600 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 148.600 120.000 158.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 162.200 120.000 178.000 ;
+    END
+  END vss
+  OBS
+    LAYER Metal1 ;
+      RECT 0.000 0.000 120.000 180.000 ;
+    LAYER Metal2 ;
+      RECT 0.000 0.000 120.000 180.000 ;
+    LAYER Metal3 ;
+      RECT 0.000 0.000 120.000 178.000 ;
+    LAYER Metal4 ;
+      RECT 0.000 0.000 120.000 178.000 ;
+    LAYER TopMetal1 ;
+      RECT 0.000 0.000 120.000 134.500 ;
+    LAYER Via1 ;
+      RECT 0.000 0.000 120.000 180.000 ;
+    LAYER Via2 ;
+      RECT 0.000 0.000 120.000 180.000 ;
+  END
+END sg13cmos5l_ip__clamp_vddvss
+
+END LIBRARY

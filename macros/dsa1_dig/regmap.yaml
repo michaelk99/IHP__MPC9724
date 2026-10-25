@@ -1,0 +1,248 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# Description: Single source of truth for the dsa1_dig SPI register map
+#
+# Generated from this file by macros/scripts/regmap_gen.py (make -C macros/dsa1_dig regmap),
+# never edited by hand:
+#   macros/dsa1_dig/rtl/dsa1_regs.vhd    the VHDL package the slave and the top use
+#   macros/dsa1_dig/rtl/dsa1_regs.vh     the same constants for the Verilog benches
+#   models/regmap_defs.py                addresses, resets, fields and write rules for Python
+#   macros/dsa1_dig/sw/dsa1_regs.h       C header for the hosts
+#   doc/regmap.md                        the register tables
+#   macros/dsa1_dig/build/regs_<die>.csv the EasyConfig profile of each die
+#
+# The schema is OpenBLAU's (meta, regions, registers, fields), with these additions:
+#   used:   the dies on which a field does something, cmos5l (this chip) or dsa1 (the DSA1 die)
+#   only:   a field that exists on one die only. On the other its bits are TBD, reset 0.
+#           Two dies may lay different `only` fields on the same bits, each die then sees its own.
+#   hold:   the value every write must carry in this field
+#   forbid: field values that must never be written
+#   names:  per-bit names where the register sheet does not count down from msb
+#   vhdl:   the name of the VHDL constant for this field or register, where the RTL has one
+#   drives: the macro ports or logic a register feeds
+#   enum:   named field values, emitted as constants
+#
+# access: rw     read/write storage
+#         const  read only, a constant (value), a write changes nothing
+#         adc    written by the ADC capture, writable over SPI too, overwritten at the next conversion
+#
+# The SPI frame is not described here. It is the DSA1 die's, in dsa1_ic_bus_slave.vhd, and both
+# dies and every host depend on it: 1 read flag, 4 address bits, a dummy bit, 16 data bits.
+# Bit names and resets come from jku-phd circuit-level/DSA1_regs.ods, the DSA1 register sheet.
+
+meta:
+  macro: dsa1_dig
+  addr_width: 4
+  data_width: 16
+  c_prefix: DSA1
+  vhdl_package: dsa1_regs
+  adc_regs: 2
+  dies: [cmos5l, dsa1]
+
+regions:
+  - name: regs
+    base: 0
+    words: 16
+    owner: dsa1_ic_bus_slave
+    title: Configuration, test control and ADC data
+
+registers:
+  - name: ADC_DATA_CH0_HIGH
+    vhdl: ADC_DATA_CH0_HIGH
+    offset: 0
+    drives: the decimator output word, bits 21 down to 16
+    access: adc
+    desc: Upper 16 bits of the 22-bit output word, loaded at each conversion. Reading it freezes ADC_DATA_CH0_LOW, so a HIGH and LOW pair belongs to one conversion.
+    fields:
+      - {name: DATA_HI, bits: "15:0", reset: 0x0000, used: [cmos5l, dsa1]}
+
+  - name: ADC_DATA_CH0_LOW
+    vhdl: ADC_DATA_CH0_LOW
+    offset: 1
+    drives: the decimator output word, bits 15 down to 0
+    access: adc
+    desc: Lower bits of the output word, as frozen by the last read of ADC_DATA_CH0_HIGH.
+    fields:
+      - {name: DATA_LO, bits: "15:0", reset: 0x0000, used: [cmos5l, dsa1]}
+
+  - name: BIAS_CFG_0
+    offset: 2
+    drives: o_bias_cfg[18:3]
+    desc: Bias current settings of OTA1 to OTA3 on the DSA1 die. On this die the dsm2 trim and dither. A host that writes a DSA1 bias profile checks CHIP_ID first, or it writes dsm2's trim and enables here.
+    fields:
+      - {name: OTA3_CFG, bits: "15:12", reset: 0x9, used: [dsa1], only: dsa1}
+      - {name: OTA2_CFG, bits: "11:8", reset: 0x0, used: [dsa1], only: dsa1}
+      - {name: OTA1_CFG, bits: "7:0", reset: 0xEA, used: [dsa1], only: dsa1}
+      - {name: NA, bits: "15:10", reset: 0x0, reserved: true, only: cmos5l}
+      - {name: DSM_SPARE, bits: "9:7", reset: 0x0, used: [], only: cmos5l, desc: "Spare, drives nothing"}
+      - {name: DSM_DITH_AMP, bits: "6:5", reset: 0x1, used: [cmos5l], only: cmos5l, desc: "dsm2 di_dith_amp, quantizer dither amplitude"}
+      - {name: DSM_DITH_EN, bits: "4", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_dith_en, quantizer dither on"}
+      - {name: DSM_TRIM, bits: "3:0", reset: 0x4, used: [cmos5l], only: cmos5l,
+         desc: "dsm2 di_trim, bias 8.33 nA x (16 + 2 x code), 4 is 200 nA. Change only with DSM_EN low"}
+
+  - name: BIAS_CFG_1
+    offset: 3
+    drives: o_bias_cfg[34:19]
+    desc: Bias current settings of the CCRO, comparator, buffer and OTA4 on the DSA1 die. On this die the dsm2 enables and the decimator source.
+    fields:
+      - {name: CCRO_CFG, bits: "15:12", reset: 0xD, used: [dsa1], only: dsa1}
+      - {name: COMP_CFG, bits: "11:8", reset: 0x0, used: [dsa1], only: dsa1}
+      - {name: BUF_CFG, bits: "7:4", reset: 0x2, used: [dsa1], only: dsa1}
+      - {name: OTA4_CFG, bits: "3:0", reset: 0xC, used: [dsa1], only: dsa1}
+      - {name: NA, bits: "15:7", reset: 0x0, reserved: true, only: cmos5l}
+      - {name: ADC_CONV_EN, bits: "6", reset: 1, used: [cmos5l], only: cmos5l, desc: "The adc_conv pad, 0 holds it low for a quiet power measurement"}
+      - {name: DSM_QOUT_EN, bits: "5", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_qout_en, the do_q and do_q_b pads follow the bit stream"}
+      - {name: DSM_VCM_EXT, bits: "4", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_vcm_ext, vcm_gen off, the vcm pad sets vcm"}
+      - {name: DSM_BTEST_EN, bits: "3", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_btest_en, ibias_test onto its pad"}
+      - {name: DEC_SRC, bits: "2", reset: 0, used: [cmos5l], only: cmos5l,
+         desc: "Decimator input, 0 the data_in pad, 1 dsm2 do_q. With 1 clk must be the inverted dsm_clk from one source"}
+      - {name: DSM_RST_B, bits: "1", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_rst_b, release 130 us after DSM_EN"}
+      - {name: DSM_EN, bits: "0", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_ena"}
+
+  - name: BIAS_CFG_2
+    offset: 4
+    drives: o_bias_cfg[2:0]
+    desc: CTAT bias setting.
+    fields:
+      - {name: NA, bits: "15:3", reset: 0x0, reserved: true}
+      - {name: CTAT_CFG, bits: "2:0", reset: 0x3, used: [dsa1]}
+
+  - name: BLOCK_CTRL_0
+    offset: 5
+    drives: o_rst_ctrl_b, o_clk_cfg[18:16], o_en_ctrl
+    desc: Enables and resets of the analog blocks.
+    fields:
+      - {name: RST_DAC_B, bits: "15", reset: 1, used: [dsa1]}
+      - {name: RST_COMP_B, bits: "14", reset: 1, used: [dsa1]}
+      - {name: EN_CLK_PAD, bits: "13", reset: 0, used: [dsa1]}
+      - {name: SYSCLK_INT, bits: "12", reset: 0, used: [dsa1]}
+      - {name: EN_CLKGEN, bits: "11", reset: 1, used: [dsa1]}
+      - {name: EN_CCRO, bits: "10", reset: 1, used: [dsa1]}
+      - {name: EN_CP_N1V0, bits: "9", reset: 1, used: [dsa1]}
+      - {name: EN_CP_VCM, bits: "8", reset: 1, used: [dsa1]}
+      - {name: EN_CTAT, bits: "7", reset: 1, used: [dsa1]}
+      - {name: EN_COMP, bits: "6", reset: 1, used: [dsa1]}
+      - {name: EN_BUF, bits: "5", reset: 1, used: [dsa1]}
+      - {name: EN_LF_CLK, bits: "4", reset: 1, used: [dsa1]}
+      - {name: EN_OTA4, bits: "3", reset: 1, used: [dsa1]}
+      - {name: EN_OTA3, bits: "2", reset: 1, used: [dsa1]}
+      - {name: EN_OTA2, bits: "1", reset: 1, used: [dsa1]}
+      - {name: EN_OTA1, bits: "0", reset: 1, used: [dsa1]}
+
+  - name: BLOCK_CTRL_1
+    offset: 6
+    drives: the decimator enable, bit 0
+    desc: Decimator enable. '1' runs it, '0' holds it in reset.
+    fields:
+      - {name: NA, bits: "15:1", reset: 0x7F, reserved: true}
+      - {name: EN_DEC, bits: "0", reset: 1, used: [cmos5l, dsa1], vhdl: BLOCK_CTRL_1_DEC_EN_BIT}
+
+  - name: TRIM_CFG_0
+    offset: 7
+    drives: o_lf_cfg
+    desc: Trims of the loop filter.
+    fields:
+      - {name: INT1C_TRIM, bits: "15:10", reset: 0x20, used: [dsa1]}
+      - {name: OTA1_TRIM, bits: "9:6", reset: 0x3, used: [dsa1]}
+      # As the register sheet names them: bit 2 is TRIM1 and bit 1 is TRIM2. Not checked
+      # against the analog netlist.
+      - {name: INT234R_TRIM, bits: "5:0", reset: 0x20, used: [dsa1], names: {2: INT234R_TRIM1, 1: INT234R_TRIM2}}
+
+  - name: CLK_CFG_0
+    offset: 8
+    drives: o_clk_cfg[15:0]
+    desc: Clock generator tuning.
+    fields:
+      - {name: STG2_ITUNEP, bits: "15:12", reset: 0x7, used: [dsa1]}
+      - {name: STG2_ITUNEN, bits: "11:8", reset: 0x8, used: [dsa1]}
+      - {name: OSC_CLTUNE, bits: "7:4", reset: 0x8, used: [dsa1]}
+      - {name: OSC_ITUNE, bits: "3:0", reset: 0x7, used: [dsa1]}
+
+  - name: TEST_CTRL_0
+    offset: 9
+    drives: o_tst_ctrl, on the pads of this chip, and the stimulus and flag synchronizer inside
+    desc: >-
+      Test control. 15:11 are this chip's decimator stimulus. Enable and trigger are separate on
+      purpose: the decimator holds about 32 output samples of history, so enable first, let the
+      output settle on the idle pattern, then trigger. 10 is the flag synchronizer, 9 belongs to
+      the analog top, 8 is PAD_Q, 7:6 the bias test mux, 5:0 the core test mux. The core mux
+      rules, one integrator at a time and neutral between two nodes, are in models/regmap.py.
+    fields:
+      - {name: STIM_OPT, bits: "15", reset: 0, used: [cmos5l], only: cmos5l, vhdl: TEST_CTRL_STIM_OPT_BIT,
+         desc: "Repeat flag for the event patterns, variant select for the steady one"}
+      - name: STIM_PAT
+        bits: "14:13"
+        reset: 0
+        used: [cmos5l]
+        only: cmos5l
+        vhdl: TEST_CTRL_STIM_PAT
+        desc: Pattern. OPT=0 once, OPT=1 repeat every 64 output samples (steady, OPT=1 is PRBS23)
+        enum: {STEP_P: 0, IMPULSE: 1, STEADY: 2, STEP_N: 3}
+      - {name: STIM_TRIG, bits: "12", reset: 0, used: [cmos5l], only: cmos5l, vhdl: TEST_CTRL_STIM_TRIG_BIT,
+         desc: "A rising edge arms, the stimulus fires at the next valid_strobe"}
+      - {name: STIM_EN, bits: "11", reset: 0, used: [cmos5l], only: cmos5l, vhdl: TEST_CTRL_STIM_EN_BIT,
+         desc: "Stimulus onto the decimator instead of data_in"}
+      - {name: FLAG_SYNC_EN, bits: "10", reset: 1, hold: 1, used: [cmos5l, dsa1], vhdl: TEST_CTRL_ADC_CDC_SYNC_EN_BIT,
+         desc: "3-FF synchronizer on the ADC ready flag"}
+      - {name: UWB_TST_EN, bits: "9", reset: 0, hold: 0, used: [cmos5l, dsa1],
+         desc: "Belongs to the analog top, never written from here"}
+      - {name: PAD_Q_EN, bits: "8", reset: 1, hold: 1, used: [cmos5l, dsa1]}
+      - {name: BIAS_TST, bits: "7:6", reset: 0, forbid: [3], used: [cmos5l, dsa1],
+         desc: "Bias test mux. 11 shorts the bias nodes"}
+      - {name: CORE_TST, bits: "5:0", reset: 0, used: [cmos5l, dsa1],
+         desc: "Core test mux, page in 5:4 and node in 3:0"}
+
+  - name: UWB_TX_CFG_0
+    offset: 10
+    drives: o_uwb_tx_cfg[14:0]
+    desc: UWB transmitter oscillator settings.
+    fields:
+      - {name: NA, bits: "15", reset: 0, reserved: true}
+      - {name: OSC_FREQ, bits: "14:10", reset: 0x0C, used: [dsa1]}
+      - {name: OSC_BIAS, bits: "9:5", reset: 0x05, used: [dsa1]}
+      - {name: OSC_BW, bits: "4:0", reset: 0x04, used: [dsa1]}
+
+  - name: UWB_TX_CFG_1
+    offset: 11
+    drives: o_uwb_tx_cfg[29:15]
+    desc: UWB transmitter PA and boost settings.
+    fields:
+      - {name: NA, bits: "15", reset: 0, reserved: true}
+      - {name: PA_MATCH, bits: "14:12", reset: 0x3, used: [dsa1]}
+      - {name: PA_GAIN, bits: "11:8", reset: 0x5, used: [dsa1]}
+      - {name: OSC_BST_DELAY, bits: "7:5", reset: 0x7, used: [dsa1]}
+      - {name: OSC_BOOST, bits: "4:0", reset: 0x1F, used: [dsa1]}
+
+  - name: AUX_CTRL_0
+    offset: 12
+    drives: o_aux_ctrl
+    desc: Drives o_aux_ctrl and nothing else on either die. The Arty harness shows bits 7:0 on its LEDs.
+    fields:
+      - {name: TBD, bits: "15:0", reset: 0xFF00, reserved: true}
+
+  - name: TEST_CTRL_1
+    offset: 13
+    drives: nothing on the die
+    desc: Plain storage on both dies. Nothing on a die reads it, the FPGA harness decodes writes to it from the bus.
+    fields:
+      - {name: TBD, bits: "15:2", reset: 0, reserved: true}
+      - {name: BUS_DSA1, bits: "1", reset: 0, desc: "FPGA harness: the bus reaches the DSA1 die's back end"}
+      - {name: CLK_FS_EXT, bits: "0", reset: 0, desc: "FPGA harness: clk_fs from the pin at the next reset"}
+
+  - name: SPARE_14
+    offset: 14
+    drives: nothing
+    desc: Plain storage, a spare.
+    fields:
+      - {name: b, bits: "15:0", reset: 0}
+
+  - name: CHIP_ID
+    offset: 15
+    drives: nothing, a constant
+    access: const
+    value: 0x0001
+    desc: Names the die. 0x0001 is this chip, read only. The DSA1 die has plain storage here that resets to 0x0000, so a read tells the dies apart as long as nothing writes it.
+    dies:
+      dsa1: {access: rw, value: 0x0000}
+    fields:
+      - {name: ID, bits: "15:0", reset: 0x0001, used: [cmos5l, dsa1]}

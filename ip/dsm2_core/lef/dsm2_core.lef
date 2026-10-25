@@ -1,0 +1,229 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# Placeholder, written by abstract/abstract_gen.py, do not edit.
+
+VERSION 5.7 ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+
+MACRO dsm2_core
+    CLASS BLOCK ;
+    ORIGIN 0.000 0.000 ;
+    FOREIGN dsm2_core 0.000 0.000 ;
+    SIZE 155.000 BY 185.000 ;
+    SYMMETRY X Y R90 ;
+  PIN vi
+    DIRECTION INOUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 154.000 9.000 155.000 11.000 ;
+    END
+  END vi
+  PIN vcm
+    DIRECTION INOUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 154.000 19.000 155.000 21.000 ;
+    END
+  END vcm
+  PIN ibias_test
+    DIRECTION INOUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 154.000 29.000 155.000 31.000 ;
+    END
+  END ibias_test
+  PIN do_q_b
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 109.000 0.000 111.000 1.000 ;
+    END
+  END do_q_b
+  PIN do_q
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 104.000 0.000 106.000 1.000 ;
+    END
+  END do_q
+  PIN di_clk
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 99.000 0.000 101.000 1.000 ;
+    END
+  END di_clk
+  PIN do_q_dec
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 9.000 1.000 11.000 ;
+    END
+  END do_q_dec
+  PIN di_qout_en
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 19.000 1.000 21.000 ;
+    END
+  END di_qout_en
+  PIN di_btest_en
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 29.000 1.000 31.000 ;
+    END
+  END di_btest_en
+  PIN di_vcm_ext
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 39.000 1.000 41.000 ;
+    END
+  END di_vcm_ext
+  PIN di_dith_amp[1]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 49.000 1.000 51.000 ;
+    END
+  END di_dith_amp[1]
+  PIN di_dith_amp[0]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 59.000 1.000 61.000 ;
+    END
+  END di_dith_amp[0]
+  PIN di_dith_en
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 69.000 1.000 71.000 ;
+    END
+  END di_dith_en
+  PIN di_trim[3]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 79.000 1.000 81.000 ;
+    END
+  END di_trim[3]
+  PIN di_trim[2]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 89.000 1.000 91.000 ;
+    END
+  END di_trim[2]
+  PIN di_trim[1]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 99.000 1.000 101.000 ;
+    END
+  END di_trim[1]
+  PIN di_trim[0]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 109.000 1.000 111.000 ;
+    END
+  END di_trim[0]
+  PIN di_rst_b
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 119.000 1.000 121.000 ;
+    END
+  END di_rst_b
+  PIN di_ena
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 129.000 1.000 131.000 ;
+    END
+  END di_ena
+  PIN vdd
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal3 ;
+        RECT 153.000 36.000 155.000 46.000 ;
+    END
+  END vdd
+  PIN vss
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal3 ;
+        RECT 153.000 50.000 155.000 60.000 ;
+    END
+  END vss
+  OBS
+    LAYER Metal1 ;
+      RECT 0.000 0.000 155.000 185.000 ;
+    LAYER Metal2 ;
+      RECT 0.000 0.000 155.000 185.000 ;
+    LAYER Metal3 ;
+      RECT 0.000 0.000 99.000 1.000 ;
+      RECT 101.000 0.000 104.000 1.000 ;
+      RECT 106.000 0.000 109.000 1.000 ;
+      RECT 111.000 0.000 155.000 1.000 ;
+      RECT 0.000 1.000 155.000 9.000 ;
+      RECT 1.000 9.000 154.000 11.000 ;
+      RECT 0.000 11.000 155.000 19.000 ;
+      RECT 1.000 19.000 154.000 21.000 ;
+      RECT 0.000 21.000 155.000 29.000 ;
+      RECT 1.000 29.000 154.000 31.000 ;
+      RECT 0.000 31.000 155.000 36.000 ;
+      RECT 0.000 36.000 153.000 39.000 ;
+      RECT 1.000 39.000 153.000 41.000 ;
+      RECT 0.000 41.000 153.000 46.000 ;
+      RECT 0.000 46.000 155.000 49.000 ;
+      RECT 1.000 49.000 155.000 50.000 ;
+      RECT 1.000 50.000 153.000 51.000 ;
+      RECT 0.000 51.000 153.000 59.000 ;
+      RECT 1.000 59.000 153.000 60.000 ;
+      RECT 1.000 60.000 155.000 61.000 ;
+      RECT 0.000 61.000 155.000 69.000 ;
+      RECT 1.000 69.000 155.000 71.000 ;
+      RECT 0.000 71.000 155.000 79.000 ;
+      RECT 1.000 79.000 155.000 81.000 ;
+      RECT 0.000 81.000 155.000 89.000 ;
+      RECT 1.000 89.000 155.000 91.000 ;
+      RECT 0.000 91.000 155.000 99.000 ;
+      RECT 1.000 99.000 155.000 101.000 ;
+      RECT 0.000 101.000 155.000 109.000 ;
+      RECT 1.000 109.000 155.000 111.000 ;
+      RECT 0.000 111.000 155.000 119.000 ;
+      RECT 1.000 119.000 155.000 121.000 ;
+      RECT 0.000 121.000 155.000 129.000 ;
+      RECT 1.000 129.000 155.000 131.000 ;
+      RECT 0.000 131.000 155.000 185.000 ;
+    LAYER Metal4 ;
+      RECT 0.000 0.000 155.000 185.000 ;
+  END
+END dsm2_core
+
+END LIBRARY

@@ -1,0 +1,367 @@
+* XSpice netlist created from SPICE and liberty sources by spi2xspice.py
+* NGSPICE file created from dsa1_dig_top.ext - technology: ihp-sg13cmos5l
+* Black-box entry subcircuit for FILLER2 abstract view
+* Black-box entry subcircuit for MUXI2X1 abstract view
+* Black-box entry subcircuit for WELLTAP abstract view
+* Black-box entry subcircuit for DFFQX1 abstract view
+* Black-box entry subcircuit for FILLER4 abstract view
+* Black-box entry subcircuit for FILLER1 abstract view
+* Black-box entry subcircuit for DECAPHV16 abstract view
+* Black-box entry subcircuit for BUFX3 abstract view
+* Black-box entry subcircuit for DFFRQX1 abstract view
+* Black-box entry subcircuit for XOR2X1 abstract view
+* Black-box entry subcircuit for DECAPHV8 abstract view
+* Black-box entry subcircuit for XNOR3X1 abstract view
+* Black-box entry subcircuit for INVX1 abstract view
+* Black-box entry subcircuit for AND2X1 abstract view
+* Black-box entry subcircuit for MIN3X1 abstract view
+* Black-box entry subcircuit for NAND3X1 abstract view
+* Black-box entry subcircuit for XNOR2X1 abstract view
+* Black-box entry subcircuit for NOR3X1 abstract view
+* Black-box entry subcircuit for OAOI211X1 abstract view
+* Black-box entry subcircuit for OAI21X1 abstract view
+* Black-box entry subcircuit for NOR2BX1 abstract view
+* Black-box entry subcircuit for AND3BX1 abstract view
+* Black-box entry subcircuit for AOAI211X1 abstract view
+* Black-box entry subcircuit for OR2X2 abstract view
+* Black-box entry subcircuit for OA21X2 abstract view
+* Black-box entry subcircuit for NOR2X1 abstract view
+* Black-box entry subcircuit for NAND2X1 abstract view
+* Black-box entry subcircuit for AOI211X1 abstract view
+* Black-box entry subcircuit for AOI21X1 abstract view
+* Black-box entry subcircuit for OAI31X1 abstract view
+* Black-box entry subcircuit for AOI31X1 abstract view
+* Black-box entry subcircuit for AOI22X1 abstract view
+* Black-box entry subcircuit for AO22X2 abstract view
+* Black-box entry subcircuit for DECAPHV32 abstract view
+* Black-box entry subcircuit for AO21X2 abstract view
+* Black-box entry subcircuit for NAND2BX1 abstract view
+* Black-box entry subcircuit for AND3X2 abstract view
+* Black-box entry subcircuit for BUFX12 abstract view
+* Black-box entry subcircuit for OR3BX1 abstract view
+* Black-box entry subcircuit for BUFX6 abstract view
+* Black-box entry subcircuit for BUFX4 abstract view
+* Black-box entry subcircuit for NOR3BX1 abstract view
+* Black-box entry subcircuit for AOI221X1 abstract view
+* Black-box entry subcircuit for ANTENNA2 abstract view
+* Black-box entry subcircuit for OA211X2 abstract view
+* Black-box entry subcircuit for OAOI211X2 abstract view
+* Black-box entry subcircuit for OR3X2 abstract view
+* Black-box entry subcircuit for OAI211X1 abstract view
+* Black-box entry subcircuit for INVX4 abstract view
+* Black-box entry subcircuit for AOI21BX1 abstract view
+* Black-box entry subcircuit for XOR3X1 abstract view
+* Black-box entry subcircuit for AOI2B2BX1 abstract view
+* Black-box entry subcircuit for NAND4X2 abstract view
+* Black-box entry subcircuit for AOI2B1X1 abstract view
+* Black-box entry subcircuit for MUX2X1 abstract view
+* Black-box entry subcircuit for INVX2 abstract view
+* Black-box entry subcircuit for BUFX8 abstract view
+* Black-box entry subcircuit for NOR4X2 abstract view
+* Black-box entry subcircuit for AO31X2 abstract view
+* Black-box entry subcircuit for AO211X2 abstract view
+* Black-box entry subcircuit for INVX14 abstract view
+* Black-box entry subcircuit for AND4X2 abstract view
+* Black-box entry subcircuit for NAND3BX1 abstract view
+* Black-box entry subcircuit for INVX16 abstract view
+* Black-box entry subcircuit for CGX3 abstract view
+* Black-box entry subcircuit for OAI22X1 abstract view
+* Black-box entry subcircuit for INVX6 abstract view
+* Black-box entry subcircuit for INVX8 abstract view
+* Black-box entry subcircuit for OAI221X1 abstract view
+* Black-box entry subcircuit for OAI2B2BX1 abstract view
+* Black-box entry subcircuit for OR3BX2 abstract view
+* Black-box entry subcircuit for NOR2X2 abstract view
+* Black-box entry subcircuit for AOI2B2X1 abstract view
+* Black-box entry subcircuit for AOI2BB2X1 abstract view
+* Black-box entry subcircuit for AOI221X2 abstract view
+* Black-box entry subcircuit for NAND3BX2 abstract view
+* Black-box entry subcircuit for OR4X1 abstract view
+* Black-box entry subcircuit for NOR2BX2 abstract view
+* Black-box entry subcircuit for NAND2X1P5 abstract view
+* Black-box entry subcircuit for NAND4BX1 abstract view
+.subckt dsa1_dig_top a_VDD a_VSS a_clk a_data_in a_mosi a_rst_b a_sclk a_ss
++ a_adc_conv a_miso a_o_aux_ctrl_0_ a_o_aux_ctrl_1_ a_o_aux_ctrl_2_
++ a_o_aux_ctrl_3_ a_o_aux_ctrl_4_ a_o_aux_ctrl_5_ a_o_aux_ctrl_6_
++ a_o_aux_ctrl_7_ a_o_aux_ctrl_8_ a_o_aux_ctrl_9_ a_o_aux_ctrl_10_
++ a_o_aux_ctrl_11_ a_o_aux_ctrl_12_ a_o_aux_ctrl_13_ a_o_aux_ctrl_14_
++ a_o_aux_ctrl_15_ a_o_bias_cfg_0_ a_o_bias_cfg_1_ a_o_bias_cfg_2_
++ a_o_bias_cfg_3_ a_o_bias_cfg_4_ a_o_bias_cfg_5_ a_o_bias_cfg_6_
++ a_o_bias_cfg_7_ a_o_bias_cfg_8_ a_o_bias_cfg_9_ a_o_bias_cfg_10_
++ a_o_bias_cfg_11_ a_o_bias_cfg_12_ a_o_bias_cfg_13_ a_o_bias_cfg_14_
++ a_o_bias_cfg_15_ a_o_bias_cfg_16_ a_o_bias_cfg_17_ a_o_bias_cfg_18_
++ a_o_bias_cfg_19_ a_o_bias_cfg_20_ a_o_bias_cfg_21_ a_o_bias_cfg_22_
++ a_o_bias_cfg_23_ a_o_bias_cfg_24_ a_o_bias_cfg_25_ a_o_bias_cfg_26_
++ a_o_bias_cfg_27_ a_o_bias_cfg_28_ a_o_bias_cfg_29_ a_o_bias_cfg_30_
++ a_o_bias_cfg_31_ a_o_bias_cfg_32_ a_o_bias_cfg_33_ a_o_bias_cfg_34_
++ a_o_clk_cfg_0_ a_o_clk_cfg_1_ a_o_clk_cfg_2_ a_o_clk_cfg_3_ a_o_clk_cfg_4_
++ a_o_clk_cfg_5_ a_o_clk_cfg_6_ a_o_clk_cfg_7_ a_o_clk_cfg_8_ a_o_clk_cfg_9_
++ a_o_clk_cfg_10_ a_o_clk_cfg_11_ a_o_clk_cfg_12_ a_o_clk_cfg_13_
++ a_o_clk_cfg_14_ a_o_clk_cfg_15_ a_o_clk_cfg_16_ a_o_clk_cfg_17_
++ a_o_clk_cfg_18_ a_o_en_ctrl_0_ a_o_en_ctrl_1_ a_o_en_ctrl_2_ a_o_en_ctrl_3_
++ a_o_en_ctrl_4_ a_o_en_ctrl_5_ a_o_en_ctrl_6_ a_o_en_ctrl_7_ a_o_en_ctrl_8_
++ a_o_en_ctrl_9_ a_o_en_ctrl_10_ a_o_lf_cfg_0_ a_o_lf_cfg_1_ a_o_lf_cfg_2_
++ a_o_lf_cfg_3_ a_o_lf_cfg_4_ a_o_lf_cfg_5_ a_o_lf_cfg_6_ a_o_lf_cfg_7_
++ a_o_lf_cfg_8_ a_o_lf_cfg_9_ a_o_lf_cfg_10_ a_o_lf_cfg_11_ a_o_lf_cfg_12_
++ a_o_lf_cfg_13_ a_o_lf_cfg_14_ a_o_lf_cfg_15_ a_o_rst_ctrl_b_0_
++ a_o_rst_ctrl_b_1_ a_o_tst_ctrl_0_ a_o_tst_ctrl_1_ a_o_tst_ctrl_2_
++ a_o_tst_ctrl_3_ a_o_tst_ctrl_4_ a_o_tst_ctrl_5_ a_o_tst_ctrl_6_
++ a_o_tst_ctrl_7_ a_o_tst_ctrl_8_ a_o_tst_ctrl_9_ a_o_tst_ctrl_10_
++ a_o_tst_ctrl_11_ a_o_tst_ctrl_12_ a_o_tst_ctrl_13_ a_o_tst_ctrl_14_
++ a_o_tst_ctrl_15_ a_o_uwb_tx_cfg_0_ a_o_uwb_tx_cfg_1_ a_o_uwb_tx_cfg_2_
++ a_o_uwb_tx_cfg_3_ a_o_uwb_tx_cfg_4_ a_o_uwb_tx_cfg_5_ a_o_uwb_tx_cfg_6_
++ a_o_uwb_tx_cfg_7_ a_o_uwb_tx_cfg_8_ a_o_uwb_tx_cfg_9_ a_o_uwb_tx_cfg_10_
++ a_o_uwb_tx_cfg_11_ a_o_uwb_tx_cfg_12_ a_o_uwb_tx_cfg_13_ a_o_uwb_tx_cfg_14_
++ a_o_uwb_tx_cfg_15_ a_o_uwb_tx_cfg_16_ a_o_uwb_tx_cfg_17_ a_o_uwb_tx_cfg_18_
++ a_o_uwb_tx_cfg_19_ a_o_uwb_tx_cfg_20_ a_o_uwb_tx_cfg_21_ a_o_uwb_tx_cfg_22_
++ a_o_uwb_tx_cfg_23_ a_o_uwb_tx_cfg_24_ a_o_uwb_tx_cfg_25_ a_o_uwb_tx_cfg_26_
++ a_o_uwb_tx_cfg_27_ a_o_uwb_tx_cfg_28_ a_o_uwb_tx_cfg_29_
+
+.model todig_1v5 adc_bridge(in_high=1.0 in_low=0.5 rise_delay=500p fall_delay=500p)
+.model toana_1v5 dac_bridge(out_high=1.5 out_low=0)
+
+.model ddflop d_dff(ic=0 rise_delay=50p fall_delay=50p)
+.model dlatch d_dlatch(ic=0 rise_delay=50p fall_delay=50p)
+.model dzero d_pulldown(load=250f)
+.model done d_pullup(load=250f)
+
+AA2D1 [a_VDD] [dig_VDD] todig_1v5
+AA2D2 [a_VSS] [dig_VSS] todig_1v5
+AA2D3 [a_adc_conv] [dig_adc_conv] todig_1v5
+AA2D4 [a_clk] [dig_clk] todig_1v5
+AA2D5 [a_data_in] [dig_data_in] todig_1v5
+AA2D6 [a_miso] [dig_miso] todig_1v5
+AA2D7 [a_mosi] [dig_mosi] todig_1v5
+AA2D8 [a_o_aux_ctrl_0_] [dig_o_aux_ctrl_0_] todig_1v5
+AA2D9 [a_o_aux_ctrl_10_] [dig_o_aux_ctrl_10_] todig_1v5
+AA2D10 [a_o_aux_ctrl_11_] [dig_o_aux_ctrl_11_] todig_1v5
+AA2D11 [a_o_aux_ctrl_12_] [dig_o_aux_ctrl_12_] todig_1v5
+AA2D12 [a_o_aux_ctrl_13_] [dig_o_aux_ctrl_13_] todig_1v5
+AA2D13 [a_o_aux_ctrl_14_] [dig_o_aux_ctrl_14_] todig_1v5
+AA2D14 [a_o_aux_ctrl_15_] [dig_o_aux_ctrl_15_] todig_1v5
+AA2D15 [a_o_aux_ctrl_1_] [dig_o_aux_ctrl_1_] todig_1v5
+AA2D16 [a_o_aux_ctrl_2_] [dig_o_aux_ctrl_2_] todig_1v5
+AA2D17 [a_o_aux_ctrl_3_] [dig_o_aux_ctrl_3_] todig_1v5
+AA2D18 [a_o_aux_ctrl_4_] [dig_o_aux_ctrl_4_] todig_1v5
+AA2D19 [a_o_aux_ctrl_5_] [dig_o_aux_ctrl_5_] todig_1v5
+AA2D20 [a_o_aux_ctrl_6_] [dig_o_aux_ctrl_6_] todig_1v5
+AA2D21 [a_o_aux_ctrl_7_] [dig_o_aux_ctrl_7_] todig_1v5
+AA2D22 [a_o_aux_ctrl_8_] [dig_o_aux_ctrl_8_] todig_1v5
+AA2D23 [a_o_aux_ctrl_9_] [dig_o_aux_ctrl_9_] todig_1v5
+AA2D24 [a_o_bias_cfg_0_] [dig_o_bias_cfg_0_] todig_1v5
+AA2D25 [a_o_bias_cfg_10_] [dig_o_bias_cfg_10_] todig_1v5
+AA2D26 [a_o_bias_cfg_11_] [dig_o_bias_cfg_11_] todig_1v5
+AA2D27 [a_o_bias_cfg_12_] [dig_o_bias_cfg_12_] todig_1v5
+AA2D28 [a_o_bias_cfg_13_] [dig_o_bias_cfg_13_] todig_1v5
+AA2D29 [a_o_bias_cfg_14_] [dig_o_bias_cfg_14_] todig_1v5
+AA2D30 [a_o_bias_cfg_15_] [dig_o_bias_cfg_15_] todig_1v5
+AA2D31 [a_o_bias_cfg_16_] [dig_o_bias_cfg_16_] todig_1v5
+AA2D32 [a_o_bias_cfg_17_] [dig_o_bias_cfg_17_] todig_1v5
+AA2D33 [a_o_bias_cfg_18_] [dig_o_bias_cfg_18_] todig_1v5
+AA2D34 [a_o_bias_cfg_19_] [dig_o_bias_cfg_19_] todig_1v5
+AA2D35 [a_o_bias_cfg_1_] [dig_o_bias_cfg_1_] todig_1v5
+AA2D36 [a_o_bias_cfg_20_] [dig_o_bias_cfg_20_] todig_1v5
+AA2D37 [a_o_bias_cfg_21_] [dig_o_bias_cfg_21_] todig_1v5
+AA2D38 [a_o_bias_cfg_22_] [dig_o_bias_cfg_22_] todig_1v5
+AA2D39 [a_o_bias_cfg_23_] [dig_o_bias_cfg_23_] todig_1v5
+AA2D40 [a_o_bias_cfg_24_] [dig_o_bias_cfg_24_] todig_1v5
+AA2D41 [a_o_bias_cfg_25_] [dig_o_bias_cfg_25_] todig_1v5
+AA2D42 [a_o_bias_cfg_26_] [dig_o_bias_cfg_26_] todig_1v5
+AA2D43 [a_o_bias_cfg_27_] [dig_o_bias_cfg_27_] todig_1v5
+AA2D44 [a_o_bias_cfg_28_] [dig_o_bias_cfg_28_] todig_1v5
+AA2D45 [a_o_bias_cfg_29_] [dig_o_bias_cfg_29_] todig_1v5
+AA2D46 [a_o_bias_cfg_2_] [dig_o_bias_cfg_2_] todig_1v5
+AA2D47 [a_o_bias_cfg_30_] [dig_o_bias_cfg_30_] todig_1v5
+AA2D48 [a_o_bias_cfg_31_] [dig_o_bias_cfg_31_] todig_1v5
+AA2D49 [a_o_bias_cfg_32_] [dig_o_bias_cfg_32_] todig_1v5
+AA2D50 [a_o_bias_cfg_33_] [dig_o_bias_cfg_33_] todig_1v5
+AA2D51 [a_o_bias_cfg_34_] [dig_o_bias_cfg_34_] todig_1v5
+AA2D52 [a_o_bias_cfg_3_] [dig_o_bias_cfg_3_] todig_1v5
+AA2D53 [a_o_bias_cfg_4_] [dig_o_bias_cfg_4_] todig_1v5
+AA2D54 [a_o_bias_cfg_5_] [dig_o_bias_cfg_5_] todig_1v5
+AA2D55 [a_o_bias_cfg_6_] [dig_o_bias_cfg_6_] todig_1v5
+AA2D56 [a_o_bias_cfg_7_] [dig_o_bias_cfg_7_] todig_1v5
+AA2D57 [a_o_bias_cfg_8_] [dig_o_bias_cfg_8_] todig_1v5
+AA2D58 [a_o_bias_cfg_9_] [dig_o_bias_cfg_9_] todig_1v5
+AA2D59 [a_o_clk_cfg_0_] [dig_o_clk_cfg_0_] todig_1v5
+AA2D60 [a_o_clk_cfg_10_] [dig_o_clk_cfg_10_] todig_1v5
+AA2D61 [a_o_clk_cfg_11_] [dig_o_clk_cfg_11_] todig_1v5
+AA2D62 [a_o_clk_cfg_12_] [dig_o_clk_cfg_12_] todig_1v5
+AA2D63 [a_o_clk_cfg_13_] [dig_o_clk_cfg_13_] todig_1v5
+AA2D64 [a_o_clk_cfg_14_] [dig_o_clk_cfg_14_] todig_1v5
+AA2D65 [a_o_clk_cfg_15_] [dig_o_clk_cfg_15_] todig_1v5
+AA2D66 [a_o_clk_cfg_16_] [dig_o_clk_cfg_16_] todig_1v5
+AA2D67 [a_o_clk_cfg_17_] [dig_o_clk_cfg_17_] todig_1v5
+AA2D68 [a_o_clk_cfg_18_] [dig_o_clk_cfg_18_] todig_1v5
+AA2D69 [a_o_clk_cfg_1_] [dig_o_clk_cfg_1_] todig_1v5
+AA2D70 [a_o_clk_cfg_2_] [dig_o_clk_cfg_2_] todig_1v5
+AA2D71 [a_o_clk_cfg_3_] [dig_o_clk_cfg_3_] todig_1v5
+AA2D72 [a_o_clk_cfg_4_] [dig_o_clk_cfg_4_] todig_1v5
+AA2D73 [a_o_clk_cfg_5_] [dig_o_clk_cfg_5_] todig_1v5
+AA2D74 [a_o_clk_cfg_6_] [dig_o_clk_cfg_6_] todig_1v5
+AA2D75 [a_o_clk_cfg_7_] [dig_o_clk_cfg_7_] todig_1v5
+AA2D76 [a_o_clk_cfg_8_] [dig_o_clk_cfg_8_] todig_1v5
+AA2D77 [a_o_clk_cfg_9_] [dig_o_clk_cfg_9_] todig_1v5
+AA2D78 [a_o_en_ctrl_0_] [dig_o_en_ctrl_0_] todig_1v5
+AA2D79 [a_o_en_ctrl_10_] [dig_o_en_ctrl_10_] todig_1v5
+AA2D80 [a_o_en_ctrl_1_] [dig_o_en_ctrl_1_] todig_1v5
+AA2D81 [a_o_en_ctrl_2_] [dig_o_en_ctrl_2_] todig_1v5
+AA2D82 [a_o_en_ctrl_3_] [dig_o_en_ctrl_3_] todig_1v5
+AA2D83 [a_o_en_ctrl_4_] [dig_o_en_ctrl_4_] todig_1v5
+AA2D84 [a_o_en_ctrl_5_] [dig_o_en_ctrl_5_] todig_1v5
+AA2D85 [a_o_en_ctrl_6_] [dig_o_en_ctrl_6_] todig_1v5
+AA2D86 [a_o_en_ctrl_7_] [dig_o_en_ctrl_7_] todig_1v5
+AA2D87 [a_o_en_ctrl_8_] [dig_o_en_ctrl_8_] todig_1v5
+AA2D88 [a_o_en_ctrl_9_] [dig_o_en_ctrl_9_] todig_1v5
+AA2D89 [a_o_lf_cfg_0_] [dig_o_lf_cfg_0_] todig_1v5
+AA2D90 [a_o_lf_cfg_10_] [dig_o_lf_cfg_10_] todig_1v5
+AA2D91 [a_o_lf_cfg_11_] [dig_o_lf_cfg_11_] todig_1v5
+AA2D92 [a_o_lf_cfg_12_] [dig_o_lf_cfg_12_] todig_1v5
+AA2D93 [a_o_lf_cfg_13_] [dig_o_lf_cfg_13_] todig_1v5
+AA2D94 [a_o_lf_cfg_14_] [dig_o_lf_cfg_14_] todig_1v5
+AA2D95 [a_o_lf_cfg_15_] [dig_o_lf_cfg_15_] todig_1v5
+AA2D96 [a_o_lf_cfg_1_] [dig_o_lf_cfg_1_] todig_1v5
+AA2D97 [a_o_lf_cfg_2_] [dig_o_lf_cfg_2_] todig_1v5
+AA2D98 [a_o_lf_cfg_3_] [dig_o_lf_cfg_3_] todig_1v5
+AA2D99 [a_o_lf_cfg_4_] [dig_o_lf_cfg_4_] todig_1v5
+AA2D100 [a_o_lf_cfg_5_] [dig_o_lf_cfg_5_] todig_1v5
+AA2D101 [a_o_lf_cfg_6_] [dig_o_lf_cfg_6_] todig_1v5
+AA2D102 [a_o_lf_cfg_7_] [dig_o_lf_cfg_7_] todig_1v5
+AA2D103 [a_o_lf_cfg_8_] [dig_o_lf_cfg_8_] todig_1v5
+AA2D104 [a_o_lf_cfg_9_] [dig_o_lf_cfg_9_] todig_1v5
+AA2D105 [a_o_rst_ctrl_b_0_] [dig_o_rst_ctrl_b_0_] todig_1v5
+AA2D106 [a_o_rst_ctrl_b_1_] [dig_o_rst_ctrl_b_1_] todig_1v5
+AA2D107 [a_o_tst_ctrl_0_] [dig_o_tst_ctrl_0_] todig_1v5
+AA2D108 [a_o_tst_ctrl_10_] [dig_o_tst_ctrl_10_] todig_1v5
+AA2D109 [a_o_tst_ctrl_11_] [dig_o_tst_ctrl_11_] todig_1v5
+AA2D110 [a_o_tst_ctrl_12_] [dig_o_tst_ctrl_12_] todig_1v5
+AA2D111 [a_o_tst_ctrl_13_] [dig_o_tst_ctrl_13_] todig_1v5
+AA2D112 [a_o_tst_ctrl_14_] [dig_o_tst_ctrl_14_] todig_1v5
+AA2D113 [a_o_tst_ctrl_15_] [dig_o_tst_ctrl_15_] todig_1v5
+AA2D114 [a_o_tst_ctrl_1_] [dig_o_tst_ctrl_1_] todig_1v5
+AA2D115 [a_o_tst_ctrl_2_] [dig_o_tst_ctrl_2_] todig_1v5
+AA2D116 [a_o_tst_ctrl_3_] [dig_o_tst_ctrl_3_] todig_1v5
+AA2D117 [a_o_tst_ctrl_4_] [dig_o_tst_ctrl_4_] todig_1v5
+AA2D118 [a_o_tst_ctrl_5_] [dig_o_tst_ctrl_5_] todig_1v5
+AA2D119 [a_o_tst_ctrl_6_] [dig_o_tst_ctrl_6_] todig_1v5
+AA2D120 [a_o_tst_ctrl_7_] [dig_o_tst_ctrl_7_] todig_1v5
+AA2D121 [a_o_tst_ctrl_8_] [dig_o_tst_ctrl_8_] todig_1v5
+AA2D122 [a_o_tst_ctrl_9_] [dig_o_tst_ctrl_9_] todig_1v5
+AA2D123 [a_o_uwb_tx_cfg_0_] [dig_o_uwb_tx_cfg_0_] todig_1v5
+AA2D124 [a_o_uwb_tx_cfg_10_] [dig_o_uwb_tx_cfg_10_] todig_1v5
+AA2D125 [a_o_uwb_tx_cfg_11_] [dig_o_uwb_tx_cfg_11_] todig_1v5
+AA2D126 [a_o_uwb_tx_cfg_12_] [dig_o_uwb_tx_cfg_12_] todig_1v5
+AA2D127 [a_o_uwb_tx_cfg_13_] [dig_o_uwb_tx_cfg_13_] todig_1v5
+AA2D128 [a_o_uwb_tx_cfg_14_] [dig_o_uwb_tx_cfg_14_] todig_1v5
+AA2D129 [a_o_uwb_tx_cfg_15_] [dig_o_uwb_tx_cfg_15_] todig_1v5
+AA2D130 [a_o_uwb_tx_cfg_16_] [dig_o_uwb_tx_cfg_16_] todig_1v5
+AA2D131 [a_o_uwb_tx_cfg_17_] [dig_o_uwb_tx_cfg_17_] todig_1v5
+AA2D132 [a_o_uwb_tx_cfg_18_] [dig_o_uwb_tx_cfg_18_] todig_1v5
+AA2D133 [a_o_uwb_tx_cfg_19_] [dig_o_uwb_tx_cfg_19_] todig_1v5
+AA2D134 [a_o_uwb_tx_cfg_1_] [dig_o_uwb_tx_cfg_1_] todig_1v5
+AA2D135 [a_o_uwb_tx_cfg_20_] [dig_o_uwb_tx_cfg_20_] todig_1v5
+AA2D136 [a_o_uwb_tx_cfg_21_] [dig_o_uwb_tx_cfg_21_] todig_1v5
+AA2D137 [a_o_uwb_tx_cfg_22_] [dig_o_uwb_tx_cfg_22_] todig_1v5
+AA2D138 [a_o_uwb_tx_cfg_23_] [dig_o_uwb_tx_cfg_23_] todig_1v5
+AA2D139 [a_o_uwb_tx_cfg_24_] [dig_o_uwb_tx_cfg_24_] todig_1v5
+AA2D140 [a_o_uwb_tx_cfg_25_] [dig_o_uwb_tx_cfg_25_] todig_1v5
+AA2D141 [a_o_uwb_tx_cfg_26_] [dig_o_uwb_tx_cfg_26_] todig_1v5
+AA2D142 [a_o_uwb_tx_cfg_27_] [dig_o_uwb_tx_cfg_27_] todig_1v5
+AA2D143 [a_o_uwb_tx_cfg_28_] [dig_o_uwb_tx_cfg_28_] todig_1v5
+AA2D144 [a_o_uwb_tx_cfg_29_] [dig_o_uwb_tx_cfg_29_] todig_1v5
+AA2D145 [a_o_uwb_tx_cfg_2_] [dig_o_uwb_tx_cfg_2_] todig_1v5
+AA2D146 [a_o_uwb_tx_cfg_3_] [dig_o_uwb_tx_cfg_3_] todig_1v5
+AA2D147 [a_o_uwb_tx_cfg_4_] [dig_o_uwb_tx_cfg_4_] todig_1v5
+AA2D148 [a_o_uwb_tx_cfg_5_] [dig_o_uwb_tx_cfg_5_] todig_1v5
+AA2D149 [a_o_uwb_tx_cfg_6_] [dig_o_uwb_tx_cfg_6_] todig_1v5
+AA2D150 [a_o_uwb_tx_cfg_7_] [dig_o_uwb_tx_cfg_7_] todig_1v5
+AA2D151 [a_o_uwb_tx_cfg_8_] [dig_o_uwb_tx_cfg_8_] todig_1v5
+AA2D152 [a_o_uwb_tx_cfg_9_] [dig_o_uwb_tx_cfg_9_] todig_1v5
+AA2D153 [a_rst_b] [dig_rst_b] todig_1v5
+AA2D154 [a_sclk] [dig_sclk] todig_1v5
+AA2D155 [a_ss] [dig_ss] todig_1v5
+
+.ends
+
+
+* FILLER2 (no function)
+* MUXI2X1 (no function)
+* WELLTAP (no function)
+* DFFQX1 (no function)
+* FILLER4 (no function)
+* FILLER1 (no function)
+* DECAPHV16 (no function)
+* BUFX3 (no function)
+* DFFRQX1 (no function)
+* XOR2X1 (no function)
+* DECAPHV8 (no function)
+* XNOR3X1 (no function)
+* INVX1 (no function)
+* AND2X1 (no function)
+* MIN3X1 (no function)
+* NAND3X1 (no function)
+* XNOR2X1 (no function)
+* NOR3X1 (no function)
+* OAOI211X1 (no function)
+* OAI21X1 (no function)
+* NOR2BX1 (no function)
+* AND3BX1 (no function)
+* AOAI211X1 (no function)
+* OR2X2 (no function)
+* OA21X2 (no function)
+* NOR2X1 (no function)
+* NAND2X1 (no function)
+* AOI211X1 (no function)
+* AOI21X1 (no function)
+* OAI31X1 (no function)
+* AOI31X1 (no function)
+* AOI22X1 (no function)
+* AO22X2 (no function)
+* DECAPHV32 (no function)
+* AO21X2 (no function)
+* NAND2BX1 (no function)
+* AND3X2 (no function)
+* BUFX12 (no function)
+* OR3BX1 (no function)
+* BUFX6 (no function)
+* BUFX4 (no function)
+* NOR3BX1 (no function)
+* AOI221X1 (no function)
+* ANTENNA2 (no function)
+* OA211X2 (no function)
+* OAOI211X2 (no function)
+* OR3X2 (no function)
+* OAI211X1 (no function)
+* INVX4 (no function)
+* AOI21BX1 (no function)
+* XOR3X1 (no function)
+* AOI2B2BX1 (no function)
+* NAND4X2 (no function)
+* AOI2B1X1 (no function)
+* MUX2X1 (no function)
+* INVX2 (no function)
+* BUFX8 (no function)
+* NOR4X2 (no function)
+* AO31X2 (no function)
+* AO211X2 (no function)
+* INVX14 (no function)
+* AND4X2 (no function)
+* NAND3BX1 (no function)
+* INVX16 (no function)
+* CGX3 (no function)
+* OAI22X1 (no function)
+* INVX6 (no function)
+* INVX8 (no function)
+* OAI221X1 (no function)
+* OAI2B2BX1 (no function)
+* OR3BX2 (no function)
+* NOR2X2 (no function)
+* AOI2B2X1 (no function)
+* AOI2BB2X1 (no function)
+* AOI221X2 (no function)
+* NAND3BX2 (no function)
+* OR4X1 (no function)
+* NOR2BX2 (no function)
+* NAND2X1P5 (no function)
+* NAND4BX1 (no function)
+.end

@@ -1,0 +1,151 @@
+# SPDX-FileCopyrightText: 2026 Simon Dorrer and Harald Pretl
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# Bondplan configuration for the DSADC1 digital back-end chip, sg13cmos5l_dsa1_dig_top
+# Bondplan configuration for the ihp-sg13cmos5l AMS chip template
+#
+# Consumed by scripts/run_bondplan.py (run from this folder):
+#   python3 scripts/run_bondplan.py config.yaml
+#   klayout -b -r scripts/run_bondplan.py -rd config=config.yaml
+#
+# Structured like a LibreLane config.yaml: flat UPPER_CASE keys, `dir::`
+# prefix for paths relative to this file, placement as location/orientation.
+# {design} in any value expands to DESIGN_NAME, {version} to the VERSION
+# passed on the command line (the Makefile does this, so there is no second
+# place where the version number has to be maintained).
+# =============================================================================
+
+meta:
+  version: 1
+  flow: Bondplan
+
+DESIGN_NAME: sg13cmos5l_dsa1_dig_top
+
+# --- Die (chip) --------------------------------------------------------------
+DIE_GDS: dir::../layout/{design}_logo_fill.gds.gz
+# DIE_CELL: sg13cmos5l_dsa1_dig_top_logo_fill    # default: top cell of DIE_GDS
+
+# Layers copied into the extracted die view (IHP SG13CMOS5L):
+DIE_EXTRACT_LAYERS: ["9/0", "125/0", "126/0"]   # Passiv, TopVia1, TopMetal1
+DIE_EXTRACT_GDS: dir::layout/{design}_logo_TM1.gds.gz
+DIE_EXTRACT_CELL: "{design}_logo_TM1"
+DIE_KEEP_LABELS: false            # do not copy DIE_PAD_LABEL_LAYER into extract
+
+# Bondpad detection on the die:
+DIE_PAD_LAYER: "9/0"              # Passiv openings define the bondpads
+DIE_PAD_MIN_SIZE: 40              # um; ignore smaller Passiv openings
+DIE_PAD_LABEL_LAYER: "126/25"     # TopMetal1.text labels carry the pad names
+
+# --- Package -----------------------------------------------------------------
+# IHP packages the chip in its QFN24, 4 x 4 mm body, 0.5 mm pitch, die up to 2 x 2 mm, 200 um thick, epoxy-sealed lid.
+# scripts/gen_qfn24_4mm.py draws that package from Mirror Semiconductor's M-QFN24T.5-G3 bond diagram and QP Technologies drawing 500378 rev A (JEDEC MO-220). The EUROPRACTICE library has no 4 mm QFN24.
+PACKAGE_GDS: dir::layout/QFN24_4MM.gds
+PACKAGE_LEAD_LAYER: "210/0"       # lead polygons (one per pin)
+PACKAGE_PIN_LABEL_LAYER: "211/0"  # numbered pin texts next to their leads
+PACKAGE_PIN_LABEL_OFFSET: 200     # um; pin number distance outside the package outline
+PACKAGE_PIN_LABEL_SIZE: 120       # um; pin number font size
+
+# --- Die placement -----------------------------------------------------------
+# location: lower-left corner of the (oriented) die outline, in um, relative
+# to the lower-left corner of the package inner border (the square touching
+# the lead tips). Omit location to center the die in the package.
+# orientation: N/S/E/W/FN/FS/FE/FW, as in LibreLane MACROS instances.
+DIE_PLACEMENT:
+  # location: [1010.0, 1010.0]    # default: centered
+  orientation: N
+
+# --- Bondwires ---------------------------------------------------------------
+BONDWIRE_LAYER: "190/0"           # Exchange0.drawing (free for documentation)
+BONDWIRE_TEXT_LAYER: "190/25"     # Exchange0.text, for per-wire labels
+BONDWIRE_WIDTH: 25                # um (drawing width only)
+BONDWIRE_LABELS: true             # write "<pin> <pad>" text at each wire
+TABLE_TEXT_SIZE: 100              # um; bond table font size
+TABLE_GAP: 400                    # um; gap between plan and bond table.
+                                  # The side margins are computed so that
+                                  # left and right come out equal.
+BONDWIRE_LEAD_SITE: 0.5           # bond point on lead: 0 = tip .. 1 = far end
+BONDWIRE_MAX_LENGTH: 3500         # um; warn above this
+BONDWIRE_MAX_SKEW: 30             # deg; warn if a wire lands skewed on its lead
+EPAD_WIRE_LENGTH: 500             # um; length of exposed-pad downbond stubs
+EPAD_LEAD_WIRE_LENGTH: 500        # um, lead to cavity, inward along the lead
+EPAD_DIE_CLEARANCE: 100           # um, a cavity landing stays this far off the die
+PACKAGE_PADDLE: 2400              # um, die pad of the 4 mm QFN24, QP Technologies 500378 and 501103 rev A
+EPAD_PADDLE_CLEARANCE: 50         # um, and this far inside the paddle edge
+EPAD_LANDING_GAP: 100             # um, pad downbond to its lead bond's landing
+
+# Guarded (sensitive) wires: warn if any other wire comes closer than
+# GUARD_SPACING. Entries are pins or [groups]; wires within one group
+# (e.g. a differential quad) are exempt from each other's check.
+# Leads 14 to 17 carry vi, vcm, ibias_test and VDDA. They are one group, so
+# only the other wires are kept away from them. Leads 13 and 18 stay empty.
+GUARDED_PINS: [[14, 15, 16, 17]]
+GUARD_SPACING: 60                 # um; see result.md for the actual gaps
+
+# --- Output ------------------------------------------------------------------
+BONDPLAN_GDS: dir::layout/{design}_bondplan.gds
+BONDPLAN_CELL: "{design}_bondplan"
+# 207/0 is the drawing template's A4 paper rectangle - documentation
+# scaffolding with no use in the bondplan (the frame lines on 211/0 mark
+# the sheet); 126/25 are the die pad name labels
+BONDPLAN_DELETE_LAYERS: ["207/0", "126/25"]
+# Bond report: .md -> Markdown (summary + bond table), .csv -> raw CSV
+BONDPLAN_REPORT: dir::result.md
+
+# PNG follows sak-render.py conventions: writes *_white / *_black
+BONDPLAN_PNG: dir::render/{design}_bondplan.png
+BONDPLAN_SVG: dir::render/{design}_bondplan.svg
+IMAGE_TOP_METAL: "126/0"          # TopMetal1, this stack's top metal
+IMAGE_WIDTH: 2000                 # px
+IMAGE_OVERSAMPLING: 2
+IMAGE_REGION: full                # package (footprint + bond table) | full
+
+# --- Drawing sheet -----------------------------------------------------------
+# No EUROPRACTICE order sheet: IHP packages the chip. Its order data (10 packaged, die 200 um thick) goes with the IHP area registration.
+SHEET_KEEP: false
+
+# --- Pinout ------------------------------------------------------------------
+# Package pin number -> die pad name (TopMetal1.text label on the pad).
+# A list bonds several wires to one lead. Use ~ (null) for NC pins.
+# Duplicate names (VDD/VSS/...) are resolved by shortest-wire assignment.
+# EPAD: downbonds to the exposed pad, drawn from leftover pads with the
+# given names, parallel to the neighboring wires.
+#
+# The die has 20 bondpads and the QFN24 has 24 leads (6 per side). Leads 1, 6,
+# 13 and 18 are not bonded. VSS and IOVSS are in EPAD_NETS below and meet on
+# the paddle instead.
+PINOUT:
+  # Left side, top to bottom (pins 1-6)
+  1:  ~
+  2:  "IOVDD"                     # I/O supply
+  3:  "IOVSS"                     # ground lead, bonded to the paddle
+  4:  "VDD"                       # core supply, 1.2 V
+  5:  "VSS"                       # ground lead, bonded to the paddle
+  6:  ~
+  # Bottom side, left to right (pins 7-12)
+  7:  "input_PAD[0]"              # data_in, the 1-bit modulator bitstream
+  8:  "output_PAD[1]"             # adc_conv, 512 Hz strobe
+  9:  "VSS"                       # ground lead, bonded to the paddle
+  10: "dsm_clk_PAD"               # dsm2 clock, 1.024 MHz
+  11: "do_q_PAD"                  # do_q
+  12: "do_q_b_PAD"                # do_q_b
+  # Right side, bottom to top (pins 13-18)
+  13: ~                           # keeps other wires off the analog leads
+  14: "analog_PAD[0]"             # vi
+  15: "analog_PAD[1]"             # vcm
+  16: "analog_PAD[2]"             # ibias_test
+  17: "VDDA"                      # dsm2 supply, 1.5 V, IOPadVdd
+  18: ~                           # keeps other wires off the analog leads
+  # Top side, right to left (pins 19-24)
+  19: "output_PAD[0]"             # miso
+  20: "input_PAD[3]"              # ss
+  21: "input_PAD[2]"              # mosi
+  22: "input_PAD[1]"              # sclk
+  23: "clk_PAD"                   # decimator clock
+  24: "rst_n_PAD"                 # reset, active low
+
+# VSS and IOVSS are bonded only through the cavity: both pads downbond to the
+# paddle and leads 3, 5 and 9 bond to the paddle, no wire runs pad to lead. That
+# is the cavity connection. It joins the two grounds in the package,
+# which the IO cells' substrate ties do on the die anyway.
+EPAD_NETS: ["VSS", "IOVSS"]

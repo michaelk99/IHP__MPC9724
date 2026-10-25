@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# ECP5 Versa pins for versa_top and versa_duo_top, from the Lattice user guide FPGA-EB-02021.
+# Banks 0 and 1 (expansion headers) are fixed at 3.3 V, bank 2 (LEDs) at
+# 2.5 V, banks 6 and 7 (oscillator, DIP 1-4) at 1.5 V.
+
+# 100 MHz oscillator, LVDS only, P3 is the true pin
+LOCATE COMP "clk_board" SITE "P3";
+IOBUF PORT "clk_board" IO_TYPE=LVDS;
+FREQUENCY PORT "clk_board" 100 MHZ;
+
+# SW1 reset button, active low
+LOCATE COMP "rst_n_btn" SITE "T1";
+IOBUF PORT "rst_n_btn" IO_TYPE=LVCMOS33;
+
+# DIP switch SW3 position 1, reads 0 when ON: ON at reset takes clk_fs from X3 pin 4
+LOCATE COMP "ext_fs_sw_n" SITE "H2";
+IOBUF PORT "ext_fs_sw_n" IO_TYPE=LVCMOS15;
+
+# Expansion header X3 (EXPCON1), even row pins 4 to 18, by the board's EXPCON_IO net
+# names, balls from Table 8.7 of the user guide. LVCMOS33 throughout, the ESP32's
+# levels, on banks 0 and 1 at 3.3 V. Inputs are pulled so the DUT sits idle with
+# nothing wired: ss and rst_n inactive high, the rest low. sclk is on a plain IO,
+# not a PCLK pin, which is fine at a few MHz. Never wire X3 pins 3, 21, 23 or 29.
+LOCATE COMP "clk_fs_pin"   SITE "B19";   # X3-4,  EXPCON_IO29
+IOBUF PORT "clk_fs_pin"   IO_TYPE=LVCMOS33 PULLMODE=DOWN;
+LOCATE COMP "data_in_pin"  SITE "B9";    # X3-6,  EXPCON_IO31
+IOBUF PORT "data_in_pin"  IO_TYPE=LVCMOS33 PULLMODE=DOWN;
+LOCATE COMP "rst_n_pin"    SITE "D6";    # X3-8,  EXPCON_IO33
+IOBUF PORT "rst_n_pin"    IO_TYPE=LVCMOS33 PULLMODE=UP;
+LOCATE COMP "adc_conv_pin" SITE "D7";    # X3-10, EXPCON_IO35
+IOBUF PORT "adc_conv_pin" IO_TYPE=LVCMOS33 DRIVE=4;
+LOCATE COMP "ss_pin"       SITE "B6";    # X3-12, EXPCON_IO37
+IOBUF PORT "ss_pin"       IO_TYPE=LVCMOS33 PULLMODE=UP;
+LOCATE COMP "mosi_pin"     SITE "D9";    # X3-14, EXPCON_IO39
+IOBUF PORT "mosi_pin"     IO_TYPE=LVCMOS33 PULLMODE=DOWN;
+LOCATE COMP "miso_pin"     SITE "C8";    # X3-16, EXPCON_IO41
+IOBUF PORT "miso_pin"     IO_TYPE=LVCMOS33 DRIVE=4;
+LOCATE COMP "sclk_pin"     SITE "E8";    # X3-18, EXPCON_IO43
+IOBUF PORT "sclk_pin"     IO_TYPE=LVCMOS33 PULLMODE=DOWN;
+
+# LEDs D25 D24 D22 D21 D26 D27 D28 D29, lit on a low output:
+# led_n[7:0] show AUX_CTRL_0[7:0], set over SPI.
+# No DRIVE here, Trellis sets it only on 3.3 V pins.
+LOCATE COMP "led_n[0]" SITE "E16";
+LOCATE COMP "led_n[1]" SITE "D17";
+LOCATE COMP "led_n[2]" SITE "D18";
+LOCATE COMP "led_n[3]" SITE "E18";
+LOCATE COMP "led_n[4]" SITE "F17";
+LOCATE COMP "led_n[5]" SITE "F18";
+LOCATE COMP "led_n[6]" SITE "E17";
+LOCATE COMP "led_n[7]" SITE "F16";
+IOBUF PORT "led_n[0]" IO_TYPE=LVCMOS25;
+IOBUF PORT "led_n[1]" IO_TYPE=LVCMOS25;
+IOBUF PORT "led_n[2]" IO_TYPE=LVCMOS25;
+IOBUF PORT "led_n[3]" IO_TYPE=LVCMOS25;
+IOBUF PORT "led_n[4]" IO_TYPE=LVCMOS25;
+IOBUF PORT "led_n[5]" IO_TYPE=LVCMOS25;
+IOBUF PORT "led_n[6]" IO_TYPE=LVCMOS25;
+IOBUF PORT "led_n[7]" IO_TYPE=LVCMOS25;

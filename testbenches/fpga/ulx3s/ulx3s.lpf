@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# ULX3S v2.0 pin map for dsa1_master_fpga_top, the master side of the two-board
+# bring-up. The J1 positions match macros/dsa1_dig/fpga/ulx3s/ulx3s.lpf one for
+# one, so the boards connect with straight jumpers plus ground. See ../README.md.
+
+LOCATE COMP "clk_board" SITE "G2";
+IOBUF  PORT "clk_board" PULLMODE=NONE IO_TYPE=LVCMOS33;
+FREQUENCY PORT "clk_board" 25 MHZ;
+
+# BTN_PWRn, already inverted and therefore active low
+LOCATE COMP "rst_n_btn" SITE "D6";
+IOBUF  PORT "rst_n_btn" PULLMODE=UP IO_TYPE=LVCMOS33 DRIVE=4;
+
+# SW1 to SW4, the program number, read at reset
+LOCATE COMP "sw[0]" SITE "E8";
+LOCATE COMP "sw[1]" SITE "D8";
+LOCATE COMP "sw[2]" SITE "D7";
+LOCATE COMP "sw[3]" SITE "E7";
+IOBUF  PORT "sw[0]" PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "sw[1]" PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "sw[2]" PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "sw[3]" PULLMODE=DOWN IO_TYPE=LVCMOS33;
+
+# J1 header to the DUT board
+LOCATE COMP "data_in_pin"   SITE "B11";   # gp[0]
+LOCATE COMP "sclk_pin"      SITE "C11";   # gn[0]
+LOCATE COMP "mosi_pin"      SITE "A10";   # gp[1]
+LOCATE COMP "ss_pin"        SITE "A11";   # gn[1]
+LOCATE COMP "adc_conv_pin"  SITE "A9";    # gp[2]
+LOCATE COMP "clk_fs_pin"    SITE "B10";   # gn[2]
+LOCATE COMP "dut_rst_n_pin" SITE "B9";    # gp[3]
+LOCATE COMP "miso_pin"      SITE "C10";   # gn[3]
+IOBUF  PORT "data_in_pin"   PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "sclk_pin"      PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "mosi_pin"      PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "ss_pin"        PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "adc_conv_pin"  PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "clk_fs_pin"    PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "dut_rst_n_pin" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "miso_pin"      PULLMODE=DOWN IO_TYPE=LVCMOS33;
+
+# FTDI, the FPGA transmits on ftdi_rxd
+LOCATE COMP "uart_tx_pin" SITE "L4";
+IOBUF  PORT "uart_tx_pin" PULLMODE=UP IO_TYPE=LVCMOS33 DRIVE=4;
+
+# LEDs: adc_conv, halted, capturing, loopback, then the program number
+LOCATE COMP "led[0]" SITE "B2";
+LOCATE COMP "led[1]" SITE "C2";
+LOCATE COMP "led[2]" SITE "C1";
+LOCATE COMP "led[3]" SITE "D2";
+LOCATE COMP "led[4]" SITE "D1";
+LOCATE COMP "led[5]" SITE "E2";
+LOCATE COMP "led[6]" SITE "E1";
+LOCATE COMP "led[7]" SITE "H3";
+IOBUF  PORT "led[0]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[1]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[2]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[3]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[4]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[5]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[6]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[7]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;

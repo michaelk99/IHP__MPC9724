@@ -1,0 +1,40 @@
+* SPDX-FileCopyrightText: 2026 Michael Koefinger
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+* Supply start-up of sg13cmos5l_dsa1_dig_top as the bench meets it: the IO cells as transistors,
+* the core as XSPICE, the supplies ramping, then SPI frames. A template: gen_startup.py fills in the
+* order and its probes, run_startup.sh the shunt, and it runs from build/, which the paths are relative to.
+
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+.lib cornerRES.lib res_typ
+* cornerDIO.lib dio_tt, with diodes.lib's transit times at 0 (run_startup.sh): the antenna diodes'
+* 700 ns stall the solver when ground bounce nudges one forward, and they sit reverse or near 0 here
+.include diodes_bench.lib
+.include sg13g2_esd.lib
+.include @IO_SPI@
+.include core.xspice
+.include clamp.spice
+.include chip.spice
+.include stim_@ORDER@.spice
+
+* the IO cells' rppd resistors take their body from sub!, a substrate the PDK SPICE leaves to the bench.
+* stim_*.spice ties it to ground, or to the paddle with the package.
+.global sub!
+
+* the regulator sides, which the host's pins and the core's outputs follow, see stim_*.spice and chip.spice
+.global IOVDD_s VDD_s VDDA_s
+
+* solver settings from run_startup.sh's RECIPES, with the largest step capped in stim_*.spice: without
+* them the IO cells' clamps and level shifters stall the solver while one supply is still near 0.
+.options method=gear cshunt=@CSHUNT@
+
+.save @SAVE@
+
+.control
+set wr_singlescale
+set wr_vecnames
+run
+wrdata startup_@ORDER@.txt @WRDATA@
+quit
+.endc
+.end

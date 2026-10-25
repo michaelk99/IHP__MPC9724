@@ -1,0 +1,18 @@
+Warning 198: final/nl/decimator_top.nl.v line 10456, module DECAPHV32 not found. Creating black box for FILLER_0_0.
+Warning 198: final/nl/decimator_top.nl.v line 10457, module DECAPHV8 not found. Creating black box for FILLER_0_1025.
+Warning 198: final/nl/decimator_top.nl.v line 10458, module FILLER2 not found. Creating black box for FILLER_0_1033.
+Warning 198: final/nl/decimator_top.nl.v line 10465, module FILLER4 not found. Creating black box for FILLER_0_1128.
+Warning 198: final/nl/decimator_top.nl.v line 10489, module FILLER1 not found. Creating black box for FILLER_0_44.
+Warning 198: final/nl/decimator_top.nl.v line 10543, module DECAPHV16 not found. Creating black box for FILLER_100_113.
+Warning 198: final/nl/decimator_top.nl.v line 22194, module WELLTAP not found. Creating black box for TAP_TAPCELL_ROW_0_0.
+Group                    Internal    Switching      Leakage        Total
+                            Power        Power        Power        Power (Watts)
+------------------------------------------------------------------------
+Sequential           4.627381e-07 5.474055e-08 3.595868e-07 8.770655e-07  39.6%
+Combinational        1.655257e-07 2.227971e-07 5.577911e-07 9.461140e-07  42.8%
+Clock                1.472515e-07 1.574028e-07 8.527220e-08 3.899265e-07  17.6%
+Macro                0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00   0.0%
+Pad                  0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00   0.0%
+------------------------------------------------------------------------
+Total                7.755157e-07 4.349403e-07 1.002650e-06 2.213106e-06 100.0%
+                            35.0%        19.7%        45.3%

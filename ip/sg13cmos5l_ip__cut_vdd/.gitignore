@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# check outputs that are large or rebuilt on every run
+verification/abut/
+verification/sim/
+verification/lvs/*.lvsdb
+verification/lvs/lvs.out

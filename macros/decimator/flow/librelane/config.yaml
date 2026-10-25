@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Simon Dorrer and Harald Pretl
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# 128x decimator for the DSADC1 back end, hardened on the EZ130 8T cells.
+#
+# The EZ130 SCL is NOT selected with STD_CELL_LIBRARY. It lives outside this
+# repo and is read through the fragment that ../../../Makefile puts FIRST on the
+# librelane command line (EZ130_DIR/scripts/librelane_scl.py). That fragment
+# supplies the tech LEF, the cell views, the three-corner LIB map and the cell
+# roles. Setting STD_CELL_LIBRARY here would make every step re-read the PDK
+# config under a name the CMOS5L PDK does not have, and running librelane
+# without the fragment would silently harden on sg13cmos5l_stdcell instead.
+
+meta:
+  version: 3
+  flow: Classic
+  substituting_steps:
+    # Magic reports some overlaps which can be ignored
+    Checker.IllegalOverlap: null
+
+DESIGN_NAME: decimator_top
+# The clock-gated netlist from the yosys pre-pass, not the RTL: LibreLane's own
+# clockgate pass skips these flops because their synchronous reset overrides the
+# enable. See ../../../scripts/clockgate_pre_decimator.ys.
+VERILOG_FILES: ["dir::../../rtl_gen/decimator_top_cg.v"]
+
+# Layout / Floorplan Rules
+# Re-derive after the first librelane-synth run on this PDK. The 487.20 um
+# square is the SG13G2 number and CMOS5L has one routing layer less.
+FP_SIZING: absolute
+DIE_AREA: [0, 0, 487.20, 487.20]
+PL_TARGET_DENSITY_PCT: 72
+GRT_ALLOW_CONGESTION: true
+RUN_MAGIC_DRC: true
+RUN_CTS: true
+FP_PIN_ORDER_CFG: dir::pin_order.cfg
+FP_PDN_MULTILAYER: false
+
+# CMOS5L stops at Metal4, there is no Metal5 or TopMetal2.
+RT_MAX_LAYER: Metal4
+
+# AREA 0 with ABC buffering. EZ130's drive digits are 3x weaker than the PDK
+# library's, so the buffering is not optional.
+SYNTH_STRATEGY: AREA 0
+SYNTH_ABC_BUFFERING: true
+SYNTH_SIZING: false
+
+# SDC, one file for both, so what is optimized is what is signed off.
+PNR_SDC_FILE: dir::decimator_top.sdc
+SIGNOFF_SDC_FILE: dir::decimator_top.sdc
+
+# Power / ground nets
+VDD_NETS: ["VDD"]
+GND_NETS: ["VSS"]
+VERILOG_POWER_DEFINE: "USE_POWER_PINS"
+
+# Clock. The real modulator clock is 65.536 kHz, this is the Genus constraint.
+CLOCK_PORT: clk_fs
+CLOCK_NET: clk_fs
+CLOCK_PERIOD: 1000
+
+# EZ130 is characterised at three corners only, so the six-corner PDK list does
+# not apply. The names are the PDK's, which is why nothing else has to change.
+STA_CORNERS:
+  - nom_fast_1p32V_m40C
+  - nom_slow_1p08V_125C
+  - nom_typ_1p20V_25C
+DEFAULT_CORNER: nom_typ_1p20V_25C
+TIMING_VIOLATION_CORNERS: ["*"]
+
+# Decoupling: the thick-oxide DECAPHV cells only. With EZ130's own thin-oxide
+# DECAP* the fill was 76 % of this block's leakage on SG13G2, so the low-oxide
+# cells are not merely unused here, they are banned.
+#
+# DECAP_CELLS alone is not enough. The SCL fragment sets it to the four
+# thin-oxide cells and overriding it only steers the decap insertion step, so
+# the LV cells stay legal for anything else that might place one. Listing them
+# in EXTRA_EXCLUDED_CELLS takes them out of synthesis and placement outright.
+# The views come from the fragment the Makefile generates with
+# ../../scripts/decaphv_frag.py.
+DECAP_CELLS: ["DECAPHV32", "DECAPHV16", "DECAPHV8"]
+EXTRA_EXCLUDED_CELLS: ["BUFX1", "BUFX2", "DLY1X2", "DECAP4", "DECAP8", "DECAP16", "DECAP32"]
+CELL_PAD_EXCLUDE: ["FILLER*", "DECAP*", "DECAPHV*"]
+
+# Hold repair. Never let the setup uncertainty reach hold on this slow clock,
+# see the SDC.
+GRT_RESIZER_HOLD_SLACK_MARGIN: 0.01
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.02
+PL_RESIZER_HOLD_MAX_BUFFER_PCT: 100

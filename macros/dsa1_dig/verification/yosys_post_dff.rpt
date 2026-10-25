@@ -1,0 +1,43 @@
+132. Printing statistics.
+
+=== dsa1_dig_top ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+     8818        - wires
+    12233        - wire bits
+      224        - public wires
+     3639        - public wire bits
+       16        - ports
+      153        - port bits
+    11772 4.36E+04 cells
+      237        -   $_ANDNOT_
+     1475        -   $_AND_
+     1887        -   $_MUX_
+     2573        -   $_NAND_
+       42        -   $_NOR_
+      257        -   $_NOT_
+      272        -   $_ORNOT_
+      848        -   $_OR_
+     1274        -   $_XNOR_
+     1035        -   $_XOR_
+       26        -   CGX3
+     1503 3.39E+04   DFFQX1
+      343 9.68E+03   DFFRQX1
+
+   Area for cell type $_ANDNOT_ is unknown!
+   Area for cell type $_AND_ is unknown!
+   Area for cell type $_MUX_ is unknown!
+   Area for cell type $_NAND_ is unknown!
+   Area for cell type $_NOR_ is unknown!
+   Area for cell type $_NOT_ is unknown!
+   Area for cell type $_ORNOT_ is unknown!
+   Area for cell type $_OR_ is unknown!
+   Area for cell type $_XNOR_ is unknown!
+   Area for cell type $_XOR_ is unknown!
+   Area for cell type \CGX3 is unknown!
+
+   Chip area for module '\dsa1_dig_top': 43617.369600
+     of which used for sequential elements: 43617.369600 (100.00%)
+

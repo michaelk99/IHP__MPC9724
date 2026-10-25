@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# Self-test of the bit-true decimator model. The nightly regression cannot build
+# this chip's macros, because EZ130 lives outside the repository, so it proves
+# the toolchain and not the design. The model has no dependencies and no cell
+# library, so this one job does check something about the design on every push:
+# that the compensator term table still reconstructs its taps and that the chain
+# still has the dc gain those taps imply.
+
+name: Model Check
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  model-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Self-test the decimator model
+        run: python3 models/decimator_model.py --self-test
+
+      - name: Check the files generated from the register map
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 macros/scripts/regmap_gen.py --check
+          python3 macros/scripts/regmap_gen.py --selftest
+          python3 models/regmap.py
+
+      - name: Self-test the FPGA master's program assembler
+        run: python3 testbenches/fpga/seq/seqasm.py --self-test
+
+      - name: Self-test the bench capture checker
+        run: python3 models/bench_capture.py --self-test

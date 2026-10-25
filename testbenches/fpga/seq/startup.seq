@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# The manual startup sequence, step for step as in
+# jku-phd circuit-level/hdl/DSADC1/DIG_TOP/sim/startup.md
+
+write BLOCK_CTRL_0 0x0000   #  1 disable all blocks
+write BLOCK_CTRL_1 0x00FE   #  2 decimator off during bring-up
+write TEST_CTRL_0  0x0580   #  3 bias test mux Vbp, Vcp
+write BLOCK_CTRL_0 0x0080   #  4 CTAT bias
+write TEST_CTRL_0  0x05A0   #  5 core test mux, buffer
+write BLOCK_CTRL_0 0x0780   #  6 CCRO, CP_N1V0, CP_VCM
+write BLOCK_CTRL_0 0x07A0   #  7 buffer
+write BLOCK_CTRL_0 0x07B0   #  8 LF clock
+write TEST_CTRL_0  0x0580   #  9 core test mux neutral
+write BLOCK_CTRL_0 0x07B1   # 10 OTA1
+write TEST_CTRL_0  0x0591   # 11 core test mux INT1
+write TEST_CTRL_0  0x0580   # 12 core test mux neutral
+write BLOCK_CTRL_0 0x07B3   # 13 OTA2
+write TEST_CTRL_0  0x0592   # 14 core test mux INT2
+write TEST_CTRL_0  0x0580   # 15 core test mux neutral
+write BLOCK_CTRL_0 0x07B7   # 16 OTA3
+write TEST_CTRL_0  0x0594   # 17 core test mux INT3
+write TEST_CTRL_0  0x0580   # 18 core test mux neutral
+write BLOCK_CTRL_0 0x07BF   # 19 OTA4
+write TEST_CTRL_0  0x0598   # 20 core test mux INT4
+write TEST_CTRL_0  0x0500   # 21 test mux neutral, operating
+write BLOCK_CTRL_0 0xC7BF   # 22 release the DAC and COMP reset
+write BLOCK_CTRL_1 0x00FF   # 23 decimator on

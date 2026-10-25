@@ -1,0 +1,16 @@
+# Excluded from synthesis AND placement.
+#
+# CGTSX*: scan clock gates, and DFFMRQX2: scan flop. No scan chain in this
+# design. CGX1/2/3 are not here: an entry for them is inert, since the resizer
+# does not size a clock gate (doc/sg13cmos5l_adaptation.md).
+#
+# Until the September 2026 drop CGTSX* was also wrong in silicon (enable
+# inverted) and DFFRQ2X*/DFFRQ4X* excluded for a broken Verilog view. Both are
+# fixed, see doc/sclqa_report.md.
+#
+# LibreLane's process_list_file takes '#' comments and blank lines.
+CGTSX1
+CGTSX1P5
+CGTSX2
+CGTSX3
+DFFMRQX2

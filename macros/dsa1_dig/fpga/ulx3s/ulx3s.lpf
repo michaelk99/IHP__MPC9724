@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# ULX3S v2.0 pin map for dsa1_dig_fpga_top.
+# See https://github.com/emard/ulx3s for the board pinout.
+#
+# The SPI lines sit on the J1 header so a host adapter can drive them. The
+# chip's sclk runs at 200 kHz and nothing here is speed critical, so plain
+# LVCMOS33 with the board's default drive is enough.
+
+LOCATE COMP "clk_board" SITE "G2";
+IOBUF  PORT "clk_board" PULLMODE=NONE IO_TYPE=LVCMOS33;
+FREQUENCY PORT "clk_board" 25 MHZ;
+
+# BTN_PWRn, already inverted and therefore active low
+LOCATE COMP "rst_n_btn" SITE "D6";
+IOBUF  PORT "rst_n_btn" PULLMODE=UP IO_TYPE=LVCMOS33 DRIVE=4;
+
+# J1 header: the modulator bitstream and the SPI slave interface
+LOCATE COMP "data_in_pin" SITE "B11";
+LOCATE COMP "sclk_pin"    SITE "C11";
+LOCATE COMP "mosi_pin"    SITE "A10";
+LOCATE COMP "ss_pin"      SITE "A11";
+LOCATE COMP "miso_pin"    SITE "C10";
+LOCATE COMP "adc_conv_pin" SITE "A9";
+IOBUF  PORT "data_in_pin"  PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "sclk_pin"     PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "mosi_pin"     PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "ss_pin"       PULLMODE=UP   IO_TYPE=LVCMOS33;
+IOBUF  PORT "miso_pin"     PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "adc_conv_pin" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+
+# J1 header, from the master board: clk_fs on gn[2], a clock-capable pin, and
+# reset on gp[3]. Pulled so the board runs alone when nothing is connected.
+LOCATE COMP "clk_fs_pin" SITE "B10";
+LOCATE COMP "rst_n_pin"  SITE "B9";
+IOBUF  PORT "clk_fs_pin" PULLMODE=DOWN IO_TYPE=LVCMOS33;
+IOBUF  PORT "rst_n_pin"  PULLMODE=UP   IO_TYPE=LVCMOS33;
+
+# SW1, read in reset: on takes clk_fs from the master board
+LOCATE COMP "ext_fs_sw" SITE "E8";
+IOBUF  PORT "ext_fs_sw" PULLMODE=DOWN IO_TYPE=LVCMOS33;
+
+# The eight on-board LEDs: adc_conv on the top one, o_tst_ctrl[6:0] below
+LOCATE COMP "led[0]" SITE "B2";
+LOCATE COMP "led[1]" SITE "C2";
+LOCATE COMP "led[2]" SITE "C1";
+LOCATE COMP "led[3]" SITE "D2";
+LOCATE COMP "led[4]" SITE "D1";
+LOCATE COMP "led[5]" SITE "E2";
+LOCATE COMP "led[6]" SITE "E1";
+LOCATE COMP "led[7]" SITE "H3";
+IOBUF  PORT "led[0]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[1]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[2]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[3]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[4]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[5]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[6]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF  PORT "led[7]" PULLMODE=NONE IO_TYPE=LVCMOS33 DRIVE=4;

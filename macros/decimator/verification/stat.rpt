@@ -1,0 +1,81 @@
+131. Printing statistics.
+
+=== decimator_top ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+    10169        - wires
+    10190        - wire bits
+     1475        - public wires
+     1496        - public wire bits
+        5        - ports
+       26        - port bits
+    10187  1.1E+05 cells
+      636 4.49E+03   AND2X1
+      220 1.86E+03   AND3BX1
+        1    8.467   AND3BX2
+       32   270.95   AND3X2
+       14  138.298   AND4X2
+       27  266.717   AO211X2
+       65  642.096   AO21X2
+       26  330.221   AO22X2
+        8   90.317   AO31X2
+      287 2.84E+03   AOAI211X1
+        2   19.757   AOAI211X2
+       81  685.843   AOI211X1
+       39  330.221   AOI21BX1
+      451 3.18E+03   AOI21X1
+       11  108.662   AOI221X1
+       17  167.933   AOI22X1
+       65  550.368   AOI2B1X1
+        3   42.336   AOI2B2BX1
+        9  101.606   AOI2B2X1
+       53  448.762   AOI31X1
+      154  869.299   BUFX3
+        3        -   CGX3
+     1487 3.36E+04   DFFQX1
+      441 1.87E+03   INVX1
+        1    4.234   INVX2
+        1    4.234   INVX3
+      433 4.28E+03   MIN3X1
+       32  406.426   MUX2X1
+       83  937.037   MUXI2X1
+      116  818.496   NAND2BX1
+      521 2.94E+03   NAND2X1
+        1    5.645   NAND2X1P5
+        4   39.514   NAND3BX1
+      204 1.44E+03   NAND3X1
+        7   69.149   NAND4X2
+      187 1.32E+03   NOR2BX1
+      857 4.84E+03   NOR2X1
+        1    5.645   NOR2X2
+        9   76.205   NOR3BX1
+        1    8.467   NOR3BX1P5
+      311 2.19E+03   NOR3X1
+        2   22.579   NOR4BX1
+        1    9.878   NOR4X2
+       35  345.744   OA211X2
+      106  897.523   OA21X2
+       83  702.778   OAI211X1
+      423 2.98E+03   OAI21X1
+        5   56.448   OAI221X1
+        1    9.878   OAI22X1
+        1   14.112   OAI2B2BX1
+       23  227.203   OAI31X1
+      256  2528.87   OAOI211X1
+        3   29.635   OAOI211X2
+      105   740.88   OR2X2
+      120 1.02E+03   OR3BX1
+        9   76.205   OR3X2
+        2   19.757   OR4X1
+      981  9690.71   XNOR2X1
+      633 1.34E+04   XNOR3X1
+      460 4.54E+03   XOR2X1
+       37  783.216   XOR3X1
+
+   Area for cell type \CGX3 is unknown!
+
+   Chip area for module '\decimator_top': 110365.718400
+     of which used for sequential elements: 33575.270400 (30.42%)
+

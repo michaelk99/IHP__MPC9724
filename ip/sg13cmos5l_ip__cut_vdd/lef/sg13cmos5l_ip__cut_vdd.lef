@@ -1,0 +1,113 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# Written by layout/cut_gen.py, do not edit.
+
+VERSION 5.7 ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+MACRO sg13cmos5l_ip__cut_vdd
+    CLASS PAD SPACER ;
+    ORIGIN 0.000 0.000 ;
+    FOREIGN sg13cmos5l_ip__cut_vdd 0.000 0.000 ;
+    SIZE 10.000 BY 180.000 ;
+    SYMMETRY X Y R90 ;
+    SITE sg13cmos5l_ioSite ;
+  PIN iovdd
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 66.000 10.000 91.500 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 93.500 10.000 119.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 66.000 10.000 91.500 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 93.500 10.000 119.000 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 66.000 10.000 91.500 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 93.500 10.000 119.000 ;
+    END
+  END iovdd
+  PIN iovss
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 126.000 10.000 134.000 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 7.000 10.000 32.500 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 34.500 10.000 60.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 126.000 10.000 134.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 7.000 10.000 32.500 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 34.500 10.000 60.000 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 126.000 10.000 134.000 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 7.000 10.000 32.500 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 34.500 10.000 60.000 ;
+    END
+  END iovss
+  PIN vss
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 140.000 10.000 158.000 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 162.200 10.000 178.000 ;
+    END
+  END vss
+  OBS
+    LAYER Metal1 ;
+      RECT 0.000 0.000 10.000 180.000 ;
+    LAYER Metal2 ;
+      RECT 0.000 0.000 10.000 180.000 ;
+    LAYER Metal3 ;
+      RECT 0.000 0.000 10.000 178.000 ;
+    LAYER Metal4 ;
+      RECT 0.000 0.000 10.000 178.000 ;
+    LAYER TopMetal1 ;
+      RECT 0.000 0.000 10.000 134.500 ;
+    LAYER Via1 ;
+      RECT 0.000 0.000 10.000 180.000 ;
+    LAYER Via2 ;
+      RECT 0.000 0.000 10.000 180.000 ;
+  END
+END sg13cmos5l_ip__cut_vdd
+
+END LIBRARY

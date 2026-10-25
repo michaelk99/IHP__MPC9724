@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# Clock-gating pre-pass for the decimator macro.
+#
+# yosys clockgate skips a flop whose synchronous reset overrides its enable, and
+# every register here is one (if (!rst_b) q <= 0; else if (ce) q <= d;). Writing
+# the reset into the enable does not help either: yosys then infers $sdffce,
+# which clockgate skips for the same reason. LibreLane runs clockgate inside its
+# synthesis step with no hook before it, so this pass does the work first: the
+# sync reset becomes logic (techmap sdffe_to_dffe.v), leaving the enable
+# ce | reset, opt_merge shares that enable across the flops of a group, and
+# clockgate puts a CGX3 in front of each group of 3 or more.
+#
+# Not run directly: the macro Makefile substitutes @EZ130_LIB@ with the typical
+# corner of EZ130_DIR and writes the result into the macro rtl_gen/.
+
+read_liberty -lib @EZ130_LIB@
+read_verilog -sv rtl/ce_generator.sv rtl/cic_n6_d32.sv rtl/sinc2_chain.sv rtl/comp_fir.sv rtl/decimator_core.sv rtl/decimator_top.sv
+hierarchy -check -top decimator_top
+proc
+flatten
+opt_expr
+opt_clean
+opt_dff
+opt_clean
+techmap -map ../scripts/sdffe_to_dffe.v t:$sdffe t:$sdffce
+opt_expr
+opt_merge
+opt_clean
+clockgate -pos CGX3 E:CK:ECK -min_net_size 3
+opt_clean
+stat
+write_verilog -noattr rtl_gen/decimator_top_cg.v

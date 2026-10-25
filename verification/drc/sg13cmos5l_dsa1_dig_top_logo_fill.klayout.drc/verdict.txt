@@ -1,0 +1,11 @@
+tables: 33 logs, all completed
+markers: 35 in 2 categories Pad.d1R=6, Pad.fR_TM1=29
+density: Activ 46.08 % [Min = 35.00%,  Max = 55.00%]
+density: GatPoly 17.71 % [Min = 15.00%]
+density: Metal1 51.99 % [Min = 35.00%,  Max = 60.00%]
+density: Metal2 47.34 % [Min = 35.00%,  Max = 60.00%]
+density: Metal3 51.34 % [Min = 35.00%,  Max = 60.00%]
+density: Metal4 53.50 % [Min = 35.00%,  Max = 60.00%]
+density: TopMetal1 46.73 % [Min = 25.00%,  Max = 70.00%]
+density: LBE 0.00 % [Max = 20.00%]
+PASS

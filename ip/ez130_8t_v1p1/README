@@ -1,0 +1,66 @@
+EZ130 8T V1.1
+Copyright 2026 ETH Zurich
+
+The EZ130 8T library was created as part of the ``VLSI 5: Design of a
+Standard-Cell Library'' course from ETH Zurich during its first,
+spring 2025 offering. Its contributors are:
+
+Oscar Castaneda
+Lavinia Recchioni
+Tobias Senti
+Flurin Cahenzli
+Marco Ferroni
+Thorben Heekenjann
+Robert Kenter
+Stefan Odermatt
+Daniel Richner
+Gabriel Altendorfer
+Davide Cannone
+Miguel Correa
+Ivan Herger
+Lars Kroeger
+Nicolas Nanzer
+Darja Nonaca
+Christopher Reinwardt
+Lukas Winklhofer
+Enrico Zelioli
+Yiheng Zhang
+Yingxue Zhang
+Domenic Keller
+Seyed Hadi Mirfashbafan
+Zerun Jiang
+Beat Muheim
+Arianna Rubino
+Jeremy Guichemerre
+Frank K. Gurkaynak
+Christoph Studer
+
+The EZ130 8T library authors thank Cadence Design Systems for their
+generous support by providing licenses to design and characterize
+this standard-cell library.
+
+The most recent version of the EZ130 8T library is available at:
+https://ez.ethz.ch
+
+If you use the EZ130 8T library (or parts of it),
+then please cite this reference:
+
+@article{castaneda2026ez130t8, 
+  author = {Casta\~neda, Oscar and Recchioni, Lavinia and
+    Senti, Tobias and Cahenzli, Flurin and Ferroni, Marco and
+    Heekenjann, Thorben and Kenter, Robert and Odermatt, Stefan and
+    Richner, Daniel and Altendorfer, Gabriel and Cannone, Davide and
+    Correa, Miguel and Herger, Ivan and Kr\"oger, Lars and
+    Nanzer, Nicolas and Nonaca, Darja and Reinwardt, Christopher and
+    Winklhofer, Lukas and Zelioli, Enrico and Zhang, Yiheng and
+    Zhang, Yingxue and Keller, Domenic and Mirfarshbafan, Seyed Hadi
+    and Jiang, Zerun and Muheim, Beat and Rubino, Arianna and
+    Guichemerre, J\'er\'emy and G\"urkaynak, Frank K. and
+    Studer, Christoph},
+  title = {An Open-Source Standard-Cell Library for {IHP} 130\,nm
+    Developed by Students},
+  journal = {arXiv preprint arXiv:XXXX.XXXXX},
+  month = {September},
+  year = {2026},
+  url = {https://arxiv.org/abs/????}
+}

@@ -140,3 +140,8 @@ SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
 path = "packaging/layout/QFN24_4MM.gds"
 SPDX-FileCopyrightText = "2026 Michael Koefinger"
 SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
+
+[[annotations]]
+path = ["flow/librelane/analog_nets.txt", "ip/dsm2_core/gds/**", "testbenches/startup/README.md"]
+SPDX-FileCopyrightText = "2026 Michael Koefinger"
+SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"

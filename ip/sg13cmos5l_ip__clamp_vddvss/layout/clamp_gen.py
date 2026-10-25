@@ -297,8 +297,10 @@ class Gen:
         """The abstract, in the IO library's style: one PORT per band rectangle
         and the fillers' OBS."""
         dbu = self.ly.dbu
+        # REUSE-IgnoreStart
         out = ["# SPDX-FileCopyrightText: 2026 Michael Koefinger",
                "# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1",
+        # REUSE-IgnoreEnd
                "# Written by layout/clamp_gen.py, do not edit.",
                "", "VERSION 5.7 ;", "BUSBITCHARS \"[]\" ;", "DIVIDERCHAR \"/\" ;", "",
                "MACRO %s" % CELL,

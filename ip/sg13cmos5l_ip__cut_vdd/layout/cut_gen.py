@@ -100,8 +100,10 @@ def write_lef(path):
     body, n = re.subn(r"^  PIN vdd$.*?^  END vdd\n", "", body, flags=re.S | re.M)
     assert n == 1, "no vdd pin in the filler's LEF"
     body = body.replace(FILLER, CELL)
+    # REUSE-IgnoreStart
     head = ["# SPDX-FileCopyrightText: 2026 Michael Koefinger",
             "# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1",
+    # REUSE-IgnoreEnd
             "# Written by layout/cut_gen.py, do not edit.",
             "", "VERSION 5.7 ;", "BUSBITCHARS \"[]\" ;", "DIVIDERCHAR \"/\" ;", ""]
     with open(path, "w") as fh:

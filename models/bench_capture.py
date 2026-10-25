@@ -357,9 +357,10 @@ def self_test() -> int:
     assert len(f) == 1 and "loopback" in f[0], f
 
     # Register model: a write returns the reset value, a read the new one.
-    ok = [pack_start(1), pack(K_RESET), pack_spi(0x02, 0x6F15, 0x90EA), pack_spi(0x12, 0, 0x6F15)]
+    r2 = regmap.RESET[2]
+    ok = [pack_start(1), pack(K_RESET), pack_spi(0x02, 0x6F15, r2), pack_spi(0x12, 0, 0x6F15)]
     assert check(ok)[0] == [], check(ok)
-    f, _ = check(ok[:3] + [pack_spi(0x12, 0, 0x90EA)])
+    f, _ = check(ok[:3] + [pack_spi(0x12, 0, r2)])
     assert len(f) == 1 and "register 2" in f[0], f
 
     # Stimulus: the model's own step response passes, one dropped conversion fails.

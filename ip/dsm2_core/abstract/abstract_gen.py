@@ -68,8 +68,10 @@ def build():
 
 
 def write_lef(path, allp):
+    # REUSE-IgnoreStart
     out = ["# SPDX-FileCopyrightText: 2026 Michael Koefinger",
            "# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1",
+    # REUSE-IgnoreEnd
            "# Placeholder, written by abstract/abstract_gen.py, do not edit.",
            "", "VERSION 5.7 ;", "BUSBITCHARS \"[]\" ;", "DIVIDERCHAR \"/\" ;", "",
            "MACRO %s" % CELL, "    CLASS BLOCK ;", "    ORIGIN 0.000 0.000 ;",

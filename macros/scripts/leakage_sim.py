@@ -32,12 +32,9 @@ from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# EZ130 and the thick-oxide decaps live outside this repo, same as for the
-# LibreLane runs. The defaults match the macro Makefiles.
-EZ130_DIR = os.environ.get(
-    "EZ130_DIR", os.path.expanduser("~/projects/OpenBLAU/ip/ez130_8t_v1p1"))
-DECAPHV_DIR = os.environ.get(
-    "DECAPHV_DIR", os.path.expanduser("~/projects/OpenBLAU/ip/ez130_8t_decap_hv"))
+# The defaults match the macro Makefiles.
+EZ130_DIR = os.environ.get("EZ130_DIR", os.path.join(HERE, "../../ip/ez130_8t_v1p1"))
+DECAPHV_DIR = os.environ.get("DECAPHV_DIR", os.path.join(HERE, "../../ip/ez130_8t_decap_hv"))
 
 # spicerun is vendored here rather than imported from DECAPHV_DIR: only
 # jku-phd's copy of the decap IP ships it, OpenBLAU's does not, and this check

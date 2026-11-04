@@ -1,0 +1,6 @@
+FAIL: no table log in verification/drc/decap_vdda.klayout.drc
+tables: 0 logs
+FAIL: M1.j: 1 markers, expected 0
+FAIL: TM1.c: 1 markers, expected 0
+markers: 2 in 2 categories M1.j=1, TM1.c=1
+FAIL

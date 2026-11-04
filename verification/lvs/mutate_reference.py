@@ -7,6 +7,8 @@
     mutate_reference.py and3bx1_swap <macro pnl copy>   AB and B of the first AND3BX1 swapped
     mutate_reference.py cut_pin      <chip pnl copy>    the iovdd pin of the first cut_vdd cell moved to VDD
     mutate_reference.py dsm2_pins    <chip pnl copy>    the nets of dsm2's di_ena and di_rst_b swapped
+    mutate_reference.py dsm2_device  <dsm2 spice copy>  drain and gate of dsm2's first transistor with three different nets swapped
+    mutate_reference.py decap_vdd    <chip pnl copy>    decap_vdda's VDD pin moved from VDDA to VDD
 """
 import re
 import sys
@@ -47,7 +49,22 @@ def dsm2_pins(text):
     return text[:m.start(1)] + new + text[m.end(1):]
 
 
-MUTANTS = {"vdda_to_vdd": vdda_to_vdd, "and3bx1_swap": and3bx1_swap, "cut_pin": cut_pin, "dsm2_pins": dsm2_pins}
+def dsm2_device(text):
+    for m in re.finditer(r"^XM\S* (\S+) (\S+) (\S+) ", text, flags=re.M):
+        if len({m.group(1), m.group(2), m.group(3)}) == 3:
+            return text[:m.start(1)] + m.group(2) + " " + m.group(1) + text[m.end(2):]
+    raise AssertionError("no transistor in the dsm2 netlist")
+
+
+def decap_vdd(text):
+    m = re.search(r"^ decap_vdda \S+ \((.*?)\);", text, flags=re.M | re.S)
+    assert m, "no decap_vdda in the netlist"
+    new, n = re.subn(r"\.VDD\(VDDA\)", ".VDD(VDD)", m.group(1))
+    assert n == 1, "decap_vdda's VDD is not on VDDA"
+    return text[:m.start(1)] + new + text[m.end(1):]
+
+
+MUTANTS = {"vdda_to_vdd": vdda_to_vdd, "and3bx1_swap": and3bx1_swap, "cut_pin": cut_pin, "dsm2_pins": dsm2_pins, "dsm2_device": dsm2_device, "decap_vdd": decap_vdd}
 
 if __name__ == "__main__":
     name, path = sys.argv[1:3]

@@ -25,7 +25,7 @@ from decimator_model import DATA_W, DecimatorModel, comp_tap_value  # noqa: E402
 sim = os.getenv("SIM", "icarus")
 # GL=1 selects the gate-level netlist; anything else (unset, "0", "") stays in RTL mode.
 gl = os.getenv("GL", "0").strip().lower() in ("1", "true", "yes", "on")
-ez130_dir = Path(os.getenv("EZ130_DIR", "~/projects/OpenBLAU/ip/ez130_8t_v1p1")).expanduser()
+ez130_dir = Path(os.getenv("EZ130_DIR", str(_REPO / "ip/ez130_8t_v1p1"))).expanduser()
 
 hdl_toplevel = "decimator_top"
 

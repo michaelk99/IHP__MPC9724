@@ -20,9 +20,9 @@ What each deck carries:
 - the core, at the core-ring port nearest each pad or split over the eight
   ports per rail: the DECAPHV banks (each an RC from its cell count, its C
   and its estimated channel corner), the core's n-well/p-substrate junction
-  (vss anode, vdd cathode), the BUFX3 that drives every output pad's c2p,
-  the TIELO cells on the bidir pads' c2p and c2p_en, and a core input load
-  on every p2c. The core is unpowered: the BUFX3 inputs sit at its vss.
+  (vss anode, vdd cathode), the BUFX3 that drives every output pad's c2p (an AND2X1 for adc_conv), and a core input load on every p2c. The core is unpowered: the driver inputs sit at its vss.
+- dsm2 as a box, two nodes: vddadsm on VDDA's strap and vssdsm on the VSS strap, where they leave the clipped annulus. The segment's pads (dsm_clk, do_q, do_q_b, vi, vcm, ibias_test) attach their core side there: a BUFX3 as the stand-in for dsm2's output drivers on do_q and do_q_b and on the inout dsm_clk pad's c2p and c2p_en, 50 fF on dsm_clk's p2c, and on each analog pin dsm2's own sg13cmos5l_SecondaryProtection (esd_dsm2_secprot in models.py) with 50 fF at its core node in_<slot>. dsm2's own decap and well junction are not in the model.
+- decap_vdda's DECAPHV bank between vddadcp and vssdcp, its two straps, built as the core banks.
 - the tester: 100 pF at V, 1.5 kohm, 5 uH, 1 pF at the pin (inside JS-001,
   --selftest); the reference pins at 0 V; every other pin floats (rshunt
   1 Gohm)
@@ -40,17 +40,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 import spicerun  # noqa: E402
 
-RAILS = ("vdd", "vss", "iovdd", "iovss")
+RAILS = ("vdd", "vss", "iovdd", "iovss")      # the pad cells' supply pins
+NETS = RAILS + ("vdda",)                      # the rails of the ring: the segment's vdd is vdda
+DRIVER = {"adcconv": "AND2X1"}                # the core cell behind an output pad, else BUFX3
 # Core-rail decap: DECAPHV cells, chip top (netlist/pnl) plus macro
 # (macros/dsa1_dig/final/pnl). C per cell is the CDL device in ngspice, AC at
 # 1.2 V, tt (6.27 / 30.52 / 79.01 fF, flat to 5 V within 4 %). The channel
 # corner is the decap_hv library's own estimate ($DECAPHV_DIR/doc/decap_hv.md),
 # so each bank is C in series with 1 / (2 pi f_c C).
 DECAP = {                  # cell: (count top + macro, C per cell F, corner Hz)
-    "DECAPHV8": (3916 + 1625, 6.272e-15, 10e9),
-    "DECAPHV16": (3434 + 504, 30.52e-15, 0.4e9),
-    "DECAPHV32": (7399 + 131, 79.01e-15, 60e6),
+    "DECAPHV8": (339 + 1578, 6.272e-15, 10e9),
+    "DECAPHV16": (200 + 575, 30.52e-15, 0.4e9),
+    "DECAPHV32": (517 + 78, 79.01e-15, 60e6),
 }
+# decap_vdda on VDDA (macros/decap_vdda/final/pnl), 67.61 pF
+DECAP_VDDA = {"DECAPHV8": (339, 6.272e-15, 10e9), "DECAPHV16": (323, 30.52e-15, 0.4e9),
+              "DECAPHV32": (704, 79.01e-15, 60e6)}
 R_DECAP = 0.5              # series R of the whole bank to the ring, lumped (assumption)
 WELL_A = 20000.0           # core n-well junction, um^2 (assumption: bounds, not measured)
 C_LOAD = 50e-15            # a core input behind p2c, or an open padres stub
@@ -58,6 +63,7 @@ C_LOAD = 50e-15            # a core input behind p2c, or an open padres stub
 # EPAD_NETS). Every VSS/IOVSS bond pad reaches one package node through its
 # own downbond, and JS-001 then treats the two as one pin group, `gnd`.
 PKG_GND = False
+UNBONDED = ("iovdd_w5",)       # a ring cell without a wire (UNBONDED_PADS in packaging/config.yaml): never a tester pin
 BOND_L, BOND_R = 0.5e-9, 0.05  # per downbond: 500 um of 25 um Au (packaging/result.md)
 # On "Timestep too small", in this order, recorded per zap. Priced on a zap
 # that converges as is (miso - vs io, RON 1): 0.02 ns step 4 mV, trap 2 mV,
@@ -73,10 +79,10 @@ def die(msg):
     sys.exit(1)
 
 
-def decap_banks():
-    """{cell: (C, R)} of the core-rail decap banks."""
+def decap_banks(table=None):
+    """{cell: (C, R)} of the core-rail decap banks, or of another table of the same form."""
     out = {}
-    for cell, (n, c, fc) in DECAP.items():
+    for cell, (n, c, fc) in (table or DECAP).items():
         out[cell] = (n * c, 1.0 / (2 * math.pi * fc * n * c))
     return out
 
@@ -101,30 +107,34 @@ def load(run):
     pj = json.load(open(os.path.join(run, "pex", "ports.json")))
     slots = {}
     for p in pj["ports"]:
-        if p["kind"] == "ring" or p["master"] == CLAMP_CELL:
+        if p["kind"] in ("ring", "dsm") or p["master"] == CLAMP_CELL:
             continue
         s = slots.setdefault(p["slot"], dict(master=p["master"], side=p["side"], k=p["k"],
-                                             ports=set()))
+                                             seg=p["seg"], ports=set()))
         if p["master"] != "bondpad":
             s["master"] = p["master"]
         if p["kind"] == "padc":
             s["xy"] = (p["x"], p["y"])
         s["ports"].add(p["name"])
     ring = sorted({p["name"] for p in pj["ports"]
-                   if p["kind"] == "ring" or p["master"] == CLAMP_CELL})
+                   if p["kind"] in ("ring", "dsm") or p["master"] == CLAMP_CELL})
     # the core-ring point nearest each pad: where its core-side circuits attach
     rk = {p["k"]: (p["x"], p["y"]) for p in pj["ports"]
           if p["kind"] == "ring" and p["rail"] == "vss"}
     for s in slots.values():
         x, y = s["xy"]
         s["ring_k"] = min(rk, key=lambda k: (rk[k][0] - x) ** 2 + (rk[k][1] - y) ** 2)
+        # where the core cell behind the pad sits: a ring point, or dsm2's pins
+        s["vdd_net"] = "vdda" if s["seg"] else "vdd"
+        s["cv"] = "vddadsm" if s["seg"] else f"vddring_{s['ring_k']}"
+        s["cg"] = "vssdsm" if s["seg"] else f"vssring_{s['ring_k']}"
     return slots, ring, pj
 
 
 def group(slot):
     """The supply group a slot belongs to, or None for a signal pad."""
     head = slot.split("_")[0]
-    if not (head in RAILS and re.match(r"^[a-z]+_[nesw]\d$", slot)):
+    if not (head in NETS and re.match(r"^[a-z]+_[nesw]\d$", slot)):
         return None
     return "gnd" if PKG_GND and head in ("vss", "iovss") else head
 
@@ -135,7 +145,7 @@ def pins(slots, zap, ref):
     zn = "pkg_gnd" if group(zap) == "gnd" else f"pad_{zap}"
     if ref == "gnd":
         return zn, ["pkg_gnd"]
-    refs = [f"pad_{s}" for s in slots
+    refs = [f"pad_{s}" for s in slots if s not in UNBONDED
             if (group(s) == ref if ref != "io" else group(s) is None and s != zap)]
     return zn, refs
 
@@ -160,13 +170,17 @@ def matrix(slots):
 
 def ring_net(name):
     """The rail a ring-network port sits on, or None for a pad net."""
-    for r in RAILS:
+    for r in NETS:
         if name.startswith(r + "_") or name.startswith(r + "ring_"):
             return r
+    if name in ("vddadsm", "vssdsm", "vddadcp", "vssdcp"):    # dsm2's and decap_vdda's straps
+        return "vdda" if name.startswith("vdda") else "vss"
     if name.startswith(("clv_", "cls_")):        # the clamp cell's stripes
-        return "vdd" if name.startswith("clv_") else "vss"
+        if name.startswith("cls_"):
+            return "vss"
+        return "vdda" if name.endswith("_vdda") else "vdd"
     m = re.match(r"^pad[c]?_([a-z]+)_[nesw]\d$", name)
-    if m and m.group(1) in RAILS:
+    if m and m.group(1) in NETS:
         return m.group(1)
     return None
 
@@ -199,34 +213,34 @@ def deck(run, slots, ring, zap, ref, pol, a):
         L += [f".include {rp}", f"Xring {' '.join(rports)} esd_ring_rport"]
     # pads, and the core cell behind each
     for s, d in sorted(slots.items()):
-        m, k = d["master"], d["ring_k"]
-        cv, cg = f"vddring_{k}", f"vssring_{k}"
-        core = dict(VDD=cv, VNW=cv, VPW=cg, VSS=cg, A=cg)
+        m = d["master"]
+        cv, cg = d["cv"], d["cg"]
+        core = dict(VDD=cv, VNW=cv, VPW=cg, VSS=cg, A=cg, B=cg)
         conn = []
         for p in ports[m]:
             if p in RAILS:
-                conn.append(f"{p}_{s}")
+                conn.append(f"{d['vdd_net'] if p == 'vdd' else p}_{s}")
             elif p == "pad":
                 conn.append(f"padc_{s}")
             elif p == "p2c":                  # a core input, or an open stub (bidir)
                 conn.append(f"p2c_{s}")
                 L.append(f"Cl_p2c_{s} p2c_{s} {cg} {C_LOAD}")
-            elif p == "padres":               # analog spare, open in the core
+            elif p == "padres":               # analog pin of dsm2: its protection, then its input
                 conn.append(f"padres_{s}")
-                L.append(f"Cl_padres_{s} padres_{s} iovss_{s} {C_LOAD}")
-            elif p in ("c2p", "c2p_en"):
-                n = f"{p.replace('_', '')}_{s}"
+                L.append(f"Xsp_{s} padres_{s} in_{s} {cv} {cg} esd_dsm2_secprot")
+                L.append(f"Cl_in_{s} in_{s} {cg} {C_LOAD}")
+            elif p in ("c2p", "c2p_en"):      # output and its enable: the core cell that drives each
+                n = f"{p}_{s}"
                 conn.append(n)
-                if "c2p_en" in ports[m]:      # bidir spare: TIELO on c2p and c2p_en
-                    L.append(core_cell(ports, "TIELO", dict(core, Y=n), f"tie_{p}_{s}"))
-                else:                         # output: the macro's BUFX3
-                    L.append(core_cell(ports, "BUFX3", dict(core, Y=n), f"drv_{s}"))
+                cell = DRIVER.get(s, "BUFX3")
+                L.append(core_cell(ports, cell, dict(core, Y=n), f"drv_{p}_{s}"))
             else:
                 die(f"{m}: port {p} has no rule")
         L.append(f"Xp_{s} {' '.join(conn)} {m}")
-    # the drawn clamp cell, on its stripe ports, its in-cell metal extracted with the ring
-    if "clv_clamp" in ring and not getattr(a, "no_clamp", False):
-        L.append("Xclampcell clv_clamp cls_clamp esd_clamp_vddvss_cell")
+    # the drawn clamp cells, on their stripe ports, their in-cell metal extracted with the ring
+    for c in ("clamp", "clamp_vdda"):
+        if f"clv_{c}" in ring and c not in a.no_clamp:
+            L.append(f"Xclampcell_{c} clv_{c} cls_{c} esd_clamp_vddvss_cell")
     # a vdd-to-vss clamp not yet drawn, on a slot's rail ports behind its in-cell metal
     if a.clamp:
         # --clamp-x scales it as wider cells would: x clamps in parallel, the metal R over x
@@ -243,6 +257,10 @@ def deck(run, slots, ring, zap, ref, pol, a):
             L.append(f"C{cell}_{k} dcm{k} dc{cell}_{k} {c / 8:.4g}")
             L.append(f"R{cell}_{k} dc{cell}_{k} {g} {r * 8:.4g}")
         L.append(f"Dwell{k} {g} {v} esd_dn_hc area={WELL_A / 35 / 8:.4g}")
+    L.append(f"Rdcp vddadcp dcpm {R_DECAP:.4g}")
+    for cell, (c, r) in decap_banks(DECAP_VDDA).items():
+        L.append(f"Cdcp{cell} dcpm dcp{cell} {c:.4g}")
+        L.append(f"Rdcp{cell} dcp{cell} vssdcp {r:.4g}")
     L.append("Rsub sub! vssring_0 1e9")       # sub! is tied through ptaps; keep it defined
     # tester
     zn, refs = pins(slots, zap, ref)
@@ -258,8 +276,8 @@ def deck(run, slots, ring, zap, ref, pol, a):
     save = sorted({n for s in slots.values() for n in s["ports"]} | set(ring))
     for s, d in sorted(slots.items()):
         pp = ports.get(d["master"], [])
-        save += [f"{p.replace('_', '')}_{s}" for p in ("p2c", "padres", "c2p", "c2p_en")
-                 if p in pp]
+        save += [f"{p}_{s}" for p in ("p2c", "padres", "c2p") if p in pp]
+        save += [f"in_{s}"] if "padres" in pp else []
         if "p2c" in pp:                        # the secondary-protected node
             save.append(f"xp_{s}.xi{leveldown_index(io, d['master'])}.net1")
     save += ["pkg_gnd"] if PKG_GND else []
@@ -330,22 +348,28 @@ def extremes(run_dir, slots, zap, ref):
         out["i_zap"] = (max(cur), min(cur))
     for k in range(8):
         pair(f"vddring_{k}", f"vssring_{k}", f"core_vdd_vss_{k}", out)
+    pair("vddadsm", "vssdsm", "dsm_vdda_vss", out)
+    pair("vddadcp", "vssdcp", "dcp_vdda_vss", out)
     for s, d in slots.items():
-        k = d["ring_k"]
-        pair(f"vdd_{s}", f"vss_{s}", f"vdd_vss@{s}", out)
+        vd, cv, cg = d["vdd_net"], d["cv"], d["cg"]
+        pair(f"{vd}_{s}", f"vss_{s}", f"{vd}_vss@{s}", out)
         pair(f"iovdd_{s}", f"iovss_{s}", f"iovdd_iovss@{s}", out)
-        pair(f"vdd_{s}", f"iovss_{s}", f"vdd_iovss@{s}", out)
+        pair(f"{vd}_{s}", f"iovss_{s}", f"{vd}_iovss@{s}", out)
         pair(f"padc_{s}", f"iovss_{s}", f"pad_iovss@{s}", out)
         pair(f"padc_{s}", f"iovdd_{s}", f"pad_iovdd@{s}", out)
         # LV: the pad cell's level shifter against its own rails, the core
-        # cell (BUFX3, TIELO, the input gate) against the core ring
-        for n, tagn in ((f"c2p_{s}", "c2p"), (f"c2pen_{s}", "c2pen"), (f"p2c_{s}", "p2c")):
+        # cell (BUFX3, the input gate) against the core ring or dsm2's pins
+        for n, tagn in ((f"c2p_{s}", "c2p"), (f"p2c_{s}", "p2c")):
             pair(n, f"vss_{s}", f"{tagn}_vss@{s}", out)
-            pair(f"vdd_{s}", n, f"vdd_{tagn}@{s}", out)
-            pair(n, f"vssring_{k}", f"{tagn}_core@{s}", out)
-            pair(f"vddring_{k}", n, f"core_{tagn}@{s}", out)
+            pair(f"{vd}_{s}", n, f"{vd}_{tagn}@{s}", out)
+            pair(n, cg, f"{tagn}_core@{s}", out)
+            pair(cv, n, f"core_{tagn}@{s}", out)
         pair(f"padres_{s}", f"iovss_{s}", f"padres_iovss@{s}", out)
         pair(f"iovdd_{s}", f"padres_{s}", f"iovdd_padres@{s}", out)
+        pair(f"padres_{s}", cg, f"padres_core@{s}", out)
+        pair(cv, f"padres_{s}", f"core_padres@{s}", out)
+        pair(f"in_{s}", cg, f"in_core@{s}", out)          # behind dsm2's protection, at its gates
+        pair(cv, f"in_{s}", f"core_in@{s}", out)
         net1 = [c for c in col if c.startswith(f"v(xp_{s}.") and c.endswith(".net1)")]
         if net1:
             n = net1[0][2:-1]
@@ -359,7 +383,7 @@ def one(run, slots, ring, z, a):
     zap, ref, pol = z
     t = tag(zap, ref, pol, a.ron) + ("__ideal" if a.ideal_ring else "") + \
         ("__pkg" if PKG_GND else "") + (f"__clamp_{a.clamp}_x{a.clamp_x:g}" if a.clamp else "") + \
-        ("__noclamp" if a.no_clamp else "")
+        "".join(f"__no_{c}" for c in a.no_clamp)
     wd = os.path.join(run, "sim", t)
     raw = os.path.join(wd, "zap.raw")
     if not (a.reuse and os.path.isfile(raw)):
@@ -399,7 +423,23 @@ def tester(v, node):
             "Ctst hz 0 1p", f"Vzap hz {node} 0"]
 
 
+def check_unbonded():
+    """hbm.UNBONDED must name the slot of the pad that packaging/config.yaml leaves without a wire."""
+    import yaml
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    west = yaml.safe_load(open(os.path.join(root, "flow/librelane/config.yaml")))["PAD_WEST"]
+    left = yaml.safe_load(open(os.path.join(root, "packaging/config.yaml")))["UNBONDED_PADS"] or {}
+    cells = [c for c in west if not str(c).startswith("clamp")]    # clamp cells take no slot number
+    want = []
+    for name, n in left.items():
+        idx = [i + 1 for i, c in enumerate(cells) if name.lower() + "_pad" in str(c)]
+        want += [f"{name.lower()}_w{i}" for i in idx[len(idx) - n:]] if n else []
+    if sorted(want) != sorted(UNBONDED):
+        die(f"hbm.UNBONDED {UNBONDED} does not match UNBONDED_PADS in packaging/config.yaml, slots {want}")
+
+
 def selftest():
+    check_unbonded()
     """The tester into a short at 2 kV against JS-001: Ips 1.20..1.48 A,
     rise (10..90 %) 2..10 ns, decay (to 36.8 %) 130..170 ns."""
     deck = "\n".join(["* HBM source into a short"] + tester(2000.0, "0") + [
@@ -416,6 +456,8 @@ def selftest():
           f"decay {decay:.1f} ns: {'passed' if ok else 'FAILED'}")
     for cell, (c, r) in decap_banks().items():
         print(f"hbm: core decap {cell}: {c * 1e12:.2f} pF behind {r:.3f} ohm")
+    for cell, (c, r) in decap_banks(DECAP_VDDA).items():
+        print(f"hbm: VDDA decap {cell}: {c * 1e12:.2f} pF behind {r:.3f} ohm")
     if not ok:
         sys.exit(1)
 
@@ -442,7 +484,8 @@ def main():
     ap.add_argument("--clamp-r", type=float, default=0.4,
                     help="Ohm per side for the clamp's in-cell metal, OpenBLAU extracted 0.41")
     ap.add_argument("--clamp-x", type=float, default=1.0, help="clamp size, in steps of 0.5")
-    ap.add_argument("--no-clamp", action="store_true", help="leave the drawn clamp cell out")
+    ap.add_argument("--no-clamp", action="append", default=[], choices=("clamp", "clamp_vdda"),
+                    help="leave a drawn clamp cell out, repeatable")
     a = ap.parse_args()
     if a.clamp and a.clamp not in slots_of(a.run):
         die(f"--clamp {a.clamp}: no such slot")
@@ -462,13 +505,13 @@ def main():
         res = dict(ex.map(lambda z: one(run, slots, ring, z, a), zaps))
     name = (f"hbm_r{a.ron:g}{'_ideal' if a.ideal_ring else ''}{'_pkg' if PKG_GND else ''}"
             f"{'_clamp_' + a.clamp if a.clamp else ''}{f'_x{a.clamp_x:g}' if a.clamp and a.clamp_x != 1 else ''}"
-            f"{'_noclamp' if a.no_clamp else ''}.json")
+            f"{''.join('_no_' + c for c in a.no_clamp)}.json")
     if a.zap and os.path.isfile(os.path.join(run, name)):     # a rerun merges in
         old = json.load(open(os.path.join(run, name)))["zaps"]
         old.update(res)
         res = old
     json.dump(dict(ron=a.ron, vhbm=a.vhbm, ideal_ring=a.ideal_ring, pkg_gnd=PKG_GND,
-                   zaps=res),
+                   seg=sorted(s for s, d in slots.items() if d["seg"]), zaps=res),
               open(os.path.join(run, name), "w"), indent=1)
     late = [t for t, r in res.items() if "error" not in r and r["late_rise"][0] > 0.1]
     for t in late:

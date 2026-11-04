@@ -9,7 +9,7 @@ Guidance for a coding agent working in this repository.
 
 ## What this is
 
-The tapeout repo for the DSADC1 digital back end on IHP SG13CMOS5L: a 1.6 mm QFN32 die carrying one macro, `dsa1_dig_top`, which is the 128x decimation filter, the SPI slave and the configuration register file. Built from the `iic-jku/ihp-sg13cmos5l-ams-chip-template`, whose history this repo adopted outright, so `git remote template` can still compute a sync range.
+The tapeout repo for the DSADC1 digital back end on IHP SG13CMOS5L: a 1.3 mm QFN24 die carrying the macro `dsa1_dig_top`, which is the 128x decimation filter, the SPI slave and the configuration register file, and `dsm2_core`, a 1.5 V delta-sigma modulator on its own VDDA segment of the pad ring. Built from the `iic-jku/ihp-sg13cmos5l-ams-chip-template`, whose history this repo adopted outright, so `git remote template` can still compute a sync range.
 
 **The RTL development repo is `../jku-phd`.** It is the source of truth for the VHDL and the decimator SystemVerilog. This repo owns a frozen copy under `macros/*/rtl/`. Change the RTL there, prove it there, then mirror. The two copies differ only by SPDX headers and the `dsa1_dig_top_v2` to `dsa1_dig_top` entity rename.
 
@@ -24,12 +24,12 @@ docker exec iic-osic-tools_xserver_uid_1000 bash -lc '
   cd /foss/designs/sg13cmos5l_dsa1_dig
   export PDK=ihp-sg13cmos5l PDKPATH=/foss/pdks/ihp-sg13cmos5l PDK_ROOT=/foss/pdks
   export STD_CELL_LIBRARY=sg13cmos5l_stdcell SCL=sg13cmos5l_stdcell
-  export EZ130_DIR=/foss/designs/OpenBLAU/ip/ez130_8t_v1p1
-  export DECAPHV_DIR=/foss/designs/OpenBLAU/ip/ez130_8t_decap_hv
+  export EZ130_DIR=/foss/designs/sg13cmos5l_dsa1_dig/ip/ez130_8t_v1p1
+  export DECAPHV_DIR=/foss/designs/sg13cmos5l_dsa1_dig/ip/ez130_8t_decap_hv
   make <target>'
 ```
 
-**All five exports matter.** A parse-time guard in each `Makefile` catches a wrong `PDK`, but `STD_CELL_LIBRARY` is only set by `sak-pdk` in an interactive shell, and without it LibreLane dies looking for `sg13g2_stdcell/config.tcl` under the CMOS5L PDK. `EZ130_DIR` and `DECAPHV_DIR` point outside the repo on purpose: EZ130 8T is a prerelease and must not ship here.
+**All five exports matter.** A parse-time guard in each `Makefile` catches a wrong `PDK`, but `STD_CELL_LIBRARY` is only set by `sak-pdk` in an interactive shell, and without it LibreLane dies looking for `sg13g2_stdcell/config.tcl` under the CMOS5L PDK. `EZ130_DIR` and `DECAPHV_DIR` default to `ip/ez130_8t_v1p1` and `ip/ez130_8t_decap_hv`, EZ130 8T v1.1 (ETH Zurich, Apache-2.0).
 
 A full macro or chip harden is 30 to 60 minutes. Run it in the background.
 

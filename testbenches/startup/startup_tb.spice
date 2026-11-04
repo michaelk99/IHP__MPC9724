@@ -7,6 +7,7 @@
 .lib cornerMOSlv.lib mos_tt
 .lib cornerMOShv.lib mos_tt
 .lib cornerRES.lib res_typ
+.lib cornerCAP.lib cap_typ
 * cornerDIO.lib dio_tt, with diodes.lib's transit times at 0 (run_startup.sh): the antenna diodes'
 * 700 ns stall the solver when ground bounce nudges one forward, and they sit reverse or near 0 here
 .include diodes_bench.lib
@@ -14,7 +15,8 @@
 .include @IO_SPI@
 .include core.xspice
 .include clamp.spice
-.include chip.spice
+@DSM2@
+.include @CHIP@
 .include stim_@ORDER@.spice
 
 * the IO cells' rppd resistors take their body from sub!, a substrate the PDK SPICE leaves to the bench.

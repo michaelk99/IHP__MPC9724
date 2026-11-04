@@ -16,6 +16,8 @@ The silicon hosts and their PC tools are kept with the evaluation setup in the I
 - On each adc_conv rising edge, read HIGH (address 0), then LOW (address 1), no earlier than a few sclk periods after the edge. LOW is frozen by the HIGH read, so the pair belongs to one conversion.
 - If the host sources the bitstream: clk_fs at 65536 Hz, and data_in changing away from the clk_fs rising edge. Bit-true results do not care about the exact rate, a spectrum's frequency axis does.
 - 3.3 V I/O, as the chip's pad ring.
+- **dsm2's oscillator.** `dsm_clk` is an inout pad. The host stops driving it (high impedance) before it sets `BIAS_CFG_0` bit 8 (`di_clk_sel`), which turns on dsm2's 4 mA driver, and drives it again only after bit 8 is cleared. Bit 7 (`di_osc_en`) runs the oscillator, about 0.65 to 0.8 MHz at trim code 4. The decimator keeps its clock from the `clk` pad, so with `DEC_SRC` the host forwards the inverted `dsm_clk` it now reads to `clk`.
+- **After `DSM_RST_B` rises, discard the first decimator word.** While dsm2 is in reset its quantizer holds its output and the integrator saturates. It needs about 17 clocks to recover (dsm2 simulation at `vi` = +0.3 V, longer closer to full scale), and the first word after the release carries that.
 - **TEST_CTRL_0** (address 9): every write keeps the `0x0500` base and bit 9 at 0, and never puts `11` in bits 7:6, which shorts the bias nodes. The core test mux, bits 5:0, never selects page `11`, which is undocumented, and on the INT page (bits 5:4 `01`) at most one of bits 3:0, or two integrator outputs are shorted. Between two selected nodes it goes through neutral, page `00` or the INT page with none selected, as `startup.md` requires.
 
 ## Programs

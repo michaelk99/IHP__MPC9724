@@ -1,0 +1,41 @@
+* smoke_pex3.spice: 5 clocks of dsm2_core_pex3.spice at tt 1.5 V 27 C, controls at their bench levels, vi at vcm level
+.include header.spice
+.include dsm2_core_pex3.spice
+VDD vdd 0 1.5
+VREF vref 0 0.75
+* vi as two series 0 V sources, as in the dsm2 benches (see README, start of the extracted run)
+VI2 vi vi_dc 0
+VI1 vi_dc vref 0
+VCLK di_clk 0 PULSE(0 1.5 0 1n 1n 487.28125n 976.5625n)
+VENA di_ena 0 1.2
+VRSTB di_rst_b 0 PWL(0 0 1.953u 0 1.954u 1.2)
+VT3 di_trim[3] 0 0
+VT2 di_trim[2] 0 1.2
+VT1 di_trim[1] 0 0
+VT0 di_trim[0] 0 0
+VDE di_dith_en 0 0
+VDA1 di_dith_amp[1] 0 0
+VDA0 di_dith_amp[0] 0 0
+VVX di_vcm_ext 0 0
+VBTE di_btest_en 0 0
+VQOE di_qout_en 0 1.2
+VBTEST ibias_test 0 0.5
+* oscillator off, external clock selected, outputs loaded as on the DSA1 pads
+VOSC di_osc_en 0 0
+VSEL di_clk_sel 0 0
+COSC do_clk_osc 0 80f
+COE do_osc_oe 0 15f
+CQ do_q 0 80f
+CQB do_q_b 0 80f
+CQD do_q_dec 0 15f
+x1 vi vcm di_clk di_ena di_rst_b di_trim[3] di_trim[2] di_trim[1] di_trim[0] di_dith_en di_dith_amp[1] di_dith_amp[0] di_vcm_ext
++ di_btest_en di_qout_en do_q do_q_b do_q_dec ibias_test vdd 0 di_osc_en di_clk_sel do_clk_osc do_osc_oe dsm2_core_pex
+.temp 27
+.control
+save v(do_q) v(do_q_dec) v(vcm) v(x1.vo_p) v(x1.vo_n) i(VDD)
+tran 10n 4.8828125u 0 10n
+meas tran idd avg i(VDD) from=1.953125u to=4.8828125u
+meas tran vcmavg avg v(vcm) from=1.953125u to=4.8828125u
+meas tran qavg avg v(do_q) from=1.953125u to=4.8828125u
+.endc
+.end

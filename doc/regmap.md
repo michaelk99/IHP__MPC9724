@@ -50,7 +50,7 @@ Bias current settings of OTA1 to OTA3 on the DSA1 die. On this die the dsm2 trim
 | Bits | Field | Reset | Rule | Description |
 |---|---|---|---|---|
 | 15:10 | NA | 0x0 |  | (only on cmos5l) |
-| 9:7 | DSM_SPARE | 0x0 |  | Spare, drives nothing (only on cmos5l) |
+| 9:7 | DSM_SPARE | 0x0 |  | Bit 7 drives dsm2 di_osc_en, bit 8 di_clk_sel (chip level). Bit 9 spare (only on cmos5l) |
 | 6:5 | DSM_DITH_AMP | 0x1 |  | dsm2 di_dith_amp, quantizer dither amplitude (only on cmos5l) |
 | 4 | DSM_DITH_EN | 0x0 |  | dsm2 di_dith_en, quantizer dither on (only on cmos5l) |
 | 3:0 | DSM_TRIM | 0x4 |  | dsm2 di_trim, bias 8.33 nA x (16 + 2 x code), 4 is 200 nA. Change only with DSM_EN low (only on cmos5l) |

@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+meta:
+  version: 3
+  flow: Classic
+  substituting_steps:
+    Checker.IllegalOverlap: null
+    # The kept inverter in rtl/decap_vdda.sv has a floating output on purpose
+    Checker.DisconnectedPins: null
+
+DESIGN_NAME: decap_vdda
+VERILOG_FILES: ["dir::../../rtl/decap_vdda.sv"]
+
+# 150.36 x 349.44 um, the chip slot is 150.5 x 352 rounded down to the 0.42 x 3.36 site grid
+FP_SIZING: absolute
+DIE_AREA: [0, 0, 150.36, 349.44]
+# One row of margin at the bottom, 9 rows at the top for the two Metal3 straps, which a row under them would block
+CORE_AREA: [2.52, 3.36, 147.84, 319.2]
+RUN_MAGIC_DRC: true
+RUN_CTS: false
+
+VDD_NETS: ["VDD"]
+GND_NETS: ["VSS"]
+VERILOG_POWER_DEFINE: "USE_POWER_PINS"
+
+# Thick-oxide decap only, same lists as dsa1_dig
+DECAP_CELLS: ["DECAPHV32", "DECAPHV16", "DECAPHV8"]
+EXTRA_EXCLUDED_CELLS: ["DECAP4", "DECAP8", "DECAP16", "DECAP32"]
+CELL_PAD_EXCLUDE: ["FILLER*", "DECAP*", "DECAPHV*"]
+
+# Rails on Metal1, Metal4 straps feed them, one 10 um Metal3 strap per net is the east pin
+# VDD at y 320.36 to 330.36, VSS at y 334.36 to 344.36 above the rows, 4 um apart like dsm2's stubs
+FP_PDN_MULTILAYER: true
+PDN_VERTICAL_LAYER: Metal4
+PDN_HORIZONTAL_LAYER: Metal3
+PDN_VWIDTH: 2
+PDN_VPITCH: 30
+PDN_VSPACING: 13
+PDN_VOFFSET: 7
+PDN_HWIDTH: 10
+PDN_HPITCH: 400
+PDN_HSPACING: 4
+PDN_HOFFSET: 322
+PDN_CFG: dir::pdn_cfg.tcl
+
+STA_CORNERS:
+  - nom_fast_1p32V_m40C
+  - nom_slow_1p08V_125C
+  - nom_typ_1p20V_25C
+DEFAULT_CORNER: nom_typ_1p20V_25C

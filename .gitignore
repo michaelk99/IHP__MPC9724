@@ -35,7 +35,7 @@ sim_build/
 /macros/*/sims
 /testbenches/fpga/build/
 /testbenches/fpga/*/build/
-/testbenches/startup/build/
+/testbenches/startup/build*/
 /verification/lvs/*.gds.lvs/*
 !/verification/lvs/*.gds.lvs/lvs.rpt
 !/verification/lvs/*.gds.lvs/input.md5

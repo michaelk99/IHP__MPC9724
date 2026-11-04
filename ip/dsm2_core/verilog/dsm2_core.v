@@ -5,7 +5,8 @@
 `celldefine
 (* blackbox *)
 module dsm2_core (vdd, vss, vi, vcm, ibias_test, di_clk, di_ena, di_rst_b, di_trim, di_dith_en,
-                  di_dith_amp, di_vcm_ext, di_btest_en, di_qout_en, do_q, do_q_b, do_q_dec);
+                  di_dith_amp, di_vcm_ext, di_btest_en, di_qout_en, do_q, do_q_b, do_q_dec,
+                  di_osc_en, di_clk_sel, do_clk_osc, do_osc_oe);
 	inout vdd;
 	inout vss;
 	inout vi;
@@ -23,5 +24,10 @@ module dsm2_core (vdd, vss, vi, vcm, ibias_test, di_clk, di_ena, di_rst_b, di_tr
 	output do_q;
 	output do_q_b;
 	output do_q_dec;
+	// Oscillator variant: inputs at 1.2 V, outputs at 1.5 V
+	input di_osc_en;
+	input di_clk_sel;
+	output do_clk_osc;
+	output do_osc_oe;
 endmodule
 `endcelldefine

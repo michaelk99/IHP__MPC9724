@@ -15,7 +15,7 @@ Pad map, from rtl/sg13cmos5l_dsa1_dig_core.sv:
   output_PAD[0]    miso
   output_PAD[1]    adc_conv, one clk cycle wide at the 512 Hz output rate, gated by ADC_CONV_EN
   analog_PAD[2:0]  vi, vcm, ibias_test
-  dsm_clk_PAD      dsm2 clock, the inverted clk when DEC_SRC is used
+  dsm_clk_PAD      dsm2 clock, the inverted clk when DEC_SRC is used. Inout: dsm2 drives it from its oscillator when DSM_SPARE bit 8 (di_clk_sel) is set
   do_q_PAD         dsm2 bit, high only with DSM_QOUT_EN
   do_q_b_PAD       its complement
   no test pads, VDDA is a supply
@@ -40,6 +40,7 @@ from pathlib import Path
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import Timer, RisingEdge, FallingEdge, ClockCycles
+from cocotb.types import LogicArray
 from cocotb_tools.runner import get_results, get_runner
 
 sim      = os.getenv("SIM", "icarus")
@@ -544,7 +545,8 @@ async def test_bias_cfg_reaches_dsm2(dut):
 
     def cfg0_pins():
         d = dut.dsm2
-        return (int(d.di_trim.value) | int(d.di_dith_en.value) << 4 | int(d.di_dith_amp.value) << 5)
+        return (int(d.di_trim.value) | int(d.di_dith_en.value) << 4 | int(d.di_dith_amp.value) << 5
+                | int(d.di_osc_en.value) << 7 | int(d.di_clk_sel.value) << 8)
 
     cfg1_names = ("DSM_EN", "DSM_RST_B", "DSM_BTEST_EN", "DSM_VCM_EXT", "DSM_QOUT_EN", "DEC_SRC", "ADC_CONV_EN")
 
@@ -555,13 +557,14 @@ async def test_bias_cfg_reaches_dsm2(dut):
                "DEC_SRC": dec_gate.B, "ADC_CONV_EN": conv_gate.B}
         return {n: int(got[n].value) for n in cfg1_names}
 
-    # BIAS_CFG_0: DSM_TRIM, DSM_DITH_EN and DSM_DITH_AMP are bits 0 to 6, the pins carry the same order
+    # BIAS_CFG_0: DSM_TRIM, DSM_DITH_EN and DSM_DITH_AMP are bits 0 to 6, di_osc_en and di_clk_sel bits 7 and 8, bit 9 is spare
     lsb0 = min(f["lsb"] for f in regmap.REGS["BIAS_CFG_0"]["fields"] if f["name"] == "DSM_TRIM")
-    for k in range(lsb0, lsb0 + 7):
+    for k in range(lsb0, lsb0 + 10):
         await reg_write(dut, pads, A["BIAS_CFG_0"], 1 << k)
         await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN)
         await ClockCycles(dut.clk_PAD, 2)
-        assert cfg0_pins() == 1 << k, f"BIAS_CFG_0 bit {k} gives dsm2 pins {cfg0_pins():07b}"
+        want = 0 if k - lsb0 == 9 else 1 << (k - lsb0)
+        assert cfg0_pins() == want, f"BIAS_CFG_0 bit {k} gives dsm2 pins {cfg0_pins():09b}"
         assert cfg1_pins() == {n: int(n == "ADC_CONV_EN") for n in cfg1_names}
 
     await reg_write(dut, pads, A["BIAS_CFG_0"], 0)
@@ -571,6 +574,38 @@ async def test_bias_cfg_reaches_dsm2(dut):
         assert cfg1_pins() == {n: int(n == name) for n in cfg1_names}, f"{name} moved {cfg1_pins()}"
         assert cfg0_pins() == 0
     await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN)
+
+
+@cocotb.test()
+async def test_oscillator_drives_dsm_clk(dut):
+    """After reset dsm_clk is an input. With di_osc_en and di_clk_sel set dsm2 drives it, once the board has let go."""
+    pads = await bringup(dut)
+    board = cocotb.start_soon(dsm_clock(dut))
+    await ClockCycles(dut.clk_PAD, 4)
+    assert int(dut.dsm2.do_osc_oe.value) == 0
+    for _ in range(4):
+        await Timer(13, units="ns")
+        assert int(dut.dsm2.di_clk.value) == int(dut.dsm_clk_PAD.value), "p2c must follow the board"
+    spare = min(f["lsb"] for f in regmap.REGS["BIAS_CFG_0"]["fields"] if f["name"] == "DSM_SPARE")
+    osc_en, clk_sel = 1 << spare, 1 << (spare + 1)
+    cfg0 = regmap.RESET[BIAS_CFG_0]
+    board.kill()
+    dut.dsm_clk_PAD.value = LogicArray("Z")
+    await reg_write(dut, pads, BIAS_CFG_0, cfg0 | osc_en | clk_sel)
+    await Timer(2, units="us")
+    assert int(dut.dsm2.do_osc_oe.value) == 1
+    rises, last = 0, 0
+    for _ in range(800):     # 20 us
+        await Timer(25, units="ns")
+        v = pad_bit(dut, "dsm_clk_PAD")
+        assert v is not None, "dsm_clk must be driven by dsm2 alone"
+        assert int(dut.dsm2.di_clk.value) == v
+        rises += v and not last
+        last = v
+    assert 14 <= rises <= 18, f"{rises} oscillator periods in 20 us, the model runs at 0.8 MHz"
+    await reg_write(dut, pads, BIAS_CFG_0, cfg0)
+    await ClockCycles(dut.clk_PAD, 2)
+    assert int(dut.dsm2.do_osc_oe.value) == 0 and pad_bit(dut, "dsm_clk_PAD") is None, "the pad must let go again"
 
 
 @cocotb.test()
@@ -756,10 +791,9 @@ def sg13cmos5l_dsa1_dig_top_runner():
     defines  = {}
     includes = [root_path / "rtl"]
 
-    # The one macro on this die is hardened on EZ130, which is a prerelease and
-    # does not ship in this repo. Its cell models are read from EZ130_DIR, the
-    # same variable the macro Makefiles use.
-    ez130_dir = os.environ.get("EZ130_DIR", str(Path.home() / "projects/OpenBLAU/ip/ez130_8t_v1p1"))
+    # The one macro on this die is hardened on EZ130. Its cell models are read
+    # from EZ130_DIR, the same variable the macro Makefiles use.
+    ez130_dir = os.environ.get("EZ130_DIR", str(root_path / "ip/ez130_8t_v1p1"))
     ez130_models = Path(ez130_dir) / "verilog" / "ez130_8t.v"
     if not ez130_models.is_file():
         raise FileNotFoundError(
@@ -785,12 +819,15 @@ def sg13cmos5l_dsa1_dig_top_runner():
 
     sources += [
         root_path / "ip/dsm2_core/verilog/dsm2_core_model.v",
+        root_path / "macros/decap_vdda/final/vh/decap_vdda.vh",
         root_path / "ip/sg13cmos5l_ip__cut_vdd/verilog/sg13cmos5l_ip__cut_vdd.v",
         root_path / "ip/sg13cmos5l_ip__bondpad_70x70/final/vh/sg13cmos5l_ip__bondpad_70x70.vh",
         root_path / "ip/sg13cmos5l_io_custom/verilog/sg13cmos5l_io.v",
         root_path / "ip/sg13cmos5l_ip__clamp_vddvss/verilog/sg13cmos5l_ip__clamp_vddvss.v",
         root_path / "ip/sg13cmos5l_ip__jku/final/vh/sg13cmos5l_ip__jku.vh",
         root_path / "ip/sg13cmos5l_ip__jku_names/final/vh/sg13cmos5l_ip__jku_names.vh",
+        root_path / "ip/sg13cmos5l_ip__helm/final/vh/sg13cmos5l_ip__helm.vh",
+        root_path / "ip/sg13cmos5l_ip__title/final/vh/sg13cmos5l_ip__title.vh",
     ]
 
     build_args = []

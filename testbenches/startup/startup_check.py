@@ -16,6 +16,11 @@ bounce: VDD and VDDA first through the package, dsm_clk at 1.024 MHz, do_q and d
 It checks the reads and that no core input crosses its threshold more often than the host's pin does.
 The ground and rail bounce, and the swing on vi, vcm and ibias_test, are reported.
 
+With dsm2 as transistors (gen_startup.py --dsm2 sch or pex) the start-up orders and bounce also start dsm2 as specified, DSM_EN, 130 us, DSM_RST_B with DSM_QOUT_EN, and check it.
+The controls reach dsm2 at those times, its own VDDA current stays within its design values (28 uA average, 140 uA over 100 ns, 600 uA over 10 ns), the modulator runs (do_q about half ones with vi at half VDDA, do_q_b its complement, do_q_dec equal to do_q), and in the start-up orders the VDD current does not move when dsm2 starts.
+The do_q pads' quiet check then ends when DSM_QOUT_EN is written. dsm2's current before DSM_EN, the vi and ibias_test pad currents and, with IOVDD first, the VDDA current while VDDA is down are reported.
+The bounce's window starts with DSM_RST_B, its analog pins are measured against a quiet stretch with dsm2 running.
+
 power_dsa1, power_dsm: the settled supply currents over a whole number of data_in periods, dsm2 off with dsm_clk low against dsm_clk at 1.024 MHz with the do_q pads switching.
 DEC_SRC is low, so VDD must not change.
 The two VDD currents must differ by less than the resolution of the run, the largest of the difference between the window's two halves, 0.1 % of the current and 1 pA, the solver's tolerances.
@@ -32,8 +37,8 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_startup import (BOUNCE_FRAMES, CORE_INPUTS, FRAMES, HOST_PINS, ORDERS, P_WINDOW, POWER_ORDERS, RAMP,  # noqa: E402
-                         T_DSM, T_DSM_ON, T_SCLK, T_SECOND)
+from gen_startup import (CORE_INPUTS, FRAMES, HOST_PINS, ORDERS, P_WINDOW, POWER_ORDERS, RAMP,  # noqa: E402
+                         T_DSM, T_DSM_ON, T_FIRST, T_SCLK, T_SECOND, T_STORE, dsm2_times, frames, t_dsm_clk)
 
 I_MAX = 10e-3
 T_SUSTAINED = 1e-6
@@ -46,6 +51,22 @@ RES_REL = 1e-3                      # the solver's reltol
 RES_ABS = 1e-12                     # and its abstol, the floors of a current's resolution
 T_BASE = (T_SECOND + RAMP + 10e-6, T_DSM_ON - 5e-6)     # the bounce's quiet window, rails settled, dsm2 not yet on
 SUPPLIES = (("IOVDD", "viovdd"), ("VDD", "vvdd"), ("VDDA", "vvdda"))
+# dsm2 as transistors
+I_DSM2 = "i(v.xchip.vdsm2_vdd)"     # its own current, positive into its vdd pin
+# its design values: 28 uA average and 600 uA over 10 ns, and 140 uA over 100 ns from the dsm2 peer, 2026-10-31,
+# schematic ff 125 C, quantizer fight excluded. Its enable inrush there is 137 uA over 100 ns and 365 uA over 10 ns (370 its worst case).
+DSM2_AVG, DSM2_P100, DSM2_P10 = 28e-6, 140e-6, 600e-6
+DSM2_P10_WORST = 370e-6
+T_SETTLE = 10e-6                    # after DSM_RST_B, before the modulator is measured
+DENSITY = (0.3, 0.7)                # do_q's ones with vi at half of VDDA, a first-order modulator alternates
+AGREE = 0.95                        # do_q_b against do_q and do_q_dec against do_q, per sampled period
+VDD_SHARE = 0.1                     # the VDD current may move by this share of dsm2's current when it starts
+DSM2_EDGES = 0.25                   # the bounce: do_q edges per dsm_clk period at least
+R_SRC_VI = 50                       # the vi source's resistance, gen_startup.R_SRC
+# dsm2 6dd2926's known quantizer latch fight: with a 1 in the output latch its preset fights it, about 195 uA disabled and
+# 200 uA in reset instead of 0.6 uA. Above this mean before DSM_EN or in reset the run is in that state, and the 100 ns and
+# 10 ns peaks are judged from DSM_RST_B on, outside the fight. dsm2's fixed GDS and CDL are due 2026-11-02.
+I_FIGHT = 100e-6
 
 
 def load(path):
@@ -82,10 +103,12 @@ def read_word(w, t0, miso, ref):
     return word
 
 
-def check(w, order):
-    """(ok, notes, quiet): quiet is False when a segment output pad rose above SPIKE_V."""
+def check(w, order, dsm2=None):
+    """(ok, notes, quiet): quiet is False when a segment output pad rose above SPIKE_V. dsm2 is the probe map
+    of dsm2 as transistors: the quiet check then ends when DSM_QOUT_EN is written and check_dsm2 runs."""
     t = w["time"]
     notes, ok = [], True
+    t_quiet = dsm2_times(order)[1] if dsm2 else np.inf
     for t0, addr, name, want, _ in FRAMES:
         word = read_word(w, t0, pad(0), "v(iovdd)")
         good = word == want
@@ -98,16 +121,18 @@ def check(w, order):
             ok, quiet = False, False
             notes.append(f"{p[2:-5]} pad trace missing from the data, FAIL")
             continue
-        k = int(np.argmax(w[p]))
-        high = w[p] > SPIKE_V
+        x = np.where(t < t_quiet, w[p], 0.0)
+        k = int(np.argmax(x))
+        high = x > SPIKE_V
         if np.any(high):
             quiet = False
             tb = t[high]
-            notes.append(f"{p[2:-5]} pad rises to {w[p][k]:.2f} V at {t[k] * 1e6:.1f} us, above {SPIKE_V} V from "
+            notes.append(f"{p[2:-5]} pad rises to {x[k]:.2f} V at {t[k] * 1e6:.1f} us, above {SPIKE_V} V from "
                          f"{tb[0] * 1e6:.1f} to {tb[-1] * 1e6:.1f} us, IOVDD {at(w, 'v(iovdd)', t[k]):.2f} V, "
                          f"VDDA {at(w, 'v(vdda)', t[k]):.2f} V, VDD {at(w, 'v(vdd)', t[k]):.2f} V")
         else:
-            notes.append(f"{p[2:-5]} pad stays below {SPIKE_V} V, highest {w[p][k]:.3f} V")
+            notes.append(f"{p[2:-5]} pad stays below {SPIKE_V} V, highest {x[k]:.3f} V"
+                         + (f", until DSM_QOUT_EN at {t_quiet * 1e6:.1f} us" if dsm2 else ""))
 
     for sup, src in SUPPLIES:
         if f"i({src})" not in w:
@@ -128,7 +153,145 @@ def check(w, order):
         notes.append(f"{sup} current: peak {i[k] * 1e3:.3f} mA at {t[k] * 1e6:.1f} us, longest above "
                      f"{I_MAX * 1e3:.0f} mA {longest * 1e9:.0f} ns, {end * 1e6:.2f} uA mean over the last 20 us, "
                      f"{'pass' if good else 'FAIL'}")
+    if dsm2:
+        good, more = check_dsm2(w, order, dsm2)
+        ok &= good
+        notes += more
     return ok, notes, quiet
+
+
+def peak_mean(w, name, a, b, width, skip=()):
+    """The largest mean of a trace over any window of width inside [a, b], on a 1 ns grid of its time integral.
+    Windows that touch an interval in skip are left out."""
+    t, x = w["time"], w[name]
+    q = np.concatenate(([0.0], np.cumsum((x[1:] + x[:-1]) / 2 * np.diff(t))))
+    g = np.arange(a, b - width, 1e-9)
+    for s0, s1 in skip:
+        g = g[(g + width < s0) | (g > s1)]
+    if len(g) == 0:
+        return float("nan"), a
+    m = (np.interp(g + width, t, q) - np.interp(g, t, q)) / width
+    k = int(np.argmax(m))
+    return float(m[k]), float(g[k])
+
+
+def first_cross(w, name, thr, after=0.0):
+    """The first time after `after` that a trace rises through thr, None if it never does."""
+    t, x = w["time"], w[name]
+    k = np.nonzero((x[1:] > thr) & (x[:-1] <= thr) & (t[1:] > after))[0]
+    return float(t[k[0] + 1]) if len(k) else None
+
+
+def fight_spans(w, until):
+    """[(start, end)] where dsm2's current sits above I_FIGHT for at least 200 ns before until: its latch fight.
+    The running modulator's spikes last nanoseconds."""
+    t, above = w["time"], (w[I_DSM2] > I_FIGHT) & (w["time"] < until)
+    edges = np.flatnonzero(np.diff(np.concatenate(([0], above.astype(int), [0]))))
+    return [(float(t[a]), float(t[b - 1])) for a, b in zip(edges[0::2], edges[1::2]) if t[b - 1] - t[a] >= 200e-9]
+
+
+def check_dsm2(w, order, pm):
+    """(ok, notes) of dsm2 as transistors: its start-up, its own VDDA current, the modulator, and in the start-up
+    orders the VDD current when dsm2 starts. pm maps dsm2's pins to their traces."""
+    t = w["time"]
+    notes, ok = [], True
+    need = [I_DSM2, "v(dsm_clk_pad)", "v(vdda)", "v(analog_pad_0_)", "v(analog_pad_0__b)" if order == "bounce" else "v(analog_pad_0__d)",
+            "v(analog_pad_2_)"] + [pm[p].lower() for p in ("di_ena", "di_rst_b", "di_qout_en", "do_q_dec")]
+    missing = [n for n in need if n not in w]
+    if missing:
+        return False, [f"dsm2 traces {', '.join(missing)} missing from the data, FAIL"]
+    on, run = dsm2_times(order)
+    t1 = float(t[-1])
+    # the controls reach dsm2 when the writes take effect, scaled by the VDD regulator
+    half = 0.6
+    t_on = first_cross(w, pm["di_ena"].lower(), half)
+    t_run = first_cross(w, pm["di_rst_b"].lower(), half)
+    t_qoe = first_cross(w, pm["di_qout_en"].lower(), half)
+    good = all(x is not None for x in (t_on, t_run, t_qoe)) and abs(t_on - on) < 1e-6 and abs(t_run - run) < 1e-6 and abs(t_qoe - run) < 1e-6
+    ok &= good
+    fmt = lambda x: "never" if x is None else f"{x * 1e6:.2f} us"
+    notes.append(f"dsm2 start-up: di_ena rises at {fmt(t_on)}, di_rst_b at {fmt(t_run)}, di_qout_en at {fmt(t_qoe)}, the writes take effect at "
+                 f"{on * 1e6:.2f} and {run * 1e6:.2f} us" + (f", {(t_run - t_on) * 1e6:.2f} us apart" if good else "") + f", {'pass' if good else 'FAIL'}")
+    # its own current: off, enabled in reset, running, and the peaks from DSM_EN on
+    i_off = tmean(w, I_DSM2, on - 20e-6, on - 2e-6)
+    i_rst = tmean(w, I_DSM2, run - 20e-6, run - 1e-6)
+    i_run = tmean(w, I_DSM2, run + T_SETTLE, t1)
+    fights = fight_spans(w, run + 2 * T_DSM)
+    a = on - 1e-6
+    if fights:
+        inside = sum(f1 - f0 for f0, f1 in fights)
+        level = sum(tmean(w, I_DSM2, f0, f1) * (f1 - f0) for f0, f1 in fights) / inside
+        f100 = max(peak_mean(w, I_DSM2, f0 - 50e-9, f1 + 50e-9, 100e-9)[0] for f0, f1 in fights)
+        notes.append(f"dsm2's known latch fight (6dd2926, quantizer output latch against its preset, fixed GDS due 2026-11-02) occurred: "
+                     f"{len(fights)} stretch{'es' if len(fights) > 1 else ''} from {fights[0][0] * 1e6:.2f} to {fights[-1][1] * 1e6:.2f} us, "
+                     f"{inside * 1e6:.2f} us in all at {level * 1e6:.1f} uA, up to {f100 * 1e6:.1f} uA over 100 ns, left out of the peaks below")
+    pad = [(f0 - 20e-9, f1 + 20e-9) for f0, f1 in fights]
+    p100, at100 = peak_mean(w, I_DSM2, a, t1, 100e-9, pad)
+    p10, at10 = peak_mean(w, I_DSM2, a, t1, 10e-9, pad)
+    fight = bool(fights)
+    good = i_run <= DSM2_AVG and p100 <= DSM2_P100 and p10 <= DSM2_P10 and i_run > 0
+    ok &= good
+    notes.append(f"dsm2's VDDA current: {i_off * 1e9:.2f} nA before DSM_EN, {i_rst * 1e6:.2f} uA enabled in reset, {i_run * 1e6:.2f} uA running "
+                 f"(mean from {(run + T_SETTLE) * 1e6:.0f} us to the end, design {DSM2_AVG * 1e6:.0f} uA), peaks {p100 * 1e6:.1f} uA over 100 ns at "
+                 f"{at100 * 1e6:.2f} us (design {DSM2_P100 * 1e6:.0f}) and {p10 * 1e6:.1f} uA over 10 ns at {at10 * 1e6:.2f} us (design "
+                 f"{DSM2_P10 * 1e6:.0f}, dsm2's worst case {DSM2_P10_WORST * 1e6:.0f}), peaks from DSM_EN on{' outside the latch fight' if fight else ', no latch fight'}, {'pass' if good else 'FAIL'}")
+    e100, e_at = peak_mean(w, I_DSM2, on - 1e-6, on + 20e-6, 100e-9, pad)
+    e10, _ = peak_mean(w, I_DSM2, on - 1e-6, on + 20e-6, 10e-9, pad)
+    notes.append(f"dsm2's enable inrush: {e100 * 1e6:.1f} uA over 100 ns at {e_at * 1e6:.3f} us, {e10 * 1e6:.1f} uA over 10 ns, "
+                 f"{tmean(w, I_DSM2, on, on + 10e-6) * 10e-6 * 1e12:.1f} pC in the first 10 us after DSM_EN")
+    # the modulator: one sample per dsm_clk period, a quarter period before the next rising edge
+    t0 = first_cross(w, "v(dsm_clk_pad)", float(np.max(w["v(iovdd)"])) / 2) or t_dsm_clk(order, True)
+    ks = np.arange(np.ceil((run + T_SETTLE - t0) / T_DSM), np.floor((t1 - t0) / T_DSM) - 1)
+    ts = t0 + (ks + 0.75) * T_DSM
+    pad_q, pad_qb = ("v(do_q_pad)", "v(do_q_b_pad)")
+    q = np.interp(ts, t, w[pad_q]) > np.interp(ts, t, w["v(iovdd)"]) / 2
+    qb = np.interp(ts, t, w[pad_qb]) > np.interp(ts, t, w["v(iovdd)"]) / 2
+    qd = np.interp(ts, t, w[pm["do_q_dec"].lower()]) > np.interp(ts, t, w["v(vdda)"]) / 2
+    n = len(ts)
+    dens = float(np.mean(q)) if n else float("nan")
+    comp, dec = (float(np.mean(qb != q)), float(np.mean(qd == q))) if n else (0.0, 0.0)
+    good = n >= 20 and DENSITY[0] <= dens <= DENSITY[1] and comp >= AGREE and dec >= AGREE
+    ok &= good
+    notes.append(f"dsm2 runs: {n} periods from {(run + T_SETTLE) * 1e6:.0f} us, do_q pad {dens * 100:.1f} % ones (want {DENSITY[0] * 100:.0f} to "
+                 f"{DENSITY[1] * 100:.0f} %), do_q_b its complement in {comp * 100:.1f} %, do_q_dec equal to do_q in {dec * 100:.1f} % "
+                 f"(want {AGREE * 100:.0f} %), {'pass' if good else 'FAIL'}")
+    # the VDD current does not move when dsm2 starts: before DSM_EN against dsm2 running, both windows free of frames
+    if order != "bounce":
+        last = max(f[0] for f in frames(order, True) if f[0] < on - T_STORE) + 24 * T_SCLK
+        a0, a1 = last + 2e-6, on - T_STORE - 2e-6
+        v_off, v_run = -tmean(w, "i(vvdd)", a0, a1), -tmean(w, "i(vvdd)", run + T_SETTLE, t1)
+        va_off, va_run = -tmean(w, "i(vvdda)", a0, a1), -tmean(w, "i(vvdda)", run + T_SETTLE, t1)
+        d = v_run - v_off
+        good = abs(d) <= VDD_SHARE * abs(i_run) and i_run > 0
+        ok &= good
+        notes.append(f"VDD current {v_off * 1e9:.2f} nA from {a0 * 1e6:.0f} to {a1 * 1e6:.0f} us before DSM_EN, {v_run * 1e9:.2f} nA with dsm2 running, "
+                     f"{d * 1e9:+.2f} nA, at most {VDD_SHARE * 100:.0f} % of dsm2's {i_run * 1e6:.2f} uA, {'pass' if good else 'FAIL'}. "
+                     f"VDDA {va_off * 1e6:.3f} to {va_run * 1e6:.3f} uA, {(va_run - va_off) * 1e6:+.3f} uA")
+    # currents into pads and rails that should be off, reported
+    src = "v(analog_pad_0__b)" if order == "bounce" else "v(analog_pad_0_)"
+    i_vi = (w["v(analog_pad_0__d)"] - w[src]) / R_SRC_VI if "v(analog_pad_0__d)" in w else None
+    if i_vi is not None:
+        k = int(np.argmax(np.abs(i_vi)))
+        notes.append(f"vi pad: the source delivers {tmean({'time': t, 'x': i_vi}, 'x', run + T_SETTLE, t1) * 1e9:.2f} nA with dsm2 running, "
+                     f"peak {i_vi[k] * 1e6:+.2f} uA at {t[k] * 1e6:.1f} us")
+    k = int(np.argmax(np.abs(w["v(analog_pad_2_)"])))
+    notes.append(f"ibias_test pad, DSM_BTEST_EN low: up to {w['v(analog_pad_2_)'][k] * 1e3:+.2f} mV on its 1 MOhm at {t[k] * 1e6:.1f} us")
+    d1, d_at = peak_mean(w, I_DSM2, 0.0, on - 2e-6, 1e-6)
+    notes.append(f"dsm2 disabled, before DSM_EN: up to {d1 * 1e6:.2f} uA over 1 us at {d_at * 1e6:.1f} us, IOVDD {at(w, 'v(iovdd)', d_at):.2f} V, "
+                 f"di_clk {at(w, pm['di_clk'].lower(), d_at):.2f} V" if pm["di_clk"].lower() in w else
+                 f"dsm2 disabled, before DSM_EN: up to {d1 * 1e6:.2f} uA over 1 us at {d_at * 1e6:.1f} us")
+    # each supply while its own regulator is still at 0: current into the source is the chip back-powering that rail
+    if order != "bounce":
+        first, second = (("IOVDD",), ("VDD", "VDDA")) if order == "io_first" else (("VDD", "VDDA"), ("IOVDD",))
+        for sup, src in SUPPLIES:
+            b = T_FIRST if sup in first else T_SECOND
+            a = 5e-6
+            sel = (t > a) & (t < b)
+            x = -w[f"i({src})"][sel]
+            k = int(np.argmin(x))
+            notes.append(f"{sup} off ({a * 1e6:.0f} to {b * 1e6:.0f} us): {-tmean(w, f'i({src})', a, b) * 1e6:+.3f} uA mean out of its source, "
+                         f"{x[k] * 1e6:+.3f} uA at {t[sel][k] * 1e6:.1f} us at the most negative, negative is the chip back-powering it")
+    return ok, notes
 
 
 def crossings(x, thr):
@@ -142,16 +305,18 @@ def swing(x, base):
     return float(np.max(x) - base), float(np.min(x) - base)
 
 
-def check_activity(w, win, notes):
-    """True when the bounce's aggressors ran: dsm_clk and the do_q pads at their rate, miso toggling through the SPARE_14 read, the adc_conv pulse. A dead stimulus would report small swings."""
+def check_activity(w, win, notes, dsm2=False):
+    """True when the bounce's aggressors ran: dsm_clk and the do_q pads at their rate, miso toggling through the SPARE_14 read, the adc_conv pulse. A dead stimulus would report small swings.
+    With dsm2 as transistors the do_q pads follow its bit stream, at least DSM2_EDGES edges per period."""
     t = w["time"]
     span = float(t[win][-1] - t[win][0])
-    spare = BOUNCE_FRAMES[-1][0]
+    spare = frames("bounce", dsm2)[-1][0]
     reads = (t > spare) & (t < spare + 24 * T_SCLK)
     half = float(np.mean(w["v(iovdd_b)"][win])) / 2
+    rate = DSM2_EDGES if dsm2 else ACTIVITY
     need = {"dsm_clk": ("v(dsm_clk_pad_b)", win, 2 * ACTIVITY * span / T_DSM),
-            "do_q": ("v(do_q_pad_b)", win, ACTIVITY * span / T_DSM),
-            "do_q_b": ("v(do_q_b_pad_b)", win, ACTIVITY * span / T_DSM),
+            "do_q": ("v(do_q_pad_b)", win, rate * span / T_DSM),
+            "do_q_b": ("v(do_q_b_pad_b)", win, rate * span / T_DSM),
             "miso in the SPARE_14 read": ("v(output_pad_0__b)", reads, MISO_EDGES_MIN),
             "adc_conv": ("v(output_pad_1__b)", win, 2)}
     ok = True
@@ -167,10 +332,12 @@ def check_activity(w, win, notes):
     return ok
 
 
-def check_bounce(w):
+def check_bounce(w, dsm2=None):
+    """(ok, notes, stats). dsm2 is the probe map of dsm2 as transistors: the window then starts with DSM_RST_B,
+    the analog pins' quiet level is the gap after that write, and check_dsm2 runs."""
     t = w["time"]
     notes, ok = [], True
-    for t0, _, name, want, wdata in BOUNCE_FRAMES:
+    for t0, _, name, want, wdata in frames("bounce", bool(dsm2)):
         if want is None:
             continue
         word = read_word(w, t0, "v(output_pad_0__b)", "v(iovdd_b)")
@@ -178,9 +345,16 @@ def check_bounce(w):
         ok &= good
         notes.append(f"read {name} at {t0 * 1e6:.0f} us: 0x{word:04X}, want 0x{want:04X}, {'pass' if good else 'FAIL'}")
 
-    win = (t > T_DSM_ON + 5e-6)
+    if dsm2:
+        run = dsm2_times("bounce")[1]
+        nxt = min(f[0] for f in frames("bounce", True) if f[0] > run)
+        win, quiet = (t > run + 5e-6), (t > run + 1e-6) & (t < nxt - 0.5e-6)
+    else:
+        win = (t > T_DSM_ON + 5e-6)
     base = (t > T_BASE[0]) & (t < T_BASE[1])
-    ok &= check_activity(w, win, notes)
+    if not dsm2:
+        quiet = base
+    ok &= check_activity(w, win, notes, bool(dsm2))
     s = {"t0": float(t[win][0]), "t1": float(t[win][-1])}
     for g in ("vss", "iovss", "paddle"):
         x = w[f"v({g})"][win]
@@ -194,7 +368,7 @@ def check_bounce(w):
     s["i_iovss"] = float(np.max(np.abs(w["i(lw_iovss_0)"][win])))
     # the analog pins against their quiet level, on the die (padres side) and the pad
     for nm, net in (("vi", "v(xchip.vi)"), ("vcm", "v(xchip.vcm)"), ("ibias_test", "v(xchip.ibias_test)")):
-        s[nm] = swing(w[net][win], float(np.mean(w[net][base])))
+        s[nm] = swing(w[net][win], float(np.mean(w[net][quiet])))
     # a core input that crosses its threshold more often than the host's pin did glitched
     glitches, margin = [], {}
     vss, vdd = w["v(vss)"][win], w["v(vdd)"][win]
@@ -219,6 +393,10 @@ def check_bounce(w):
         notes.append(f"{label} on the die: {hi * 1e3:+.1f} and {lo * 1e3:+.1f} mV against its quiet level, {(hi - lo) * 1e3:.1f} mV peak to peak")
     notes.append(f"static core inputs move up to {max(margin.values()) * 1e3 if margin else 0:.0f} mV; "
                  + (f"glitches: {', '.join(glitches)}, FAIL" if glitches else "no core input glitches, pass"))
+    if dsm2:
+        good, more = check_dsm2(w, "bounce", dsm2)
+        ok &= good
+        notes += more
     return ok, notes, s
 
 
@@ -309,12 +487,11 @@ def this_inventory(root):
     return inv
 
 
-def plot_bounce(w, s, out):
+def plot_bounce(w, s, out, dsm2=False):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    t0 = BOUNCE_FRAMES[-1][0]
-    sel = (w["time"] > T_DSM_ON - 5e-6)
+    sel = (w["time"] > (dsm2_times("bounce")[0] if dsm2 else T_DSM_ON) - 5e-6)
     us = w["time"][sel] * 1e6
     fig, axes = plt.subplots(4, 1, figsize=(9, 10), sharex=True)
     for g in ("vss", "iovss", "paddle"):
@@ -355,7 +532,9 @@ def plot(waves, out):
         a[0].legend(fontsize=7)
         for lbl, src in (("IOVDD", "viovdd"), ("VDD", "vvdd"), ("VDDA", "vvdda")):
             a[1].plot(us, np.abs(w[f"i({src})"]) * 1e3, label=lbl)
-        a[1].set(ylabel="|I| (mA)", yscale="log")
+        if I_DSM2 in w:
+            a[1].plot(us, np.abs(w[I_DSM2]) * 1e3, label="dsm2", lw=0.6)
+        a[1].set(ylabel="|I| (mA)", yscale="log", ylim=(1e-7, None))      # below 0.1 nA is solver noise
         a[1].legend(fontsize=7)
         for p in SEG_PADS:
             a[2].plot(us, w[p], label=p[2:-5])
@@ -369,9 +548,24 @@ def plot(waves, out):
     fig.savefig(out, dpi=120)
 
 
-def synth(order="core_first", spike=False, i_vdd=15e-6):
+def dsm2_map(path, view=None):
+    """dsm2's probe map from dsm2_probes.json next to a wave file, None with dsm2 a box. A view given must match it."""
+    j = os.path.join(os.path.dirname(path), "dsm2_probes.json")
+    if view == "box":
+        return None
+    if not os.path.exists(j):
+        if view:
+            raise SystemExit(f"--dsm2 {view} but {j} is missing")
+        return None
+    pm = json.load(open(j))
+    if view and pm["view"] != view:
+        raise SystemExit(f"--dsm2 {view} but {j} is of {pm['view']}")
+    return pm
+
+
+def synth(order="core_first", spike=False, i_vdd=15e-6, t=None):
     """A wave set that passes, for the self-test."""
-    t = np.linspace(0, 520e-6, 52001)
+    t = np.linspace(0, 520e-6, 52001) if t is None else t
     io = np.clip((t - 10e-6) / 100e-6, 0, 1) * 3.3
     w = {"time": t, "v(iovdd)": io, "v(vdd)": io / 3.3 * 1.2, "v(vdda)": io / 3.3 * 1.5, "v(rst_n_pad)": io * (t > 300e-6),
          "i(viovdd)": -1e-6 * np.ones_like(t), "i(vvdd)": -i_vdd * np.ones_like(t), "i(vvdda)": -2e-6 * np.ones_like(t),
@@ -390,8 +584,131 @@ def synth(order="core_first", spike=False, i_vdd=15e-6):
     return w
 
 
+SYN_PM = {"view": "sch", "di_clk": "v(xchip.ck)", "di_ena": "v(xchip.ena)", "di_rst_b": "v(xchip.rstb)", "di_qout_en": "v(xchip.qoe)",
+          "do_q": "v(xchip.q)", "do_q_b": "v(xchip.qb)", "do_q_dec": "v(xchip.qd)"}
+
+
+def synth_dsm2(order="core_first", t=None):
+    """A start-up order with dsm2 as transistors that passes: started as specified, 10 uA in reset, 14 uA running, alternating bits."""
+    from gen_startup import t_end
+    t = np.arange(0, t_end(order, True), 2.5e-9) if t is None else t
+    w = synth(order, t=t)
+    on, run = dsm2_times(order)
+    t0 = t_dsm_clk(order, True)
+    ph = np.where(t > t0, (t - t0) / T_DSM, -1.0)
+    w["v(dsm_clk_pad)"] = 3.3 * ((ph >= 0) & (ph % 1 < 0.5))
+    bit = (np.floor(ph - 5e-9 / T_DSM) % 2 == 1) & (t > run)
+    w[I_DSM2] = 10e-6 * (t > on) + 4e-6 * (t > run)
+    w["i(vvdda)"] = -2e-6 - w[I_DSM2]
+    w["v(xchip.ena)"], w["v(xchip.rstb)"], w["v(xchip.qoe)"] = 1.2 * (t > on), 1.2 * (t > run), 1.2 * (t > run)
+    w["v(do_q_pad)"], w["v(do_q_b_pad)"] = 3.3 * bit, 3.3 * (~bit & (t > run))
+    w["v(xchip.qd)"] = 1.5 * bit
+    w["v(analog_pad_0_)"], w["v(analog_pad_0__d)"], w["v(analog_pad_2_)"] = 0.75 + 0 * t, 0.75 + 50e-9 + 0 * t, 0 * t
+    return w
+
+
+def synth_bounce(dsm2=False):
+    """A bounce run that passes, for the self-test. With dsm2 it is started as specified and runs from DSM_RST_B."""
+    from gen_startup import ADC_CONV_AT, ADC_CONV_AT_DSM2, t_end
+    t = np.linspace(0, t_end("bounce", dsm2), int(t_end("bounce", dsm2) / 5e-9) + 1)
+    one = np.ones_like(t)
+    w = {"time": t, "v(iovdd_b)": 3.3 * one, "v(iovdd)": 3.3 * one, "v(vdd)": 1.2 * one, "v(vdda)": 1.5 * one}
+    for n in ("vss", "iovss", "paddle"):
+        w[f"v({n})"] = 0 * one
+    for n in ("iovdd", "vdd", "vdda", "iovss_0"):
+        w[f"i(lw_{n})"] = 0 * one
+    t_on = t_dsm_clk("bounce", dsm2)
+    w["v(xchip.vi)"] = 0.75 * one + 0.002 * np.sin(2 * np.pi * 1.024e6 * t) * (t > (dsm2_times("bounce")[1] if dsm2 else T_DSM_ON))
+    w["v(xchip.vcm)"], w["v(xchip.ibias_test)"] = 0.75 * one, 0 * one
+    miso = np.zeros_like(t)
+    for t0, _, _, want, _ in frames("bounce", dsm2):
+        for b in range(16 if want is not None else 0):
+            if want >> b & 1:
+                tb = t0 + (22 - b) * T_SCLK
+                miso[(t > tb - T_SCLK) & (t < tb)] = 3.3
+    w["v(output_pad_0__b)"] = miso
+    ph = lambda per, lag=0: 3.3 * ((t > t_on + lag) & (((t - t_on - lag) / per) % 1 < 0.5))
+    w["v(dsm_clk_pad_b)"], w["v(do_q_pad_b)"], w["v(do_q_b_pad_b)"] = ph(T_DSM), ph(2 * T_DSM), ph(2 * T_DSM, T_DSM)
+    adc = ADC_CONV_AT_DSM2 if dsm2 else ADC_CONV_AT
+    w["v(output_pad_1__b)"] = 3.3 * ((t > adc) & (t < adc + 15e-6))
+    for nm, net in CORE_INPUTS.items():
+        w[f"v(xchip.{net})".lower()] = 1.2 * one if nm == "rst_n" else 0 * one
+        w[f"v({HOST_PINS[nm].lower()}_b)"] = 3.3 * one if nm == "rst_n" else 0 * one
+    if dsm2:
+        d = synth_dsm2("bounce", t)
+        for k in (I_DSM2, "v(dsm_clk_pad)", "v(xchip.ena)", "v(xchip.rstb)", "v(xchip.qoe)", "v(do_q_pad)", "v(do_q_b_pad)", "v(xchip.qd)",
+                  "v(analog_pad_0_)", "v(analog_pad_0__d)", "v(analog_pad_2_)"):
+            w[k] = d[k]
+        w["v(analog_pad_0__b)"] = d["v(analog_pad_0_)"]
+        w["v(do_q_pad_b)"], w["v(do_q_b_pad_b)"] = d["v(do_q_pad)"], d["v(do_q_b_pad)"]
+    return w
+
+
 def self_test():
     import tempfile
+    # dsm2 as transistors: a run that starts it as specified passes, the do_q pads may switch after DSM_QOUT_EN
+    w = synth_dsm2()
+    ok, notes, quiet = check(w, "core_first", SYN_PM)
+    assert ok and quiet, notes
+    assert any("dsm2 start-up: di_ena rises at 586.25 us" in n and "130.00 us apart, pass" in n for n in notes), notes
+    assert any("dsm2's VDDA current: 0.00 nA before DSM_EN, 10.00 uA enabled in reset, 14.00 uA running" in n and n.endswith("pass") for n in notes), notes
+    assert any("do_q pad 50.0 % ones" in n and n.endswith("pass") for n in notes) and any("from 512 to 528 us before DSM_EN" in n and "+0.00 nA" in n and "pass" in n for n in notes), notes
+    # dsm2's vdd on VDD: VDD moves by dsm2's current when it starts
+    bad = dict(w)
+    bad["i(vvdd)"] = w["i(vvdd)"] - w[I_DSM2]
+    ok, notes, _ = check(bad, "core_first", SYN_PM)
+    assert not ok and any(n.startswith("VDD current") and "FAIL" in n for n in notes), notes
+    # over the design values: on average, over 100 ns, over 10 ns
+    for extra, what in ((15e-6 * (w["time"] > 700e-6), "average"), (150e-6 * ((w["time"] > 740e-6) & (w["time"] < 740.2e-6)), "100 ns"),
+                        (700e-6 * ((w["time"] > 745e-6) & (w["time"] < 745.012e-6)), "10 ns")):
+        bad = dict(w)
+        bad[I_DSM2] = w[I_DSM2] + extra
+        ok, notes, _ = check(bad, "core_first", SYN_PM)
+        assert not ok and any(n.startswith("dsm2's VDDA current") and n.endswith("FAIL") for n in notes), (what, notes)
+    # dsm2's latch fight before DSM_RST_B is named and left out of the peaks, a peak after DSM_RST_B still fails
+    bad = dict(w)
+    bad[I_DSM2] = np.where((w["time"] > 200e-6) & (w["time"] < 717.6e-6), 195e-6, w[I_DSM2])
+    ok, notes, _ = check(bad, "core_first", SYN_PM)
+    assert ok and any("latch fight (6dd2926" in n and "1 stretch from 200.00 to 717.60 us" in n and "at 195.0 uA" in n for n in notes), notes
+    assert any("outside the latch fight, pass" in n for n in notes), notes
+    # a fight of one clock period at the clock start, as core_first showed it, is found too
+    one = dict(w)
+    one[I_DSM2] = np.where((w["time"] > 712e-6) & (w["time"] < 713e-6), 202e-6, w[I_DSM2])
+    ok, notes, _ = check(one, "core_first", SYN_PM)
+    assert ok and any("1 stretch from 712.00 to 713.00 us" in n for n in notes), notes
+    bad[I_DSM2] = bad[I_DSM2] + 150e-6 * ((w["time"] > 740e-6) & (w["time"] < 740.2e-6))
+    ok, notes, _ = check(bad, "core_first", SYN_PM)
+    assert not ok, notes
+    assert not any("known latch fight" in n for n in check(w, "core_first", SYN_PM)[1]) and any("no latch fight, pass" in n for n in check(w, "core_first", SYN_PM)[1])
+    # DSM_RST_B never reaching dsm2, a stuck do_q, do_q_dec not following, a missing trace
+    bad = dict(w)
+    bad["v(xchip.rstb)"] = 0 * w["time"]
+    ok, notes, _ = check(bad, "core_first", SYN_PM)
+    assert not ok and any("di_rst_b at never" in n for n in notes), notes
+    for tr, val in (("v(do_q_pad)", 0.0), ("v(xchip.qd)", 0.0), ("v(do_q_b_pad)", 0.0)):
+        bad = dict(w)
+        bad[tr] = val * w["time"]
+        ok, notes, _ = check(bad, "core_first", SYN_PM)
+        assert not ok and any(n.startswith("dsm2 runs") and n.endswith("FAIL") for n in notes), (tr, notes)
+    bad = {k: v for k, v in w.items() if k != I_DSM2}
+    ok, notes, _ = check(bad, "core_first", SYN_PM)
+    assert not ok and any("dsm2 traces i(v.xchip.vdsm2_vdd) missing" in n for n in notes), notes
+    # a do_q pad high before DSM_QOUT_EN is still a spike
+    bad = dict(w)
+    bad["v(do_q_pad)"] = np.where(w["time"] < 100e-6, 1.0, w["v(do_q_pad)"])
+    ok, notes, quiet = check(bad, "core_first", SYN_PM)
+    assert not quiet, notes
+    # the box's check of the same waves sees the pads switch
+    assert not check(w, "core_first")[2]
+    # the bounce with dsm2: its frames read, the window from DSM_RST_B, dsm2 checked, and a stuck do_q fails
+    w = synth_bounce(True)
+    ok, notes, st = check_bounce(w, SYN_PM)
+    assert ok and any("read SPARE_14 at 580 us: 0x5555" in n for n in notes) and any(n.startswith("dsm2 runs") and n.endswith("pass") for n in notes), notes
+    assert abs(st["t0"] - 576.25e-6) < 1e-8 and abs(st["vi"][0] - 0.002) < 1e-4 and not any(n.startswith("VDD current") for n in notes), (st, notes)
+    bad = dict(w)
+    bad["v(do_q_pad_b)"] = 0 * w["time"]
+    ok, notes, _ = check_bounce(bad, SYN_PM)
+    assert not ok and any("stimulus ran, do_q: 0 edges" in n for n in notes), notes
     w = synth()
     ok, notes, quiet = check(w, "x")
     assert ok and quiet and any("do_q pad stays below" in n for n in notes), notes
@@ -429,28 +746,8 @@ def self_test():
     ok, notes, _ = check(bad, "x")
     assert not ok and any("read CHIP_ID: 0x0000" in n for n in notes), notes
     # bounce: miso toggling as read, the analog pins moving, then a glitch on rst_n that its host pin does not have
-    t = np.linspace(0, 520e-6, 104001)
-    one = np.ones_like(t)
-    w = {"time": t, "v(iovdd_b)": 3.3 * one, "v(iovdd)": 3.3 * one, "v(vdd)": 1.2 * one, "v(vdda)": 1.5 * one}
-    for n in ("vss", "iovss", "paddle"):
-        w[f"v({n})"] = 0 * one
-    for n in ("iovdd", "vdd", "vdda", "iovss_0"):
-        w[f"i(lw_{n})"] = 0 * one
-    w["v(xchip.vi)"] = 0.75 * one + 0.002 * np.sin(2 * np.pi * 1.024e6 * t) * (t > T_DSM_ON)
-    w["v(xchip.vcm)"], w["v(xchip.ibias_test)"] = 0.75 * one, 0 * one
-    miso = np.zeros_like(t)
-    for t0, _, _, want, _ in BOUNCE_FRAMES:
-        for b in range(16 if want is not None else 0):
-            if want >> b & 1:
-                tb = t0 + (22 - b) * T_SCLK
-                miso[(t > tb - T_SCLK) & (t < tb)] = 3.3
-    w["v(output_pad_0__b)"] = miso
-    ph = lambda per, lag=0: 3.3 * ((t > T_DSM_ON) & (((t - T_DSM_ON - lag) / per) % 1 < 0.5))
-    w["v(dsm_clk_pad_b)"], w["v(do_q_pad_b)"], w["v(do_q_b_pad_b)"] = ph(T_DSM), ph(2 * T_DSM), ph(2 * T_DSM, T_DSM)
-    w["v(output_pad_1__b)"] = 3.3 * ((t > 456e-6) & (t < 471e-6))
-    for nm, net in CORE_INPUTS.items():
-        w[f"v(xchip.{net})".lower()] = 1.2 * one if nm == "rst_n" else 0 * one
-        w[f"v({HOST_PINS[nm].lower()}_b)"] = 3.3 * one if nm == "rst_n" else 0 * one
+    w = synth_bounce()
+    t = w["time"]
     ok, notes, s = check_bounce(w)
     with tempfile.TemporaryDirectory() as d:
         plot_bounce(w, s, os.path.join(d, "b.png"))
@@ -523,6 +820,7 @@ def main(argv=None):
     ap.add_argument("--export-power", nargs=3, metavar=("TREE", "TAG", "JSON"), help="write the DSA1 state currents of the power_dsa1 file "
                     "given, for the chip netlist of TREE called TAG, to JSON and stop")
     ap.add_argument("--out", default="verification/startup")
+    ap.add_argument("--dsm2", choices=("sch", "pex", "box"), help="the dsm2 view the runs took, from dsm2_probes.json next to the data when not given")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args(argv)
     if a.self_test:
@@ -537,13 +835,14 @@ def main(argv=None):
     lines, all_ok, power = ["# Supply start-up bench", ""], True, {}
     for (order, w), path in zip(waves.items(), a.waves):
         quiet = True
+        pm = None if order in POWER_ORDERS else dsm2_map(path, a.dsm2)
         if order == "bounce":
-            ok, notes, stats = check_bounce(w)
-            plot_bounce(w, stats, os.path.join(a.out, "bounce.png"))
+            ok, notes, stats = check_bounce(w, pm)
+            plot_bounce(w, stats, os.path.join(a.out, "bounce.png"), bool(pm))
         elif order in POWER_ORDERS:
             ok, notes, power[order] = check_power(w, order)
         else:
-            ok, notes, quiet = check(w, order)
+            ok, notes, quiet = check(w, order, pm)
         if order == REQUIRED:
             ok &= quiet
         elif not quiet:
@@ -551,6 +850,10 @@ def main(argv=None):
         c = os.path.join(os.path.dirname(path), f"solver_{order}.txt")
         if os.path.exists(c):
             notes.append(f"solver settings: {open(c).read().strip()}")
+        c = os.path.join(os.path.dirname(path), f"wall_{order}.txt")
+        if os.path.exists(c):
+            notes.append(f"wall time: {open(c).read().strip()}")
+        notes.append("dsm2: " + (f"{pm['view']}, transistors" if pm else "a box, bench sources on its pads"))
         all_ok &= ok
         lines += [f"## {order.replace('_', ' ')}", ""] + [f"- {n}" for n in notes] + [""]
     if power and len(power) != 2:

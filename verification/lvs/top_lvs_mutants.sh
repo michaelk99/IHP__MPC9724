@@ -7,7 +7,7 @@
 set -uo pipefail
 out=verification/lvs/sg13cmos5l_dsa1_dig_top.gds.lvs
 ok=0
-for m in vdda_to_vdd and3bx1_swap cut_pin dsm2_pins; do
+for m in vdda_to_vdd and3bx1_swap cut_pin dsm2_pins dsm2_device decap_vdd; do
     rm -f $out/lvs.rpt
     LVS_MUTANT=$m verification/lvs/top_lvs.sh --netgen-only > $out/mutant_$m.log 2>&1
     rc=$?

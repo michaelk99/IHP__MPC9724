@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 """Check in the DEF that VDD and VDDA share no pin and that VDDA reaches exactly its segment.
 
-    check_vdd_isolation.py <def> [--segment a,b,...] [--macro dsm2] [--cut-s cut_vdd_s] [--cut-e cut_vdd_e]
+    check_vdd_isolation.py <def> [--segment a,b,...] [--macro dsm2,vdda_decap] [--cut-s cut_vdd_s] [--cut-e cut_vdd_e]
 
-VDDA must hold the vdd pin of every segment pad, of the macro, and of the IO fillers and the corner between the two cut cells. VDD must hold none of them.
+VDDA must hold the vdd pin of every segment pad, of the macros, and of the IO fillers and the corner between the two cut cells. VDD must hold none of them.
 The south side runs left to right and the east side bottom to top, so the segment is every south cell at or right of the south cut, the south-east corner, and every east cell below the east cut.
 """
 
@@ -38,17 +38,18 @@ def parse(text):
     return comps, nets
 
 
-def check(text, segment=SEGMENT, macro="dsm2", cut_s="cut_vdd_s", cut_e="cut_vdd_e"):
+def check(text, segment=SEGMENT, macro="dsm2,vdda_decap", cut_s="cut_vdd_s", cut_e="cut_vdd_e"):
     """Return a list of failure messages, empty on PASS."""
     comps, nets = parse(text)
     fails = []
-    for need in (cut_s, cut_e, macro):
+    macros = set(macro.split(","))
+    for need in [cut_s, cut_e] + sorted(macros):
         if need not in comps:
             return ["no component %s in the DEF" % need]
     for net in ("VDD", "VDDA"):
         if net not in nets:
             return ["no special net %s in the DEF" % net]
-    names = set(segment.split(",")) | {macro}
+    names = set(segment.split(",")) | macros
     sx = comps[cut_s][1]
     ey = comps[cut_e][2]
     die_south = comps[cut_s][2]
@@ -63,8 +64,9 @@ def check(text, segment=SEGMENT, macro="dsm2", cut_s="cut_vdd_s", cut_e="cut_vdd
             if south or east or (x == comps[cut_e][1] and y == die_south):
                 names.add(name)
     want = {(n, "vdd") for n in names if comps.get(n, ("", 0, 0))[0] != "sg13cmos5l_ip__cut_vdd"}
-    got_a = {p for p in nets["VDDA"] if p[1].lower() == "vdd"}
-    got_d = {p for p in nets["VDD"] if p[1].lower() == "vdd"}
+    # decap_vdda names its pin VDD
+    got_a = {(i, p.lower()) for i, p in nets["VDDA"] if p.lower() == "vdd"}
+    got_d = {(i, p.lower()) for i, p in nets["VDD"] if p.lower() == "vdd"}
     for inst, pin in sorted(got_a & got_d):
         fails.append("%s/%s is on both VDD and VDDA" % (inst, pin))
     for inst, pin in sorted(want - got_a):
@@ -82,7 +84,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("def_file")
     ap.add_argument("--segment", default=SEGMENT)
-    ap.add_argument("--macro", default="dsm2")
+    ap.add_argument("--macro", default="dsm2,vdda_decap")
     ap.add_argument("--cut-s", default="cut_vdd_s")
     ap.add_argument("--cut-e", default="cut_vdd_e")
     args = ap.parse_args()

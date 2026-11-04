@@ -5,8 +5,7 @@ SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # Chip Specifications
 
-The DSADC1 digital back end on IHP SG13CMOS5L: a 128x decimation filter, an
-SPI slave and the configuration register file, in a QFN-32.
+The DSADC1 digital back end on IHP SG13CMOS5L: a 128x decimation filter, an SPI slave and the configuration register file, next to the `dsm2_core` delta-sigma modulator on its own 1.5 V supply. QFN24, 4 x 4 mm, 0.5 mm pitch, packaged by IHP.
 
 Related: [pinout.md](pinout.md), [floorplan.md](floorplan.md),
 [rtl2gds.md](rtl2gds.md), [../testbenches/README.md](../testbenches/README.md).
@@ -18,10 +17,11 @@ Related: [pinout.md](pinout.md), [floorplan.md](floorplan.md),
 | Technology | IHP SG13CMOS5L, Metal1 to Metal4 plus TopMetal1 |
 | Standard cells | ETH Zurich EZ130 8T, 220 cells, 3.36 um row |
 | Core supply | **1.2 V** |
+| dsm2 supply | VDDA, **1.5 V** (1.45 to 1.55 V) |
 | I/O supply | 3.3 V |
-| Die | 1600 x 1600 um |
-| Package | QFN-32 |
-| Clocks | `clk` 65536 Hz, `sclk` 200 kHz, asynchronous |
+| Die | 1300 x 1300 um |
+| Package | QFN24, 4 x 4 mm, 0.5 mm pitch, packaged by IHP, see [../packaging/result.md](../packaging/result.md) |
+| Clocks | `clk` 65536 Hz, `sclk` 200 kHz, asynchronous, and `dsm_clk` 1.024 MHz for dsm2 |
 | Output rate | 512 Hz, 22-bit words over SPI |
 
 **The core runs at 1.2 V, not the template's 1.5 V.** EZ130 is characterised
@@ -40,11 +40,42 @@ than a hardcoded list, because three of the template's six do not exist here.
 
 | Block | Kind | Notes |
 |---|---|---|
-| `dsa1_dig_top` | hard macro, 497.28 um square | the whole design |
-| bitstream synchronizer | 3 flops at chip level | the only logic outside the macro |
-| `sg13cmos5l_ip__jku`, `..._jku_names` | logos, TopMetal1 | |
+| `dsa1_dig_top` | hard macro, 409.08 x 514.08 um | the DSA1 back end, 33.61 pF of DECAPHV on VDD inside |
+| `dsm2_core` | hard macro, 150.5 x 178 um | first-order DT delta-sigma modulator, dsm2's oscillator variant of 2026-11-02 |
+| `decap_vdda` | hard macro, 150.36 x 349.44 um | 67.61 pF of DECAPHV on VDDA, north of dsm2 |
+| VDD decap strips | DECAPHV in the chip rows, 11 rows below and 11 above `dsa1_dig` | 49.08 pF, so VDD has 82.69 pF in all |
+| bitstream synchronizer | 3 flops and a mux at chip level | `DEC_SRC` picks the `data_in` pad or dsm2's `do_q_dec` |
+| glue gates | two EZ130 `AND2X1` | `do_q_dec` with `DEC_SRC`, `adc_conv` with `ADC_CONV_EN` |
+| `sg13cmos5l_ip__clamp_vddvss` | two ESD clamp cells | one on VDD, one on VDDA |
+| `sg13cmos5l_ip__cut_vdd` | two ring cells | cut the pad ring's vdd band, the stretch between them is VDDA |
+| `sg13cmos5l_ip__jku`, `..._jku_names`, `sg13cmos5l_ip__helm`, `sg13cmos5l_ip__title` | logos, chip art and title, Metal4 | |
 
-The template's counters, inverters and SRAM are not on this die.
+The template's counters, inverters and SRAM are not on this die. The standard cells are EZ130 8T v1.1 (ETH Zurich, Apache-2.0), in `ip/ez130_8t_v1p1` and `ip/ez130_8t_decap_hv`.
+
+## dsm2_core
+
+`dsm2_core` is a test and side project on the die. DSA1 stays the main project: the back end runs exactly as in v1.1.1 with dsm2 off, VDD carries the DSA1 filter alone, and nothing that switches with dsm2 sits on VDD. The design is in [dsm2_integration.md](dsm2_integration.md).
+
+| | |
+|---|---|
+| Supply | VDDA 1.5 V (1.45 to 1.55 V), always on. VSS is shared. VDDA is also the DAC reference |
+| Clock | `di_clk` from the `dsm_clk` pad, fs 1.024 MHz, OSR 512, 1 kHz band. Or its own oscillator (`di_osc_en`, about 0.65 MHz extracted and 0.8 MHz schematic at trim 4), selected by `di_clk_sel`, which also makes dsm2 drive the `dsm_clk` pad |
+| Inputs | `vi` single ended, full scale +-0.75 V around VDDA/2. `vcm` is VDDA/2 from dsm2's `vcm_gen`, an input with `DSM_VCM_EXT`. Control inputs static, from `BIAS_CFG_0` and `BIAS_CFG_1` |
+| Outputs | `do_q`, `do_q_b` at 1.5 V to their pads in the VDDA segment, gated by `DSM_QOUT_EN`. `do_clk_osc` and `do_osc_oe` at 1.5 V to the inout `dsm_clk` pad. `do_q_dec`, the same bit ungated, into one gate in the core. `ibias_test`, a current copy of the bias, to its pad |
+| Bias | `DSM_TRIM` code c gives 8.33 nA x (16 + 2 c), reset code 4 is 200 nA. Change it only with `DSM_EN` low |
+| Start-up | `DSM_EN` high, wait 130 us, then `DSM_RST_B` high. Discard the first decimator word after that: the integrator needs about 17 clocks to leave saturation |
+| Size | 150.5 x 178 um on the die |
+| VDDA current | dsm2's design values for the oscillator variant at ff 1.55 V 125 C: 32 uA average, 220 uA over 100 ns, 600 uA over 10 ns. Its simulation of the variant at that corner: 29.0 uA running, 215.3 uA over 100 ns and 546.4 uA over 10 ns at the first clock after `di_ena` |
+
+| State | VDD | IOVDD | VDDA | `dsm_clk` |
+|---|---|---|---|---|
+| DSA1 | on | on | 1.5 V | low or running, dsm2 off (`DSM_EN` 0), its pads static (`DSM_QOUT_EN` 0) |
+| dsm2 | on | on | 1.5 V | 1.024 MHz, after `DSM_EN`, 130 us, `DSM_RST_B`, then `DSM_QOUT_EN` for the pads or `DEC_SRC` for the decimator |
+| dsm2 on its oscillator | on | on | 1.5 V | driven by dsm2: the board lets go, then `di_osc_en` and `di_clk_sel` (`BIAS_CFG_0` bits 7 and 8) |
+
+The registers that reach dsm2 are `BIAS_CFG_0` (`DSM_TRIM`, `DSM_DITH_EN`, `DSM_DITH_AMP`, and bits 7 and 8 of `DSM_SPARE` as `di_osc_en` and `di_clk_sel`) and `BIAS_CFG_1` (`DSM_EN`, `DSM_RST_B`, `DEC_SRC`, `DSM_BTEST_EN`, `DSM_VCM_EXT`, `DSM_QOUT_EN`, `ADC_CONV_EN`), see [regmap.md](regmap.md). After reset dsm2 is off and in reset, its oscillator is off, `dsm_clk` is an input, its pads are static and the decimator reads the `data_in` pad.
+
+With `DEC_SRC` set the decimator reads `do_q_dec` through the gate. The decimator samples on `clk`, dsm2 changes `do_q_dec` on the rising `dsm_clk`, so this path needs `clk` to be the inverted `dsm_clk` from one source. Each bit is then read about 488 ns from either edge. It gives 8 kHz words and suits DC and spot reads over SPI. The full-rate stream is the `do_q` pad.
 
 ## Signal chain
 
@@ -71,10 +102,7 @@ model is shifted by three input samples.
 ### Configuration registers
 
 Sixteen 16-bit registers over a 5-bit address, the top address bit selecting
-read. 145 output bits drive nothing on this die: the register file is here so
-the taped area is comparable against the older `dsa1_dig_top`. The exception
-is `o_tst_ctrl[15:0]`, bonded out on 16 spare pads so the write path can be
-checked in silicon.
+read. 145 output bits drive nothing on this die: the register file is here so the taped area is comparable against the older `dsa1_dig_top`. The exceptions are the `DSM_*`, `DEC_SRC` and `ADC_CONV_EN` fields of `BIAS_CFG_0` and `BIAS_CFG_1`, which control dsm2. The 16 test pads of v1.1.1 are gone, and `TEST_CTRL_0` stays readable over SPI.
 
 Two properties bring-up software must know, both found in simulation:
 
@@ -83,7 +111,7 @@ Two properties bring-up software must know, both found in simulation:
 - `ADC_DATA_LOW` returns the freeze register, not address 1. **Always read
   HIGH first.**
 
-The full map is in [pinout.md](pinout.md).
+The full map is in [regmap.md](regmap.md).
 
 ### Stimulus test mode
 
@@ -144,39 +172,44 @@ number of conversions.
 
 | Corner | Internal | Switching | Leakage | Total |
 |---|---|---|---|---|
-| `nom_typ_1p20V_25C` | 1.178 | 0.676 | 1.208 | **3.061** |
-| `nom_fast_1p32V_m40C` | 1.480 | 0.841 | 2.299 | 4.619 |
-| `nom_slow_1p08V_125C` | 0.932 | 0.533 | 6.105 | 7.570 |
+| `nom_typ_1p20V_25C` | 1.170 | 0.733 | 1.171 | **3.075** |
+| `nom_fast_1p32V_m40C` | 1.471 | 0.910 | 2.228 | 4.608 |
+| `nom_slow_1p08V_125C` | 0.925 | 0.580 | 5.898 | 7.403 |
 
-The decimator alone is 2.213 uW at typical (0.776 / 0.435 / 1.003), so the
-register file, the SPI slave, the stimulus generator and the extra clock tree cost about 0.85 uW, and
-most of that is clock: the decimator spends 17.6 % of its power on the clock
-tree and the digital top 29.5 %.
+This is the macro re-hardened for the 1.3 mm die, 0.45 % above the 3.061 uW of v1.1.1 at typical. The decimator alone is 2.213 uW at typical (0.776 / 0.435 / 1.003), so the register file, the SPI slave, the stimulus generator and the extra clock tree cost about 0.86 uW.
 
-Leakage is the largest single term at typical and it dominates at the slow
-corner. The static timing figure of 1.208 uW agrees with the transistor-level
-measurement of 1.171 uW from `leakage_sim.py` to 3 %, which is the only
-independent check of either number.
+Leakage is the largest single term at typical and it dominates at the slow corner. The static figure above for the v1.1.1 macro, 1.157 uW, was not rerun on the re-hardened netlist.
+
+The start-up bench measures the IO cells and clamps in the DSA1 state (VDD, IOVDD and VDDA on, dsm2 off, `dsm_clk` low): VDD 12.65 nA, IOVDD 28.54 nA, VDDA 2.19 nA. With dsm2 running and its pads switching, VDD stays at 12.65 nA (difference -1 pA, resolution 13 pA), so dsm2 costs VDD nothing. The same bench on the v1.1.1 layout gives VDD 21.45 nA and IOVDD 37.54 nA. The difference is the pad population: 2 push-pull 30 mA outputs against 18 on v1.1.1, and no bidirectional pads. Details in [../verification/startup/startup_report.md](../verification/startup/startup_report.md).
 
 ## Verification status
 
+Chip run `RUN_2026-10-23_07-00-13`, benches of Tasks 8a and 8b. The sign-off record for the release is [signoff.md](signoff.md).
+
 | | |
 |---|---|
-| Router DRC, Magic DRC | 0 router, Magic 9710 items in library cells, seal ring and macro, see [signoff.md](signoff.md) |
-| KLayout regular DRC | 69 items, all library level, see below |
-| Netgen LVS | `Circuits match uniquely`, from the DEF, and from the GDS with the macro, every standard cell and the ESD clamp cell device by device |
-| Antenna | 0 nets, 0 pins |
-| Setup / hold worst slack | +44.26 ns / +0.074 ns, the macro's inside included |
-| Chip cocotb | 7 of 8 pass, the 8th opt-in with PSD=1 |
-| Macro RTL vs netlist | identical, 527 observations, and EQY 1325 of 1325 partitions |
-| Bond plan | 34 wires, VSS and IOVSS through the cavity, 60 um minimum gap, 5.8 deg max skew |
-| HBM ESD, 2 kV | every 1.2 V node under 4.5 V with the vdd-to-vss clamp cell, the core rail at 3.58 V, see [esd_hbm.md](esd_hbm.md) |
-| Current density | worst ratio 0.312 of 0.5, chip and macro |
-| Supply start-up | VDD first required, see [testbenches/startup](../testbenches/startup/README.md) |
+| Router DRC, Magic DRC | 0 router. Magic 4978 items at the top, only rule families v1.1.1 already had, none new |
+| KLayout regular DRC | 37 items, `Pad.d1R` 4 and `Pad.fR_TM1` 33, all on the bondpads. Against 35 before the second IOVDD cell: it adds 4 `Pad.fR_TM1`, and its 20 um west gaps are one `Filler4000` each, so the small fillers that met the pad cell corner are gone, which removes 2 `Pad.d1R` and the 12 Magic `LU.d` items. Magic gains 201 `Slt.c` and 54 `CntB.h1` from the new cell |
+| Top LVS from the GDS | `Circuits match uniquely`: the macro, every standard cell and both clamp copies device by device, the cut cells and dsm2 by pins, VDDA its own net. A reference with VDDA joined to VDD fails, and so do three more mutants |
+| Antenna | the flow's antenna checker clear |
+| Setup / hold worst slack | +44.07 ns / +0.0695 ns, the macro's inside included |
+| Chip cocotb | 12 pass, 1 skipped (`test_psd`, opt-in with PSD=1), RTL and gate level |
+| Macro RTL vs netlist | `sim-gl` identical (1343 samples), `model-gate` 8 of 8, `sim-cdc` clean, LEC 1323 of 1323 partitions |
+| Bond plan | in [../packaging/result.md](../packaging/result.md) |
+| HBM ESD, 2 kV | model result at RON 1 and 4 on the tape-out layout: 1.2 V nodes (3.87 V), the VDDA rail (4.38 V), dsm2's analog pins behind its protection (4.41 V) and HV (8.84 V) inside the indicative limits, see [esd_hbm.md](esd_hbm.md) |
+| Current density | worst ratio 0.312 of 0.5, VDDA rated at 1 mA, above dsm2's 600 uA over 10 ns |
+| Supply start-up | VDD and VDDA no later than IOVDD, see [testbenches/startup](../testbenches/startup/README.md) |
 
-The 69 KLayout items are 31 `Pad.d1R` and 38 `Pad.fR_TM1`, recommended bondpad
-rules. Until the core rows moved to EZ130, 2 `NW.d` items sat on the PDK's
-thin-oxide decap and filler cells next to the macro's top corners.
+### Known limits
+
+- Signal and supply wires run inside dsm2's 10 um halo to reach its pins. The keep-out check bounds the box metal and the halo fill only.
+- VDDA has no IR-drop analysis. The EM check rates VDDA at 1 mA, dsm2's design values for the oscillator variant are 32 uA average, 220 uA over 100 ns and 600 uA over 10 ns.
+- The `miso` and `adc_conv` pads are 20 to 24 ps over max slew at the slow corner. At the 950 ns clock this has no timing effect.
+- With IOVDD before VDDA, `do_q` and `do_q_b` sit at 3.3 V from 28 to 202 us and IOVDD sees a 53 mA, 34 ns peak. The board rule (VDD and VDDA no later than IOVDD) avoids it.
+- The v1.1.1 start-up currents in uA were an artifact of a sample mean over 1 ns edges. The bench now uses a time mean, and the currents are nA.
+- `dsm2_core` is a box in the ESD model: its supply nodes and the protection of its analog pins, not its internal nodes.
+- HBM, dsm2 analog pins: behind dsm2's own `sg13cmos5l_SecondaryProtection`, `vi`, `vcm` and `ibias_test` reach 4.41 V at worst (`ibias_test`, `iovdd_w4` - vs vdda, RON 4, 4.35 V at RON 1), 0.09 V under the indicative 4.5 V. The margin is the VDDA rail plus one diode drop and shrinks with the diodes' on-resistance.
+- HBM, HV: under the indicative 10 V with the second `IOPadIOVdd` cell, which has a bondpad and no wire (item 5 of [esd_hbm.md](esd_hbm.md)). Worst 8.68 V at RON 1 (`pad_iovdd@vdda_e4`) and 8.84 V at RON 4 (`pad_iovss@doqb`), no zap over 10 V. With the one cell of the first layout it was 30 zaps at RON 0.5 and 1 and 96 at RON 4, worst 11.55 V. RON 0.5 and 2 and the package short were not rerun on this layout.
 
 ### Not done
 
@@ -189,7 +222,4 @@ thin-oxide decap and filler cells next to the macro's top corners.
   `Circuits match uniquely`. The schematic is now correct and generated, but
   its job is the transient testbench and the documentation. See
   [testbenches/README.md](../testbenches/README.md).
-- **Supply network simulation with the package.** The start-up bench ramps the
-  supplies through 0.5 Ohm with the IO cells as transistors. Its bounce case adds
-  the package and switches 11 output pads together, but its core draws no current
-  and carries no on-die decoupling, so the core supply network is not simulated.
+- **Supply network simulation with the package.** The start-up bench ramps the supplies through 0.5 Ohm with the IO cells as transistors. Its bounce case adds the package and switches `do_q`, `do_q_b`, `miso` and `adc_conv`, but its core draws no current and carries no on-die decoupling, so the core supply network is not simulated.

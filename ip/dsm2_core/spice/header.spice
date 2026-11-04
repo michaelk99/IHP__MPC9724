@@ -1,0 +1,31 @@
+* header.spice: models, OSDI loads and options for dsm2_core_sch.spice and dsm2_core_pex3.spice in ngspice
+* IIC-OSIC-TOOLS (registry.iic.jku.at:5000/iic-osic-tools:next, image dd952ba01866, ngspice-47), PDK ihp-sg13cmos5l at /foss/pdks
+* SPDX-FileCopyrightText: 2026 Michael Koefinger
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+* corners: tt here, mos_ss / mos_ff / mos_sf / mos_fs for the others
+.lib /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt
+.lib /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/models/cornerMOShv.lib mos_tt
+.lib /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/models/cornerRES.lib res_typ
+.lib /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/models/cornerCAP.lib cap_typ
+.lib /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/models/cornerDIO.lib dio_tt
+
+* PSP103, r3_cmc (rhigh, rppd), cap_cmomf and the rest. The PDK .spiceinit loads the same files, so ngspice started with it does not need this block.
+.control
+pre_osdi /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/osdi/psp103.osdi
+pre_osdi /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/osdi/psp103_nqs.osdi
+pre_osdi /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/osdi/r3_cmc.osdi
+pre_osdi /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/osdi/mosvar.osdi
+pre_osdi /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/osdi/cap_cmomi.osdi
+pre_osdi /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/osdi/cap_cmomf.osdi
+.endc
+
+* options of the dsm2 benches. rshunt (1 TOhm from every node to ground) is needed for the operating point of the extracted netlist.
+.options klu method=gear reltol=5e-3 trtol=10
+.options chgtol=1e-18 rshunt=1e12
+* At -40 C use instead: .options gmin=1e-10 reltol=1e-3 trtol=7
+* (with the options above the extracted runs stop on "Timestep too small" in the dparea part of the ibias_test ESD dpantenna).
+* Warning: reltol=5e-3 trtol=10 gave a false 0.40 ns phase-2-fall to phase-1-rise gap at ff 1.55 V -40 C on the schematic
+* (3.33 ns with reltol=1e-3 trtol=7, 3.24 ns on the clk_noverlap bench alone), so use the tighter options for clock timing at that corner.
+* Warning: at reltol 1e-3 and looser, ngspice can flip an idle sg13cmos5l_dfrbp_1 latch between two time points (seen on a divider flop).
+* Use reltol=1e-4 where flop states matter.

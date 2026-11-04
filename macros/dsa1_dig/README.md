@@ -15,7 +15,7 @@ One bitstream goes in and 22-bit words come out over SPI at 512 Hz.
 | Top cell | `dsa1_dig_top` |
 | Standard cells | EZ130 8T, read from `EZ130_DIR` |
 | Decoupling | `DECAPHV8/16/32` only, from `DECAPHV_DIR` |
-| Die | 497.28 um square |
+| Die | 409.08 x 514.08 um |
 | Clocks | `clk` 65536 Hz, `sclk` 200 kHz, asynchronous |
 
 ## Where the RTL comes from
@@ -115,9 +115,7 @@ make sim-gl         # the gate-level netlist must equal the RTL, sample for samp
 make check-netlist  # no cell that is wrong in silicon reached the netlist
 ```
 
-`EZ130_DIR` and `DECAPHV_DIR` point at checkouts outside this repo and default
-to `~/projects/OpenBLAU/ip/...`. `check-ez130` fails loudly if either is wrong.
-EZ130 is a prerelease and deliberately does not ship here.
+`EZ130_DIR` and `DECAPHV_DIR` default to `ip/ez130_8t_v1p1` and `ip/ez130_8t_decap_hv`. `check-ez130` fails loudly if either is wrong.
 
 ## FPGA evaluation
 
@@ -130,23 +128,24 @@ the 65.536 kHz it needs. Nothing has run on hardware yet. See
 
 ## Results
 
-LibreLane run of 2026-09-30, container `2026.08`, EZ130 8T, thick-oxide
-decoupling. Every signoff check is zero: router DRC, Magic DRC, KLayout DRC,
-netgen LVS, antenna nets and antenna pins.
+LibreLane run of 2026-10-31 (`RUN_2026-10-31_16-16-30`), the image of `scripts/image.env`, EZ130 8T, thick-oxide decoupling. The outline is 409.08 x 514.08 um at 69 % utilization, as wide as the gap to dsm2's halo allows, so the chip has room for VDD decap strips above and below it. Every signoff check is zero: router DRC, Magic DRC, KLayout DRC, netgen LVS, antenna nets and antenna pins.
 
 | | |
 |---|---|
-| Functional cells | 137733 um2 |
+| Functional cells | 134.0k um2 |
 | of which flops | 1846 |
 | Clock gates | 26 CGX3 |
-| Decoupling | 2260 DECAPHV |
-| Setup worst slack | +44.27 ns |
-| Hold worst slack | +0.074 ns |
-| Max-slew, slow corner | 145 |
-| Power at typical, `make power-vcd` | 3.061 uW |
-| `sim-gl` | 527 observations identical to RTL |
-| `model-gate` | all 5 stimulus patterns match the model, RTL and gate level |
-| `lec` | EQY, netlist equal to the RTL, 1325 of 1325 partitions |
+| Decoupling | 2231 DECAPHV, 33.6 pF |
+| Setup worst slack | +43.64 ns, slow corner |
+| Hold worst slack | +0.044 ns, fast corner |
+| Max-slew, slow corner | 193 |
+| Power at typical, `make power-vcd` | 2.979 uW |
+| `sim-gl` | 1343 samples identical to RTL |
+| `model-gate` | all 8 stimulus patterns match the model, RTL and gate level |
+| `sim-cdc` | 24 sweeps, 0 of 48 words stale in each |
+| `lec` | open: EQY timed out at 10800 s with 946 of 1325 partitions proved and 0 failed, under a load of about 25 on 12 threads. Its work dir passed 5 GB, so it was not rerun |
+
+Detailed placement runs without cell padding on this outline (`DPL_CELL_PADDING` 1, which is 0 per side). With padding the 404.88 x 504 um try failed legalization, and the router reached 0 without it.
 
 Setup margin is +44 ns against the decimator's +491 ns because this is the
 `sclk` domain, constrained at 100 ns while `clk` sits at 1000 ns. That is the
@@ -154,8 +153,7 @@ expected number, not a warning.
 
 ### Leakage
 
-Transistor level, `../scripts/leakage_sim.py --corner tt`, on the hardened
-netlist. Banning EZ130's thin-oxide `DECAP*` is worth 6.2x:
+Transistor level, `../scripts/leakage_sim.py --corner tt`, on the hardened netlist. Banning EZ130's thin-oxide `DECAP*` was worth 6.2x on the 497 um macro of 2026-09-30:
 
 | | thin-oxide | thick-oxide |
 |---|---|---|
@@ -164,20 +162,12 @@ netlist. Banning EZ130's thin-oxide `DECAP*` is worth 6.2x:
 | share of the block | 83.6 % | 0.0 % |
 | block total | 7.136 uW | 1.157 uW |
 
-Read the `~0 nW` correctly: IHP sets `iginvlw = 0` for both 3.3 V devices, so a
-thick-oxide gate carries no tunnelling term in the model at all and the solver
-returns residue. The physics is right and the 7.136 uW is a real measurement,
-but this is a floor rather than a number.
+The 409.08 x 514.08 um macro measures 1.136 uW with 2231 DECAPHV, against 1.137 uW with 1035 for the 370.02 x 588 um one.
 
-The total also moves 1.089 to 1.157 uW between runs, because a few cells hit a
-non-deterministic ngspice failure and drop out. It under-counts when that
-happens.
+Read the `~0 nW` correctly: IHP sets `iginvlw = 0` for both 3.3 V devices, so a thick-oxide gate carries no tunnelling term in the model at all and the solver returns residue. The physics is right and the 7.136 uW is a real measurement, but this is a floor rather than a number.
+
+The total also moves 1.089 to 1.157 uW between runs, because a few cells hit a non-deterministic ngspice failure and drop out (XOR3X1, CGX3 and ANTENNA2 fall back to the liberty value). It under-counts when that happens.
 
 ## Open
 
-- Metal2 and Metal3 sit at 18.46 % and 16.57 % inside the macro. That is not a
-  violation, `M<n>Fil.h` is a 25 % minimum over an 800 x 800 um window and this
-  block is 38.6 % of one, and the chip's density run reports no window failures.
-  The die around the macro carries 52.3 % and 56.5 % against the 29.1 % and
-  30.3 % the arithmetic needs. A floorplan that put a second sparse block in the
-  same window would break it, so recheck the density log after any move.
+- The macro GDS in `final/gds` carries no metal fill: Metal1 to Metal4 sit at 28.53, 16.80, 13.46 and 5.96 % over its 409.08 x 514.08 um, which is 32.9 % of an 800 um window. `macros/scripts/fill_macro.sh` takes them to 30.49, 19.33, 15.45 and 47.97 %. `M<n>Fil.h` is a 25 % minimum over the window, so the die around the macro must carry the rest. Recheck the chip's density log after the floorplan change.

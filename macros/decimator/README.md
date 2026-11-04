@@ -57,9 +57,7 @@ reproduces the Verilog testbench stimulus in Python, runs
 `make sim-rtl-cocotb` and `make sim-gl-cocotb` carry the same model alongside
 the DUT and compare at every `valid_strobe`.
 
-`EZ130_DIR` and `DECAPHV_DIR` point at checkouts outside this repo and default
-to `~/projects/OpenBLAU/ip/...`. EZ130 is a prerelease and deliberately does not
-ship here.
+`EZ130_DIR` and `DECAPHV_DIR` default to `ip/ez130_8t_v1p1` and `ip/ez130_8t_decap_hv`.
 
 ## Results
 

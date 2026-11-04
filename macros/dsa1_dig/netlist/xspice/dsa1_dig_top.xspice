@@ -1,81 +1,79 @@
 * XSpice netlist created from SPICE and liberty sources by spi2xspice.py
 * NGSPICE file created from dsa1_dig_top.ext - technology: ihp-sg13cmos5l
+* Black-box entry subcircuit for FILLER4 abstract view
 * Black-box entry subcircuit for FILLER2 abstract view
 * Black-box entry subcircuit for MUXI2X1 abstract view
-* Black-box entry subcircuit for WELLTAP abstract view
 * Black-box entry subcircuit for DFFQX1 abstract view
-* Black-box entry subcircuit for FILLER4 abstract view
 * Black-box entry subcircuit for FILLER1 abstract view
-* Black-box entry subcircuit for DECAPHV16 abstract view
+* Black-box entry subcircuit for WELLTAP abstract view
 * Black-box entry subcircuit for BUFX3 abstract view
-* Black-box entry subcircuit for DFFRQX1 abstract view
 * Black-box entry subcircuit for XOR2X1 abstract view
-* Black-box entry subcircuit for DECAPHV8 abstract view
+* Black-box entry subcircuit for DFFRQX1 abstract view
 * Black-box entry subcircuit for XNOR3X1 abstract view
+* Black-box entry subcircuit for DECAPHV8 abstract view
 * Black-box entry subcircuit for INVX1 abstract view
 * Black-box entry subcircuit for AND2X1 abstract view
 * Black-box entry subcircuit for MIN3X1 abstract view
 * Black-box entry subcircuit for NAND3X1 abstract view
 * Black-box entry subcircuit for XNOR2X1 abstract view
 * Black-box entry subcircuit for NOR3X1 abstract view
-* Black-box entry subcircuit for OAOI211X1 abstract view
 * Black-box entry subcircuit for OAI21X1 abstract view
-* Black-box entry subcircuit for NOR2BX1 abstract view
-* Black-box entry subcircuit for AND3BX1 abstract view
+* Black-box entry subcircuit for OAOI211X1 abstract view
 * Black-box entry subcircuit for AOAI211X1 abstract view
-* Black-box entry subcircuit for OR2X2 abstract view
+* Black-box entry subcircuit for AND3BX1 abstract view
+* Black-box entry subcircuit for NOR2BX1 abstract view
 * Black-box entry subcircuit for OA21X2 abstract view
+* Black-box entry subcircuit for OR2X2 abstract view
 * Black-box entry subcircuit for NOR2X1 abstract view
 * Black-box entry subcircuit for NAND2X1 abstract view
 * Black-box entry subcircuit for AOI211X1 abstract view
 * Black-box entry subcircuit for AOI21X1 abstract view
+* Black-box entry subcircuit for DECAPHV16 abstract view
 * Black-box entry subcircuit for OAI31X1 abstract view
 * Black-box entry subcircuit for AOI31X1 abstract view
 * Black-box entry subcircuit for AOI22X1 abstract view
 * Black-box entry subcircuit for AO22X2 abstract view
-* Black-box entry subcircuit for DECAPHV32 abstract view
 * Black-box entry subcircuit for AO21X2 abstract view
 * Black-box entry subcircuit for NAND2BX1 abstract view
 * Black-box entry subcircuit for AND3X2 abstract view
-* Black-box entry subcircuit for BUFX12 abstract view
 * Black-box entry subcircuit for OR3BX1 abstract view
-* Black-box entry subcircuit for BUFX6 abstract view
 * Black-box entry subcircuit for BUFX4 abstract view
+* Black-box entry subcircuit for BUFX6 abstract view
 * Black-box entry subcircuit for NOR3BX1 abstract view
 * Black-box entry subcircuit for AOI221X1 abstract view
 * Black-box entry subcircuit for ANTENNA2 abstract view
+* Black-box entry subcircuit for BUFX12 abstract view
 * Black-box entry subcircuit for OA211X2 abstract view
 * Black-box entry subcircuit for OAOI211X2 abstract view
 * Black-box entry subcircuit for OR3X2 abstract view
 * Black-box entry subcircuit for OAI211X1 abstract view
-* Black-box entry subcircuit for INVX4 abstract view
+* Black-box entry subcircuit for INVX2 abstract view
 * Black-box entry subcircuit for AOI21BX1 abstract view
 * Black-box entry subcircuit for XOR3X1 abstract view
 * Black-box entry subcircuit for AOI2B2BX1 abstract view
 * Black-box entry subcircuit for NAND4X2 abstract view
 * Black-box entry subcircuit for AOI2B1X1 abstract view
+* Black-box entry subcircuit for DECAPHV32 abstract view
 * Black-box entry subcircuit for MUX2X1 abstract view
-* Black-box entry subcircuit for INVX2 abstract view
-* Black-box entry subcircuit for BUFX8 abstract view
 * Black-box entry subcircuit for NOR4X2 abstract view
 * Black-box entry subcircuit for AO31X2 abstract view
 * Black-box entry subcircuit for AO211X2 abstract view
-* Black-box entry subcircuit for INVX14 abstract view
 * Black-box entry subcircuit for AND4X2 abstract view
 * Black-box entry subcircuit for NAND3BX1 abstract view
-* Black-box entry subcircuit for INVX16 abstract view
 * Black-box entry subcircuit for CGX3 abstract view
 * Black-box entry subcircuit for OAI22X1 abstract view
-* Black-box entry subcircuit for INVX6 abstract view
 * Black-box entry subcircuit for INVX8 abstract view
 * Black-box entry subcircuit for OAI221X1 abstract view
 * Black-box entry subcircuit for OAI2B2BX1 abstract view
+* Black-box entry subcircuit for INVX6 abstract view
 * Black-box entry subcircuit for OR3BX2 abstract view
 * Black-box entry subcircuit for NOR2X2 abstract view
+* Black-box entry subcircuit for INVX4 abstract view
+* Black-box entry subcircuit for INVX14 abstract view
 * Black-box entry subcircuit for AOI2B2X1 abstract view
 * Black-box entry subcircuit for AOI2BB2X1 abstract view
-* Black-box entry subcircuit for AOI221X2 abstract view
 * Black-box entry subcircuit for NAND3BX2 abstract view
+* Black-box entry subcircuit for BUFX8 abstract view
 * Black-box entry subcircuit for OR4X1 abstract view
 * Black-box entry subcircuit for NOR2BX2 abstract view
 * Black-box entry subcircuit for NAND2X1P5 abstract view
@@ -284,82 +282,80 @@ AA2D155 [a_ss] [dig_ss] todig_1v5
 .ends
 
 
+* FILLER4 (no function)
 * FILLER2 (no function)
 * MUXI2X1 (no function)
-* WELLTAP (no function)
 * DFFQX1 (no function)
-* FILLER4 (no function)
 * FILLER1 (no function)
-* DECAPHV16 (no function)
+* WELLTAP (no function)
 * BUFX3 (no function)
-* DFFRQX1 (no function)
 * XOR2X1 (no function)
-* DECAPHV8 (no function)
+* DFFRQX1 (no function)
 * XNOR3X1 (no function)
+* DECAPHV8 (no function)
 * INVX1 (no function)
 * AND2X1 (no function)
 * MIN3X1 (no function)
 * NAND3X1 (no function)
 * XNOR2X1 (no function)
 * NOR3X1 (no function)
-* OAOI211X1 (no function)
 * OAI21X1 (no function)
-* NOR2BX1 (no function)
-* AND3BX1 (no function)
+* OAOI211X1 (no function)
 * AOAI211X1 (no function)
-* OR2X2 (no function)
+* AND3BX1 (no function)
+* NOR2BX1 (no function)
 * OA21X2 (no function)
+* OR2X2 (no function)
 * NOR2X1 (no function)
 * NAND2X1 (no function)
 * AOI211X1 (no function)
 * AOI21X1 (no function)
+* DECAPHV16 (no function)
 * OAI31X1 (no function)
 * AOI31X1 (no function)
 * AOI22X1 (no function)
 * AO22X2 (no function)
-* DECAPHV32 (no function)
 * AO21X2 (no function)
 * NAND2BX1 (no function)
 * AND3X2 (no function)
-* BUFX12 (no function)
 * OR3BX1 (no function)
-* BUFX6 (no function)
 * BUFX4 (no function)
+* BUFX6 (no function)
 * NOR3BX1 (no function)
 * AOI221X1 (no function)
 * ANTENNA2 (no function)
+* BUFX12 (no function)
 * OA211X2 (no function)
 * OAOI211X2 (no function)
 * OR3X2 (no function)
 * OAI211X1 (no function)
-* INVX4 (no function)
+* INVX2 (no function)
 * AOI21BX1 (no function)
 * XOR3X1 (no function)
 * AOI2B2BX1 (no function)
 * NAND4X2 (no function)
 * AOI2B1X1 (no function)
+* DECAPHV32 (no function)
 * MUX2X1 (no function)
-* INVX2 (no function)
-* BUFX8 (no function)
 * NOR4X2 (no function)
 * AO31X2 (no function)
 * AO211X2 (no function)
-* INVX14 (no function)
 * AND4X2 (no function)
 * NAND3BX1 (no function)
-* INVX16 (no function)
 * CGX3 (no function)
 * OAI22X1 (no function)
-* INVX6 (no function)
 * INVX8 (no function)
 * OAI221X1 (no function)
 * OAI2B2BX1 (no function)
+* INVX6 (no function)
 * OR3BX2 (no function)
 * NOR2X2 (no function)
+* INVX4 (no function)
+* INVX14 (no function)
 * AOI2B2X1 (no function)
 * AOI2BB2X1 (no function)
-* AOI221X2 (no function)
 * NAND3BX2 (no function)
+* BUFX8 (no function)
 * OR4X1 (no function)
 * NOR2BX2 (no function)
 * NAND2X1P5 (no function)

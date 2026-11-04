@@ -71,7 +71,7 @@ WAVEFORM_VIEWER ?= gtkwave
 
 # Version for release target
 # Override with: make <target> VERSION=<version>
-VERSION ?= 1.0.0
+VERSION ?= 1.2.0
 
 # Extra options for the sak-open.py file browser (e.g. --all to include build outputs)
 # Override with: make open OPEN_ARGS=<options>
@@ -83,12 +83,11 @@ OPEN_ARGS ?=
 STA_CORNERS := nom_fast_1p32V_m40C nom_slow_1p08V_125C nom_typ_1p20V_25C
 
 # The chip core sits on EZ130 rows, so its decoupling can be the thick-oxide
-# DECAPHV cells the macros use: the PDK library has no thick-oxide decap. Both
-# are read in place from outside this repo, as in macros/dsa1_dig/Makefile.
+# DECAPHV cells the macros use: the PDK library has no thick-oxide decap.
 # The IO liberty and the bondpad views go into the same fragment, because the
 # design config would replace the fragment's LIB and EXTRA_* lists, not extend them.
-EZ130_DIR   ?= $(HOME)/projects/OpenBLAU/ip/ez130_8t_v1p1
-DECAPHV_DIR ?= $(HOME)/projects/OpenBLAU/ip/ez130_8t_decap_hv
+EZ130_DIR   ?= $(abspath ip/ez130_8t_v1p1)
+DECAPHV_DIR ?= $(abspath ip/ez130_8t_decap_hv)
 IO_LIB_DIR  := $(abspath ip/sg13cmos5l_io_custom/lib)
 BONDPAD_DIR := $(abspath ip/sg13cmos5l_ip__bondpad_70x70/final)
 CLAMP_DIR   := $(abspath ip/sg13cmos5l_ip__clamp_vddvss)
@@ -264,6 +263,15 @@ check-netlist: ## Fail if any cell that is wrong in silicon, or a thin-oxide dec
 	done; test $$bad -eq 0 && echo "OK: no banned cell in $(NET_NL_DIR)/$(TOP).nl.v"
 .PHONY: check-netlist
 
+# The boxes come from DSM2_OUTLINE and DSM2_KEEPOUT in scripts/add_logo_fill.sh.
+KEEPOUT_GDS ?= $(LAY_DIR)/$(TOP)_logo_fill.gds.gz
+check-keepout: ## Fail on metal in the dsm2 outline, metal fill in its halo, or Activ or GatPoly fill in its outline (usage: make check-keepout [KEEPOUT_GDS=<file>])
+	python3 $(SCRIPTS_DIR)/test_check_keepout.py
+	python3 $(SCRIPTS_DIR)/check_keepout.py $(KEEPOUT_GDS) outline
+	python3 $(SCRIPTS_DIR)/check_keepout.py $(KEEPOUT_GDS) halo --datatypes 22 --edge 0
+	python3 $(SCRIPTS_DIR)/check_keepout.py $(KEEPOUT_GDS) outline --layers feol --datatypes 22 --edge 0
+.PHONY: check-keepout
+
 librelane-openroad: ## Open the last LibreLane run in OpenROAD GUI
 	librelane $(CHIP_FRAGS) $(LIBRELANE_DIR)/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --last-run --flow OpenInOpenROAD
 .PHONY: librelane-openroad
@@ -341,9 +349,11 @@ build-bondpad: ## Build the bondpad in ip/sg13cmos5l_ip__bondpad_70x70/
 	@$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__bondpad_70x70 all
 .PHONY: build-bondpad
 
-build-logos: ## Build the logos in ip/sg13cmos5l_ip__jku/ and ip/sg13cmos5l_ip__jku_names/
+build-logos: ## Build the logos in ip/sg13cmos5l_ip__jku/, ip/sg13cmos5l_ip__jku_names/, ip/sg13cmos5l_ip__helm/ and ip/sg13cmos5l_ip__title/
 	@$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__jku all
 	@$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__jku_names all
+	@$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__helm all
+	@$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__title all
 .PHONY: build-logos
 
 build-decimator: ## Build the standalone decimator macro (not on the die, built for its numbers)
@@ -399,9 +409,9 @@ build-all: ## Build the bondpad, logos, macros and the chip top-level
 # DRC Targets
 # The precheck gets its own directory: sak-drc.sh wipes <cell>.klayout.drc on
 # every run, so the two levels would overwrite each other. sak-drc.sh fails on
-# any marker, so the verdict comes from drc_verdict.py, which knows the 35 the
-# regular deck is expected to find on this die.
-DRC_EXPECT   ?= Pad.d1R=6,Pad.fR_TM1=29
+# any marker, so the verdict comes from drc_verdict.py, which knows the counts
+# the regular deck is expected to find on this die, in DRC_EXPECT.
+DRC_EXPECT   ?= Pad.d1R=4,Pad.fR_TM1=33
 PRECHECK_GDS ?= $(LAY_DIR)/$(TOP)_logo_fill.gds.gz
 PRECHECK_DIR ?= $(DRC_RPT_DIR)/precheck
 
@@ -445,7 +455,8 @@ mpw-precheck: klayout-drc-minimum gds-scan ## The foundry precheck of the delive
 # IOVDD and IOVSS: 20 pF x 3.3 V x 100 kHz on miso, rounded up. Their ring is
 # inside the pad cells, so they are listed, not rated.
 # The clock tree: 5 pF x 1.2 V x 65536 Hz per net. miso inside the core: 1 pF x 1.2 V x 100 kHz.
-# VDDA: dsm2 has no supply current figure yet, 1 mA is a placeholder for its strap on Metal3 (10 um wide, rated 20 mA).
+# VDDA: dsm2's design values for the oscillator variant are 32 uA average, 220 uA over 100 ns and 600 uA over 10 ns (ff 1.55 V 125 C).
+# 1 mA stays the bound for its straps on Metal3 (10 um wide, rated 20 mA), above even the 10 ns peak.
 EM_CURRENTS ?= --current VDD=0.25 --current VSS=0.25 --current VDDA=1 --current IOVDD=1 --current IOVSS=1 \
 	--signal '*clk_PAD*=0.0004' --signal 'i_sg13cmos5l_dsa1_dig_core.miso=0.00012'
 
@@ -635,6 +646,12 @@ release: ## Copy the gds, netlist files and chip renders to the release folder (
 	mkdir -p $(RELEASE_DIR)/v.$(VERSION)/packaging
 	cp -f $(PACKAGING_DIR)/layout/$(TOP)_bondplan.gds $(PACKAGING_DIR)/result.md $(RELEASE_DIR)/v.$(VERSION)/packaging/
 .PHONY: release
+
+# IHP's tree: the same folders as release, but gds/ holds only the copy renamed to the project name, so nothing else in it can be taken for the layout
+release-ihp: release ## The release in IHP's Open-Silicon-MPW layout, GDS renamed to the project name and saved with IHP's options (usage: make release-ihp VERSION=<version>)
+	rm -f $(RELEASE_DIR)/v.$(VERSION)/gds/$(TOP)_logo_fill.gds.gz
+	SRC=$(LAY_DIR)/$(TOP)_logo_fill.gds.gz OUT=$(RELEASE_DIR)/v.$(VERSION) scripts/release_ihp.sh
+.PHONY: release-ihp
 # ================================================================================================
 
 
@@ -694,6 +711,8 @@ clean-all: ## Delete all generated files of the chip top-level, the IPs and the 
 	$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__bondpad_70x70 clean
 	$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__jku clean
 	$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__jku_names clean
+	$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__helm clean
+	$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__title clean
 	$(MAKE) -C $(MACROS_DIR)/decimator clean
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig clean
 	$(MAKE) -C $(MACROS_DIR)/counter clean

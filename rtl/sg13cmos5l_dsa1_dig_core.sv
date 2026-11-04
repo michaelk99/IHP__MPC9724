@@ -29,7 +29,9 @@ module sg13cmos5l_dsa1_dig_core #(
     output logic [1:0] dsm_dith_amp,
     output logic       dsm_vcm_ext,
     output logic       dsm_btest_en,
-    output logic       dsm_qout_en
+    output logic       dsm_qout_en,
+    output logic       dsm_osc_en,
+    output logic       dsm_clk_sel
 );
 
     // ======================================================
@@ -125,6 +127,9 @@ module sg13cmos5l_dsa1_dig_core #(
     assign dsm_trim     = o_bias_cfg[CFG0+3:CFG0];
     assign dsm_dith_en  = o_bias_cfg[CFG0+4];
     assign dsm_dith_amp = o_bias_cfg[CFG0+6:CFG0+5];
+    // DSM_SPARE bits 7 and 8 of BIAS_CFG_0, bit 9 stays spare
+    assign dsm_osc_en   = o_bias_cfg[CFG0+7];
+    assign dsm_clk_sel  = o_bias_cfg[CFG0+8];
     assign dsm_ena      = o_bias_cfg[CFG1+0];
     assign dsm_rst_b    = o_bias_cfg[CFG1+1];
     assign dec_src      = o_bias_cfg[CFG1+2];
@@ -151,7 +156,7 @@ module sg13cmos5l_dsa1_dig_core #(
 
     // Configuration bits that nothing on this chip reads.
     /* verilator lint_off UNUSEDSIGNAL */
-    wire _unused = &{1'b0, o_tst_ctrl, o_bias_cfg[34:26], o_bias_cfg[18:10], o_bias_cfg[2:0],
+    wire _unused = &{1'b0, o_tst_ctrl, o_bias_cfg[34:26], o_bias_cfg[18:12], o_bias_cfg[2:0],
                      o_rst_ctrl_b, o_en_ctrl, o_lf_cfg, o_clk_cfg, o_uwb_tx_cfg, o_aux_ctrl, 1'b0};
     /* verilator lint_on UNUSEDSIGNAL */
 endmodule

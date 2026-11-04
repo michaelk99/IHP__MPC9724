@@ -9,7 +9,7 @@
 
 clip     scripts/esd/ring_clip.py -> <run>/pex/esd_ring.gds, ports.json
 extract  kpex 2.5D, R only, through scripts/esd/kpex_cmos5l.py --wires
-         (kpex 0.4.4, image hpretl/iic-osic-tools:2026.09)
+         (kpex of the pinned :next image, scripts/image.env)
 reduce   Kron reduction onto the ports (exact at DC): esd_ring_rport.spice,
          one resistor per port pair whose conductance is not negligible
 

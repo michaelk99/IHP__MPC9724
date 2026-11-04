@@ -28,15 +28,16 @@ One macro reaches the die: `dsa1_dig_top`. The `decimator` macro is the same
 filter hardened alone, kept so its area, timing and leakage can be quoted for
 the block by itself. The chip consumes only `macros/dsa1_dig/final/`.
 
-## The cell library is not in this repository
+## The cell library
 
-EZ130 8T is a prerelease and does not ship here, nor do the thick-oxide
-decoupling cells. Both are read in place from outside:
+EZ130 8T v1.1 (ETH Zurich, Apache-2.0) and the thick-oxide decoupling cells are
+in `ip/ez130_8t_v1p1` and `ip/ez130_8t_decap_hv`. The builds read them through
+two variables, which default to those folders:
 
 | Variable | Default | What it holds |
 |---|---|---|
-| `EZ130_DIR` | `~/projects/OpenBLAU/ip/ez130_8t_v1p1` | tech LEF, cell LEF, GDS, CDL, Verilog models, three liberties |
-| `DECAPHV_DIR` | `~/projects/OpenBLAU/ip/ez130_8t_decap_hv` | `DECAPHV8/16/32` views and liberties |
+| `EZ130_DIR` | `ip/ez130_8t_v1p1` | tech LEF, cell LEF, GDS, CDL, Verilog models, three liberties |
+| `DECAPHV_DIR` | `ip/ez130_8t_decap_hv` | `DECAPHV8/16/32` views and liberties |
 
 `make check-ez130` fails loudly when either is wrong, and every `librelane`
 target depends on it.

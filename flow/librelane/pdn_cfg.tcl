@@ -214,6 +214,7 @@ global_connect -verbose
 # The analog wires of dsm2, drawn on Metal3 after pdngen and checked before the flow goes on.
 # vi, vcm and ibias_test run from the pad's padres pin to the dsm2 pin, 2 um wide, vi with a VSS track on each side.
 # The VDDA strap runs from the segment's vdd band of vdda_pad to dsm2's vdd stub, the VSS strap from dsm2's vss stub to the east VSS core ring.
+# decap_vdda gets the same pair: VDDA from its east VDD pin straight into the segment's band, VSS from its east VSS pin to the ring.
 # All of it is Metal3 below the Metal4 core ring, so the ring does not join the segment.
 # Coordinates come from the placed pads, dsm2 and the core ring in the database. All lengths below are in um.
 # ---------------------------------------------------------------------------
@@ -446,6 +447,28 @@ proc draw_analog {} {
     lappend drawn [list $vss [list $vss_c1 $yv $xv [expr {$yv + $ws}]]]
     set vss_run [list $vss_c1 $yv $xv [expr {$yv + $ws}]]
 
+    # decap_vdda: both pins are 10 um Metal3 straps across the block, their east ends meet these.
+    if {[$block findInst vdda_decap] == "NULL"} { fail_analog "no vdda_decap instance" }
+    set cvdd [one_pin_rect vdda_decap VDD Metal3]
+    set cvss [one_pin_rect vdda_decap VSS Metal3]
+    # The band: the VDDA vdd pin on Metal3 east of the core ring that spans the strap height, nearest to the core.
+    set dbu [expr {double([$tech getDbUnitsPerMicron])}]
+    set cband ""
+    foreach inst [$block getInsts] {
+        set it [$inst findITerm vdd]
+        if {$it == "NULL" || [$it getNet] eq "NULL" || [[$it getNet] getName] ne "VDDA"} continue
+        foreach gm [$it getGeometries] {
+            lassign $gm l r
+            if {[$l getName] ne "Metal3"} continue
+            set pr [list [expr {[$r xMin] / $dbu}] [expr {[$r yMin] / $dbu}] [expr {[$r xMax] / $dbu}] [expr {[$r yMax] / $dbu}]]
+            if {[lindex $pr 0] > $ring_x2 && [lindex $pr 1] <= [lindex $cvdd 1] && [lindex $pr 3] >= [lindex $cvdd 3] && ($cband eq "" || [lindex $pr 0] < [lindex $cband 0])} { set cband $pr }
+        }
+    }
+    if {$cband eq ""} { fail_analog "no VDDA band east of the ring spans decap_vdda's VDD pin at $cvdd" }
+    lappend drawn [list $vdda [list [expr {[lindex $cvdd 2] - 1.0}] [lindex $cvdd 1] [expr {[lindex $cband 0] + 8.0}] [lindex $cvdd 3]]]
+    set dvss_run [list [expr {[lindex $cvss 2] - 1.0}] [lindex $cvss 1] $xv [lindex $cvss 3]]
+    lappend drawn [list $vss $dvss_run]
+
     # Shapes into the database, one new special wire per net and the vias where a track meets the VSS ring.
     set swires [dict create]
     foreach e $drawn {
@@ -458,15 +481,15 @@ proc draw_analog {} {
         add_box [dict get $swires $nm] $m3 $r
     }
     set nvia 0
-    foreach run [concat $vi_guard_runs [list $vss_run]] {
+    foreach run [concat $vi_guard_runs [list $vss_run $dvss_run]] {
         incr nvia [via3_array [dict get $swires VSS] $run $ring]
     }
     puts "\[INFO\] analog wires: [llength $drawn] Metal3 boxes and $nvia Via3 cuts drawn"
 
-    check_analog $drawn $sigs $band $dvdd $dvss
+    check_analog $drawn $sigs [list [list VDDA $band] [list VDDA $dvdd] [list VSS $dvss] [list VDDA $cband] [list VDDA $cvdd] [list VSS $cvss]]
 }
 
-proc check_analog {drawn sigs band dvdd dvss} {
+proc check_analog {drawn sigs supply_pins} {
     set block [ord::get_db_block]
     set dbu [expr {double([[ord::get_db_tech] getDbUnitsPerMicron])}]
     set eps 1e-6
@@ -543,7 +566,7 @@ proc check_analog {drawn sigs band dvdd dvss} {
         lassign $s net pr dr
         lappend want [list [$net getName] $pr] [list [$net getName] $dr]
     }
-    lappend want [list VDDA $band] [list VDDA $dvdd] [list VSS $dvss]
+    set want [concat $want $supply_pins]
     foreach w $want {
         lassign $w nn pin
         set hit 0
@@ -568,6 +591,7 @@ proc check_analog {drawn sigs band dvdd dvss} {
     set nseg 0
     foreach inst [$block getInsts] {
         set it [$inst findITerm vdd]
+        if {$it == "NULL"} { set it [$inst findITerm VDD] }
         if {$it == "NULL" || [$it getNet] eq "NULL" || [[$it getNet] getName] ne "VDDA"} continue
         incr nseg
         foreach gm [$it getGeometries] {
@@ -581,6 +605,21 @@ proc check_analog {drawn sigs band dvdd dvss} {
         }
     }
     puts "\[INFO\] analog wires: $nseg cells and macros with a vdd pin on VDDA checked against VDD"
+
+    # decap_vdda: VDD on VDDA, VSS on VSS, and no VDD shape on any layer over the block.
+    set dc [$block findInst vdda_decap]
+    foreach {pin want_net} {VDD VDDA VSS VSS} {
+        set it [$dc findITerm $pin]
+        if {$it == "NULL" || [$it getNet] eq "NULL" || [[$it getNet] getName] ne $want_net} { lappend errs "vdda_decap/$pin is not on $want_net" }
+    }
+    set bb [$dc getBBox]
+    set db [list [expr {[$bb xMin] / $dbu}] [expr {[$bb yMin] / $dbu}] [expr {[$bb xMax] / $dbu}] [expr {[$bb yMax] / $dbu}]]
+    foreach ln {Metal1 Metal2 Metal3 Metal4 TopMetal1} {
+        foreach v [net_shapes $vdd $ln] {
+            lassign [rect_gap_prl $db $v] gap prl
+            if {$gap <= $eps} { lappend errs "VDD $ln $v touches decap_vdda at $db" }
+        }
+    }
 
     if {[llength $errs] > 0} {
         foreach e $errs { puts stderr "\[ERROR\] analog wires: $e" }

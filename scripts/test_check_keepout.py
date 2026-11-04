@@ -75,6 +75,34 @@ def main():
         ly.top_cell().shapes(ly.layer(30, 0)).clear()
         ly.write(str(gds))
         assert ck.check(str(gds), BOX) == []
+        # Activ filler inside the box fails the feol check, the macro's own Activ does not
+        make(gds, (1, 22, [150, 150, 152, 152]))
+        ly = db.Layout()
+        ly.read(str(gds))
+        top = ly.top_cell()
+        top.shapes(ly.layer(30, 0)).clear()
+        macro = ly.cell("dsm2_core")
+        macro.shapes(ly.layer(1, 0)).insert(db.Box(0, 0, 100 * 1000, 100 * 1000))
+        top.shapes(ly.layer(1, 23)).insert(db.Box(100 * 1000, 100 * 1000, 200 * 1000, 200 * 1000))
+        ly.write(str(gds))
+        assert ck.check(str(gds), BOX) == []
+        f = ck.check(str(gds), BOX, edge=0, datatypes=(22,), layers=ck.FEOL)
+        assert len(f) == 1 and f[0].startswith("Activ 1/22"), f
+        # GatPoly filler too, and filler that only abuts the box passes
+        make(gds, (5, 22, [190, 110, 200, 112]))
+        ly = db.Layout()
+        ly.read(str(gds))
+        ly.top_cell().shapes(ly.layer(1, 22)).insert(db.Box(200 * 1000, 100 * 1000, 202 * 1000, 102 * 1000))
+        ly.write(str(gds))
+        f = ck.check(str(gds), BOX, edge=0, datatypes=(22,), layers=ck.FEOL)
+        assert len(f) == 1 and f[0].startswith("GatPoly 5/22"), f
+        # the named boxes come from the fill script
+        script = Path(d) / "fill.sh"
+        script.write_text('DSM2_KEEPOUT="1,2,3,4"\n# DSM2_OUTLINE="9,9,9,9"\nDSM2_OUTLINE="5,6,7.5,8"\n')
+        assert ck.named_box("halo", script) == [1, 2, 3, 4]
+        assert ck.named_box("outline", script) == [5, 6, 7.5, 8]
+        o, h = ck.named_box("outline"), ck.named_box("halo")
+        assert h[0] < o[0] and h[1] < o[1] and o[2] < h[2] and o[3] < h[3], (o, h)
         # a missing macro cell is an error, not a pass
         assert ck.check(str(gds), BOX, cell="nope") == ["no cell nope in %s" % gds]
     print("test_check_keepout: OK")

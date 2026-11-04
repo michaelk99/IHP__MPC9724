@@ -105,14 +105,19 @@ SPDX-FileCopyrightText = "2026 Michael Koefinger"
 SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
 
 [[annotations]]
-path = ["macros/dsa1_dig/final/**", "macros/dsa1_dig/netlist/**", "macros/dsa1_dig/render/**", "macros/dsa1_dig/schematic/**", "macros/dsa1_dig/verification/**", "macros/decimator/final/**", "macros/decimator/netlist/**", "macros/decimator/render/**", "macros/decimator/schematic/**", "macros/decimator/verification/**"]
+path = ["macros/decap_vdda/final/**", "macros/decap_vdda/verification/**", "macros/dsa1_dig/final/**", "macros/dsa1_dig/netlist/**", "macros/dsa1_dig/render/**", "macros/dsa1_dig/schematic/**", "macros/dsa1_dig/verification/**", "macros/decimator/final/**", "macros/decimator/netlist/**", "macros/decimator/render/**", "macros/decimator/schematic/**", "macros/decimator/verification/**"]
 SPDX-FileCopyrightText = "2026 Michael Koefinger"
 SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
 
 [[annotations]]
-path = ["testbenches/cocotb/*.gtkw", "macros/dsa1_dig/testbenches/**/*.gtkw", "macros/decimator/testbenches/**/*.gtkw", "ip/sg13cmos5l_ip__jku_names/logo/**", "ip/sg13cmos5l_ip__jku_names/final/**", "ip/sg13cmos5l_ip__jku_names/verification/**"]
+path = ["testbenches/cocotb/*.gtkw", "macros/dsa1_dig/testbenches/**/*.gtkw", "macros/decimator/testbenches/**/*.gtkw", "ip/sg13cmos5l_ip__jku_names/logo/**", "ip/sg13cmos5l_ip__jku_names/final/**", "ip/sg13cmos5l_ip__jku_names/verification/**", "ip/sg13cmos5l_ip__helm/logo/README.md", "ip/sg13cmos5l_ip__helm/final/**", "ip/sg13cmos5l_ip__helm/verification/**", "ip/sg13cmos5l_ip__title/logo/**", "ip/sg13cmos5l_ip__title/final/**", "ip/sg13cmos5l_ip__title/verification/**"]
 SPDX-FileCopyrightText = "2026 Michael Koefinger"
 SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
+
+[[annotations]]
+path = ["ip/sg13cmos5l_ip__helm/logo/helm_source.jpg", "ip/sg13cmos5l_ip__helm/logo/helm.png"]
+SPDX-FileCopyrightText = "The respective copyright holders"
+SPDX-License-Identifier = "LicenseRef-RespectiveCopyrightHolders"
 
 # Third-party files keep their original copyright and license.
 
@@ -142,6 +147,11 @@ SPDX-FileCopyrightText = "2026 Michael Koefinger"
 SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
 
 [[annotations]]
-path = ["flow/librelane/analog_nets.txt", "ip/dsm2_core/gds/**", "testbenches/startup/README.md"]
+path = ["flow/librelane/analog_nets.txt", "ip/dsm2_core/cdl/**", "ip/dsm2_core/gds/**", "ip/dsm2_core/lef/**", "ip/dsm2_core/spice/**", "testbenches/startup/README.md"]
+SPDX-FileCopyrightText = "2026 Michael Koefinger"
+SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
+
+[[annotations]]
+path = "scripts/release_note.template.md"
 SPDX-FileCopyrightText = "2026 Michael Koefinger"
 SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"

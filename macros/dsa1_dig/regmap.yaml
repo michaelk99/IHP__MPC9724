@@ -74,7 +74,7 @@ registers:
       - {name: OTA2_CFG, bits: "11:8", reset: 0x0, used: [dsa1], only: dsa1}
       - {name: OTA1_CFG, bits: "7:0", reset: 0xEA, used: [dsa1], only: dsa1}
       - {name: NA, bits: "15:10", reset: 0x0, reserved: true, only: cmos5l}
-      - {name: DSM_SPARE, bits: "9:7", reset: 0x0, used: [], only: cmos5l, desc: "Spare, drives nothing"}
+      - {name: DSM_SPARE, bits: "9:7", reset: 0x0, used: [], only: cmos5l, desc: "Bit 7 drives dsm2 di_osc_en, bit 8 di_clk_sel (chip level). Bit 9 spare"}
       - {name: DSM_DITH_AMP, bits: "6:5", reset: 0x1, used: [cmos5l], only: cmos5l, desc: "dsm2 di_dith_amp, quantizer dither amplitude"}
       - {name: DSM_DITH_EN, bits: "4", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_dith_en, quantizer dither on"}
       - {name: DSM_TRIM, bits: "3:0", reset: 0x4, used: [cmos5l], only: cmos5l,

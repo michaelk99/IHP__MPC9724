@@ -10,7 +10,7 @@ _spec = importlib.util.spec_from_file_location("cvi", Path(__file__).resolve().p
 cvi = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cvi)
 
-DEF = """COMPONENTS 9 ;
+DEF = """COMPONENTS 10 ;
     - IO_FILL_IO_SOUTH_3_0 sg13cmos5l_Filler4000 + FIXED ( 625000 140000 ) N ;
     - IO_FILL_IO_SOUTH_4_0 sg13cmos5l_Filler4000 + FIXED ( 655000 140000 ) N ;
     - IO_CORNER_SOUTH_EAST_INST sg13cmos5l_Corner + FIXED ( 980000 140000 ) FN ;
@@ -20,12 +20,13 @@ DEF = """COMPONENTS 9 ;
     - vi_pad sg13cmos5l_IOPadAnalog + FIXED ( 980000 350000 ) W ;
     - g_vdd_pads\\[0\\].vdd_pad sg13cmos5l_IOPadVdd + FIXED ( 140000 630000 ) FW ;
     - dsm2 dsm2_core + FIXED ( 780000 375000 ) N ;
+    - vdda_decap decap_vdda + FIXED ( 784500 593000 ) N ;
 END COMPONENTS
 SPECIALNETS 3 ;
     - VDD ( PIN VDD ) ( * VDD ) ( g_vdd_pads\\[0\\].vdd_pad vdd ) ( IO_FILL_IO_SOUTH_3_0 vdd ) ( IO_FILL_IO_EAST_6_0 vdd ) + USE POWER ;
-    - VDDA ( vi_pad vdd ) ( dsm2 vdd )
+    - VDDA ( vi_pad vdd ) ( dsm2 vdd ) ( vdda_decap VDD )
       ( IO_FILL_IO_SOUTH_4_0 vdd ) ( IO_CORNER_SOUTH_EAST_INST vdd ) + USE POWER ;
-    - VSS ( PIN VSS ) ( dsm2 vss ) + USE GROUND ;
+    - VSS ( PIN VSS ) ( dsm2 vss ) ( vdda_decap VSS ) + USE GROUND ;
 END SPECIALNETS
 """
 SEG = "vi_pad"
@@ -37,6 +38,10 @@ def check(text):
 
 def main():
     assert check(DEF) == []
+    # decap_vdda's VDD pin moved to VDD
+    bad = DEF.replace("( vdda_decap VDD )", "").replace("( * VDD ) ", "( * VDD ) ( vdda_decap VDD ) ")
+    f = check(bad)
+    assert f == ["vdda_decap/vdd is not on VDDA but on VDD"], f
     # a segment pad moved to VDD
     bad = DEF.replace("( vi_pad vdd ) ", "").replace("( * VDD ) ", "( * VDD ) ( vi_pad vdd ) ")
     f = check(bad)

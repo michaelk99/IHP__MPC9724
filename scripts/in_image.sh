@@ -14,6 +14,6 @@ esac
 repo=$(git -C "$here" rev-parse --show-toplevel)
 proj=$(dirname "$repo")
 # The image's login shell resets PDK, so the exports go inside bash -lc.
-env_vars="export PDK=ihp-sg13cmos5l PDKPATH=/foss/pdks/ihp-sg13cmos5l PDK_ROOT=/foss/pdks STD_CELL_LIBRARY=sg13cmos5l_stdcell SCL=sg13cmos5l_stdcell EZ130_DIR=/foss/designs/OpenBLAU/ip/ez130_8t_v1p1 DECAPHV_DIR=/foss/designs/OpenBLAU/ip/ez130_8t_decap_hv"
+env_vars="export PDK=ihp-sg13cmos5l PDKPATH=/foss/pdks/ihp-sg13cmos5l PDK_ROOT=/foss/pdks STD_CELL_LIBRARY=sg13cmos5l_stdcell SCL=sg13cmos5l_stdcell EZ130_DIR=/foss/designs/$(basename "$repo")/ip/ez130_8t_v1p1 DECAPHV_DIR=/foss/designs/$(basename "$repo")/ip/ez130_8t_decap_hv"
 # --skip stops the entrypoint from starting a UI.
 exec docker run --rm -v "$proj:/foss/designs" "$img" --skip bash -lc "$env_vars && cd /foss/designs/$(basename "$repo") && $1"

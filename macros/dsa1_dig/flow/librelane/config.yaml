@@ -23,13 +23,9 @@ DESIGN_NAME: dsa1_dig_top
 VERILOG_FILES: ["dir::../../rtl_gen/dsa1_dig_top_cg.v"]
 
 # Layout / Floorplan Rules
-# West column of the dsm2 die. 881 sites by 175 rows of the 0.42 x 3.36 um
-# CoreSite. The core is 5.04 um in from the sides and 13.44 um from top and
-# bottom, 202.0k um2, so 137.7k um2 of cells is 68 %. The 355 x 561 um outline
-# (75 %) failed detailed placement after global placement: the cell padding
-# below inflates the cells to over 90 % of the core.
+# West column of the dsm2 die, as wide as the gap to dsm2's halo allows. 974 sites by 153 rows of the 0.42 x 3.36 um CoreSite. The core is 5.04 um in from the sides and 13.44 um from top and bottom, 194.4k um2, so 134.1k um2 of cells is 69 %. 409.08 x 504 um (70 %) placed and routed but kept one antenna violation.
 FP_SIZING: absolute
-DIE_AREA: [0, 0, 370.02, 588]
+DIE_AREA: [0, 0, 409.08, 514.08]
 PL_TARGET_DENSITY_PCT: 85
 GRT_ALLOW_CONGESTION: true
 RUN_MAGIC_DRC: true
@@ -37,14 +33,10 @@ RUN_CTS: true
 FP_PIN_ORDER_CFG: dir::pin_order.cfg
 FP_PDN_MULTILAYER: false
 
-# One site of padding either side of every functional cell. Signal routing
-# starts at Metal2, so Metal1 carries only pin access and the router has no
-# freedom there. Without this the detailed router plateaus at a handful of
-# Metal1 spacing violations that move between runs and never clear.
-# These are totals, not per side: gpl.tcl and dpl_cell_pad.tcl both divide by 2
-# with integer division, so 1 silently becomes 0 per side.
+# One site of padding either side of every functional cell in global placement, none in detailed placement. Signal routing starts at Metal2, so Metal1 carries only pin access and the router cannot move cells apart. The global padding spreads them enough for the router to reach 0, and DPL padding 2 failed legalization at 404.88 x 504 um (DPL-0036).
+# These are totals, not per side: gpl.tcl and dpl_cell_pad.tcl both divide by 2 with integer division, so DPL 1 is 0 per side.
 GPL_CELL_PADDING: 2
-DPL_CELL_PADDING: 2
+DPL_CELL_PADDING: 1
 
 # CMOS5L stops at Metal4, there is no Metal5 or TopMetal2.
 RT_MAX_LAYER: Metal4

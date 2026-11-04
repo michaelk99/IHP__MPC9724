@@ -99,6 +99,7 @@ IMAGE_TOP_METAL: "126/0"          # TopMetal1, this stack's top metal
 IMAGE_WIDTH: 2000                 # px
 IMAGE_OVERSAMPLING: 2
 IMAGE_REGION: full                # package (footprint + bond table) | full
+IMAGE_MARGIN: 60                  # um, so the outermost pin names are not cut at the image edge
 
 # --- Drawing sheet -----------------------------------------------------------
 # No EUROPRACTICE order sheet: IHP packages the chip. Its order data (10 packaged, die 200 um thick) goes with the IHP area registration.
@@ -111,7 +112,7 @@ SHEET_KEEP: false
 # EPAD: downbonds to the exposed pad, drawn from leftover pads with the
 # given names, parallel to the neighboring wires.
 #
-# The die has 20 bondpads and the QFN24 has 24 leads (6 per side). Leads 1, 6,
+# The die has 21 bondpads and the QFN24 has 24 leads (6 per side). Leads 1, 6,
 # 13 and 18 are not bonded. VSS and IOVSS are in EPAD_NETS below and meet on
 # the paddle instead.
 PINOUT:
@@ -144,8 +145,39 @@ PINOUT:
   23: "clk_PAD"                   # decimator clock
   24: "rst_n_PAD"                 # reset, active low
 
+# Signal names drawn next to the pin numbers and listed in the bond table, as in doc/pinout.md. Every PINOUT pin needs one, NC pins say NC.
+PIN_NAMES:
+  1: NC
+  2: IOVDD
+  3: IOVSS
+  4: VDD
+  5: VSS
+  6: NC
+  7: data_in
+  8: adc_conv
+  9: VSS
+  10: dsm_clk
+  11: do_q
+  12: do_q_b
+  13: NC
+  14: vi
+  15: vcm
+  16: ibias_test
+  17: VDDA
+  18: NC
+  19: miso
+  20: ss
+  21: mosi
+  22: sclk
+  23: clk
+  24: rst_n
+
 # VSS and IOVSS are bonded only through the cavity: both pads downbond to the
 # paddle and leads 3, 5 and 9 bond to the paddle, no wire runs pad to lead. That
 # is the cavity connection. It joins the two grounds in the package,
 # which the IO cells' substrate ties do on the die anyway.
 EPAD_NETS: ["VSS", "IOVSS"]
+
+# The die has two IOVDD pads for the second iovdd-to-iovss ESD clamp. Lead 2 bonds one, the other (the north one on the west side) stays unbonded. Any other PINOUT pad without a wire fails the run.
+UNBONDED_PADS:
+  IOVDD: 1

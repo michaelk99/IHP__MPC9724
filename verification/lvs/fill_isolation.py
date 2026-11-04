@@ -15,6 +15,8 @@ out = globals().get("out") or "verification/lvs/fill_isolation.txt"
 CONDUCTORS = {"Activ": (1, [6]), "GatPoly": (5, [6]), "Metal1": (8, [6, 19]), "Metal2": (10, [19, 29]),
               "Metal3": (30, [29, 49]), "Metal4": (50, [49, 125]), "TopMetal1": (126, [125])}
 FILL = 22
+# The nofill markers are not circuit shapes. Counted as drawn, fill that abuts them reads as touching drawn.
+NOFILL = 23
 
 ly = pya.Layout()
 ly.read(gds)
@@ -34,7 +36,7 @@ rows, bad = [], 0
 fills = {}
 for name, (layer, cuts) in CONDUCTORS.items():
     fill = region(layer, lambda d: d == FILL)
-    drawn = region(layer, lambda d: d != FILL).merged()
+    drawn = region(layer, lambda d: d not in (FILL, NOFILL)).merged()
     via = pya.Region()
     for c in cuts:
         via += region(c, lambda d: True)
@@ -46,8 +48,8 @@ for name, (layer, cuts) in CONDUCTORS.items():
     bad += joined + n_via
     rows.append(f"| {name} {layer}/{FILL} | {fill.count()} | {n_touch} | {joined} | {n_via} |")
 
-drawn_act = region(1, lambda d: d != FILL)
-drawn_poly = region(5, lambda d: d != FILL)
+drawn_act = region(1, lambda d: d not in (FILL, NOFILL))
+drawn_poly = region(5, lambda d: d not in (FILL, NOFILL))
 n_dev = fills["GatPoly"].interacting(drawn_act).count() + fills["Activ"].interacting(drawn_poly).count()
 n_dummy = fills["GatPoly"].interacting(fills["Activ"]).count()
 bad += n_dev

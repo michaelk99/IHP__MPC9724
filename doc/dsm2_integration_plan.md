@@ -56,7 +56,7 @@ SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 | `macros/scripts/regmap_gen.py` | per-die overlays: `die_fields()`, per-die validation, selftest cases |
 | `macros/dsa1_dig/regmap.yaml` | `BIAS_CFG_0/1`: DSA1 fields `only: dsa1`, dsm2 fields `only: cmos5l` |
 | generated: `macros/dsa1_dig/rtl/dsa1_regs.vhd`, `.vh`, `sw/dsa1_regs.h`, `models/regmap_defs.py`, `doc/regmap.md` | regenerated |
-| `ip/dsm2_core/` | new: blackbox Verilog, cocotb sim model, abstract LEF and outline GDS generator, later the real views |
+| `ip/dsm2_core/` | new: blackbox Verilog, cocotb sim model, abstract LEF and outline GDS generator, later the real views. The generator is removed since dsm2's GDS is in `gds/` |
 | `ip/sg13cmos5l_ip__cut_vdd/` | new: the vdd band cut ring cell, generator, GDS, LEF, CDL, Verilog, lib, checks |
 | `rtl/sg13cmos5l_dsa1_dig_top.sv` | east pads, second VSS, VDDA clamp, dsm2, analog wires |
 | `rtl/sg13cmos5l_dsa1_dig_core.sv` | dsm2 control ports, `do_q` gating, `DEC_SRC` mux |
@@ -488,6 +488,8 @@ endmodule
 ```
 
 - [ ] **Step 3: Abstract generator**
+
+Removed on 2026-10-30, git history keeps it. It wrote `gds/dsm2_core.gds`, which is dsm2's own GDS since the intake of 6dd2926.
 
 `ip/dsm2_core/abstract/abstract_gen.py` writes the LEF as text and a GDS with only `prBoundary` (189/4) and the pin shapes on Metal3 plus `Metal3.pin`/`Metal3.text` labels, through `scripts/gdswrite.py` as the clamp generator does (`write_gds(layout, path)`). Pins 1 x 2 um on Metal3 at 10 um pitch: the east pins from 10 um above the south-east corner in the order `vi, vcm, ibias_test, vdd`, the south pins from 10 um west of the south-east corner in the order `do_q_b, do_q, di_clk`, the west pins from 10 um above the south-west corner in the order `do_q_dec, di_qout_en, di_btest_en, di_vcm_ext, di_dith_amp[1:0], di_dith_en, di_trim[3:0], di_rst_b, di_ena`. `vss` is a 2 um ring pin on Metal3 at the outline, as dsm2's guard ring will be. The real LEF replaces all of this in Task 10. The README names the abstract a placeholder and records the dsm2 source (`sg13cmos5l_batmon` `macros/dsm2`, its commit when it arrives).
 
@@ -1098,11 +1100,11 @@ Test it on a hand-written 10-line netlist with an extra `sg13cmos5l_antennanp` o
 Run: `scripts/in_image.sh 'make build-top'` in the background (laptop), or on gigaarm (Task 9).
 Expected: LibreLane finishes. Then:
 - `scripts/in_image.sh 'make check-netlist && python3 scripts/check_analog_nets.py netlist/nl/sg13cmos5l_dsa1_dig_top.nl.v flow/librelane/analog_nets.txt --rx flow/librelane/config.yaml'` passes.
-- Keep-out: a KLayout script, `scripts/check_keepout.py <gds> <box>`, flattens the top cell without the `dsm2_core` instance and fails on any shape on Metal1 to TopMetal1 inside the dsm2 box, except the drawn and routed wires that end on a dsm2 pin within 2 um of the box edge. Require PASS on the chip, and FAIL on a copy with one Metal2 rectangle added inside the box.
+- Keep-out: a KLayout script, `scripts/check_keepout.py <gds> <box>`, flattens the top cell without the `dsm2_core` instance and fails on any shape on Metal1 to TopMetal1 inside the dsm2 box, except the drawn and routed wires that end on a dsm2 pin within 2 um of the box edge. Require PASS on the chip, and FAIL on a copy with one Metal2 rectangle added inside the box. Since 2026-10-30 `make check-keepout` runs it on the delivery GDS together with the metal fill check of the halo and the Activ and GatPoly fill check of the outline.
 - `scripts/in_image.sh 'make sim-gl-cocotb'`: every test passes on the gate-level netlist.
 - VDD isolation: in the DEF, list every instance pin on VDD and on VDDA. VDD has no pin of a segment cell or of dsm2, VDDA has no other. A copy of the netlist with one segment cell's `vdd` moved to VDD must fail this check.
 - `scripts/in_image.sh 'make em-probe'` and the IR report from `make copy-reports`: the 5 um core ring within the v1.1.1 limits (worst EM ratio 0.5, IR as reported then).
-- The DEF shows every east pad gap on the 1 um site grid and 20 um gaps.
+- The DEF shows every east pad gap on the 1 um site grid and 30 um gaps (20 um is the south side).
 - STA: setup and hold met for `clk` and `sclk`, no path from or to dsm2.
 - `make copy-reports`, then DRC: only the expected density markers, `DRC_EXPECT` re-derived if bondpad markers change.
 
@@ -1204,8 +1206,8 @@ git commit -m "benches: LVS, ESD, start-up and bounce with VDDA, dsm2 and the se
 
 Needs dsm2's GDS and LEF (end of the week of 2026-10-19 at the earliest).
 
-- [ ] **Step 1:** Copy dsm2's `final/gds`, `final/lef`, CDL and pin list into `ip/dsm2_core/`, with the dsm2 commit in the README. Compare its LEF pin names to `dsm2_core.v` (the Task 3 check), and its outline to 150 x 170 um. A difference stops here and goes back to the dsm2 session. Also ask dsm2 for its input-bench result (at VDD 1.08 and 1.32 V against VDDA 1.45 and 1.55 V: no extra VDDA current beyond the receivers' figures, the bias at code 4 within one trim step, the `di_ena` edge at the OTA at least 30 ns) and record it with dsm2's commit in `doc/signoff.md`.
+- [ ] **Step 1:** dsm2 hands off one directory: GDS, LEF, CDL, `dsm2_core.vh`, the KLayout and the Magic LVS log of the delivered GDS, the md5 of each file, and the XOR of its `sg13cmos5l_SecondaryProtection` against the IO library's cell. Check the md5s, copy GDS, LEF and CDL into `ip/dsm2_core/` with the dsm2 commit in the README. Compare its LEF pin names to `dsm2_core.v` (the Task 3 check), and its outline to 150.5 x 178 um. Run the cell-name clash XOR on every handoff: every cell name of dsm2's GDS that also occurs in the chip GDS or a merge input must XOR to 0. The GDS merge renames dsm2's copy of `sg13cmos5l_SecondaryProtection` to `sg13cmos5l_SecondaryProtection$1` even when it is identical, so a changed copy would stay in the chip silently. A difference stops here and goes back to the dsm2 session. Also ask dsm2 for its input-bench result (at VDD 1.08 and 1.32 V against VDDA 1.45 and 1.55 V: no extra VDDA current beyond the receivers' figures, the bias at code 4 within one trim step, the `di_ena` edge at the OTA at least 30 ns) and record it with dsm2's commit in `doc/signoff.md`.
 - [ ] **Step 2:** Rebuild the chip (`make build-top`), Task 7 Step 6 checks, `top_lvs.sh` with dsm2 compared device by device.
-- [ ] **Step 3:** Every row of `doc/signoff.md` on the delivery GDS, in its order, on `:next`: check-netlist, macro XOR against `macros/dsa1_dig/final/gds` (0), the same XOR for the dsm2 cell against `ip/dsm2_core/gds/dsm2_core.gds` (0), `mpw-precheck`, `klayout-drc-regular` (with the antenna and latch-up decks), Magic DRC, `fill_isolation.py`, `top_lvs.sh` and mutant, LibreLane LVS/STA/antenna via `copy-reports`, `em-probe`, start-up, bounce, ESD, `make bondplan`, chip cocotb RTL and GL, `signoff_env.txt` with the `:next` digest.
+- [ ] **Step 3:** Every row of `doc/signoff.md` on the delivery GDS, in its order, on `:next`: check-netlist, macro XOR against `macros/dsa1_dig/final/gds` (0), the same XOR for the dsm2 cell against `ip/dsm2_core/gds/dsm2_core.gds` (0), `check-keepout`, `mpw-precheck`, `klayout-drc-regular` (with the antenna and latch-up decks), the worst 800 um Activ window with `scripts/density_window.py` (the deck's 400 um grid and a 10 um sliding step, method in its docstring), Magic DRC, `fill_isolation.py`, `top_lvs.sh` and mutant, LibreLane LVS/STA/antenna via `copy-reports`, `em-probe`, start-up, bounce, ESD, `make bondplan`, chip cocotb RTL and GL, `signoff_env.txt` with the `:next` digest.
 - [ ] **Step 4:** `make release VERSION=1.2.0`, `doc/signoff.md`, the new md5 into `scripts/submission.sh`, a `submission.sh` dry run.
 - [ ] **Step 5:** Commit, then ask the user before any push or tag.

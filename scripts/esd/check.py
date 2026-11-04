@@ -158,16 +158,17 @@ def build(run, ron, clamp, ideal, without=()):
             continue
         conn = []
         for p in cells[d["master"]][0]:
-            conn.append(f"{p}_{s}" if p in hbm.RAILS else
+            conn.append(f"{d['vdd_net'] if p == 'vdd' else p}_{s}" if p in hbm.RAILS else
                         f"padc_{s}" if p == "pad" else f"{p}_{s}")
         flatten(cells, d["master"], conn, f"{s}.", g, ron, clamp)
-    if "clv_clamp" in ring and "clamp" not in without:     # the clamp cell, 3 of IHP's
-        g.add("clv_clamp", "cls_clamp", clamp[0], clamp[1] / hbm.CLAMP_X, "clamp")
+    for c in ("clamp", "clamp_vdda"):            # the clamp cells, 3 of IHP's each
+        if f"clv_{c}" in ring and c not in without:
+            g.add(f"clv_{c}", f"cls_{c}", clamp[0], clamp[1] / hbm.CLAMP_X, "clamp")
     if hbm.PKG_GND:                          # the package short, one bond wire per pad
         for s in slots:
             if hbm.group(s) == "gnd":
                 g.add(f"pad_{s}", "pkg_gnd", 0.0, hbm.BOND_R, "bond", both=True)
-    # the core: its n-well junction, vss -> vdd
+    # the core: its n-well junction, vss -> vdd. dsm2 brings none.
     for k in range(8):
         g.add(f"vssring_{k}", f"vddring_{k}", VF, ron * 35 / (hbm.WELL_A / 8), "well")
     # the ring
@@ -280,7 +281,7 @@ def main():
     hbm.PKG_GND = a.pkg_gnd
     slots, _, _ = hbm.load(os.path.abspath(a.run))
     for w in a.without:
-        if w not in slots and w != "clamp":
+        if w not in slots and w not in ("clamp", "clamp_vdda"):
             die(f"--without {w}: no such slot or clamp, have {sorted(slots)}")
     sys.exit(run_check(os.path.abspath(a.run), a.ron, a.vhbm, a.ideal_ring, a.without))
 

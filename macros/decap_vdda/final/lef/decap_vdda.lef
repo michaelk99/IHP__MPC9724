@@ -1,0 +1,148 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO decap_vdda
+  CLASS BLOCK ;
+  FOREIGN decap_vdda ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 150.360 BY 349.440 ;
+  PIN VDD
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal4 ;
+        RECT 8.520 0.000 10.520 6.620 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 8.520 330.260 10.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 38.520 0.000 40.520 6.620 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 38.520 330.260 40.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 68.520 0.000 70.520 6.620 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 68.520 330.260 70.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 98.520 0.000 100.520 6.620 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 98.520 330.260 100.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 128.520 0.000 130.520 6.620 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 128.520 330.260 130.520 349.440 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 320.360 150.360 330.360 ;
+    END
+  END VDD
+  PIN VSS
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal4 ;
+        RECT 23.520 0.000 25.520 3.260 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 23.520 344.260 25.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 53.520 0.000 55.520 3.260 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 53.520 344.260 55.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 83.520 0.000 85.520 3.260 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 83.520 344.260 85.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 113.520 0.000 115.520 3.260 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 113.520 344.260 115.520 349.440 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 143.520 0.000 145.520 3.260 ;
+    END
+    PORT
+      LAYER Metal4 ;
+        RECT 143.520 344.260 145.520 349.440 ;
+    END
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 334.360 150.360 344.360 ;
+    END
+  END VSS
+  OBS
+      LAYER GatPoly ;
+        RECT 3.450 3.465 147.735 319.095 ;
+      LAYER Metal1 ;
+        RECT 2.520 3.200 147.840 319.360 ;
+      LAYER Metal2 ;
+        RECT 8.600 3.215 145.440 319.345 ;
+      LAYER Metal3 ;
+        RECT 8.555 3.260 145.485 319.300 ;
+      LAYER Metal4 ;
+        RECT 10.730 344.050 23.310 344.260 ;
+        RECT 25.730 344.050 38.310 344.260 ;
+        RECT 10.730 330.050 38.310 344.050 ;
+        RECT 40.730 344.050 53.310 344.260 ;
+        RECT 55.730 344.050 68.310 344.260 ;
+        RECT 40.730 330.050 68.310 344.050 ;
+        RECT 70.730 344.050 83.310 344.260 ;
+        RECT 85.730 344.050 98.310 344.260 ;
+        RECT 70.730 330.050 98.310 344.050 ;
+        RECT 100.730 344.050 113.310 344.260 ;
+        RECT 115.730 344.050 128.310 344.260 ;
+        RECT 100.730 330.050 128.310 344.050 ;
+        RECT 130.730 344.050 143.310 344.260 ;
+        RECT 130.730 330.050 145.520 344.050 ;
+        RECT 8.520 6.830 145.520 330.050 ;
+        RECT 10.730 3.470 38.310 6.830 ;
+        RECT 10.730 3.260 23.310 3.470 ;
+        RECT 25.730 3.260 38.310 3.470 ;
+        RECT 40.730 3.470 68.310 6.830 ;
+        RECT 40.730 3.260 53.310 3.470 ;
+        RECT 55.730 3.260 68.310 3.470 ;
+        RECT 70.730 3.470 98.310 6.830 ;
+        RECT 70.730 3.260 83.310 3.470 ;
+        RECT 85.730 3.260 98.310 3.470 ;
+        RECT 100.730 3.470 128.310 6.830 ;
+        RECT 100.730 3.260 113.310 3.470 ;
+        RECT 115.730 3.260 128.310 3.470 ;
+        RECT 130.730 3.470 145.520 6.830 ;
+        RECT 130.730 3.260 143.310 3.470 ;
+  END
+END decap_vdda
+END LIBRARY
+

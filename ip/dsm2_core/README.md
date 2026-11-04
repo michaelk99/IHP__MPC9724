@@ -1,22 +1,34 @@
 # dsm2_core
 
-Placeholder views of the dsm2 first-order DT delta-sigma modulator, so the chip RTL and flow can be built before the real GDS and LEF are drawn.
+Views of the dsm2 first-order DT delta-sigma modulator, 150.5 x 178 um. GDS, LEF and CDL are dsm2's own, copied byte for byte and never edited here.
 
-Source of the real macro: `sg13cmos5l_batmon`, `macros/dsm2` (commit to be recorded when the views arrive).
+These are dsm2's oscillator variant views of 2026-11-02, the views that tape out. They carry the quantizer2 latch preset fix and four oscillator pins. The baseline views of the same day stay outside the repo as the fallback. The views of 6dd2926 (2026-10-29) are in git history.
+
+| File | md5 | Source |
+| --- | --- | --- |
+| `gds/dsm2_core.gds` | `00624787128efe33ca6ddf5273170e56` | dsm2 delivery 2026-11-02, `dsm2_core_variant`, top cell `dsm2_core` |
+| `lef/dsm2_core.lef` | `042ec97848217f9a30e94a391885b839` | same delivery, the variant LEF agreed on 2026-10-31 |
+| `cdl/dsm2_core.cdl` | `5df9700351cb3b2c1804480eb62dfc12` | same delivery, the LVS netlist without the xschem path comments, 48 subckts |
+| `spice/` | `MD5SUMS` there | same delivery, its ngspice bundle: schematic `dsm2_core`, extracted `dsm2_core_pex` (Magic full RC of this GDS), header, smoke benches, see `spice/README.md` |
+
+dsm2's own LVS of these views, read at intake, kept with the delivery outside the repo (`lvs/`):
+
+- `klayout_lvs.log`: KLayout 0.30.12, "Netlists match", 0 errors.
+- `netgen_lvs.out`: Magic and Netgen, "Circuits match uniquely", 1477 devices and 696 nets on both sides. The 2753 property errors are all `mm_ok` on schematic devices, a model flag the extraction does not carry.
+
+Both logs are dated 2026-10-31 02:25 and name `layout/dsm2_core.gds` without an md5. The chip's top LVS compares this GDS device by device against this CDL (`verification/lvs/`).
 
 | File | What it is |
 | --- | --- |
-| `verilog/dsm2_core.v` | Blackbox with the agreed 17 ports, 21 pin bits |
+| `verilog/dsm2_core.v` | Blackbox with 21 ports, 25 pin bits: the 17 agreed ports and the four oscillator ports appended. dsm2's `dsm2_core.vh` has the same names and widths, its baseline part in another order, the four oscillator ports appended after `ibias_test` as here after `do_q_dec` |
 | `verilog/dsm2_core_model.v` | Bench-only model: PRBS15 (`x^15 + x^14 + 1`, seed 1) on `di_clk`, not the circuit |
-| `abstract/abstract_gen.py` | Writes the placeholder LEF and outline GDS: `klayout -n sg13cmos5l -zz -r abstract_gen.py` |
 | `abstract/check_pins.py` | LEF pins against the blackbox ports |
-| `lef/dsm2_core.lef`, `gds/dsm2_core.gds` | Generated, 155.0 x 185.0 um, Metal3 pins only |
 
-Pins are 1 x 2 um on Metal3.
-East edge from the south-east corner: `vi`, `vcm`, `ibias_test`, `vdd` at 10 um pitch.
-South edge: `do_q_b`, `do_q`, `di_clk` at 110, 105 and 100 um from the west edge, so the south-east corner stays free for dsm2's internal `vi` route.
-West edge from the south-west corner: `do_q_dec`, the controls, `di_ena` at 10 um pitch.
-`vdd` (y 36 to 46 um) and `vss` (y 50 to 60 um) are 2 um deep stubs on the east edge, 10 um tall, for the chip top's straps.
-OBS covers Metal1 to Metal4 over the outline except the pin shapes.
+Pins, from the LEF: all Metal3.
+East edge from the bottom: `vi` at 3.0 um, `vcm` 8.5, `ibias_test` 14.0, `vdd` 36 to 46, `vss` 50 to 60.
+South edge: `di_clk`, `do_q` and `do_q_b` centred at x 97.27, 99.96 and 102.65 um.
+West edge: the controls at 2.69 um pitch, `di_osc_en` at y 122.445 and `di_clk_sel` at 125.135 (1.2 V inputs).
+South edge, oscillator: `do_osc_oe` at x 91.745 and `do_clk_osc` at 94.435 (1.5 V outputs).
+OBS covers Metal1 and Metal2 over the outline, Metal3 around the pins and Metal4.
 
-The real LEF and GDS replace all of this.
+The GDS has no fill and no nofill markers. The chip keeps metal fill out of the box and its 10 um halo, and Activ and GatPoly fill out of the outline (`scripts/add_logo_fill.sh`). It carries `sg13cmos5l_SecondaryProtection` under the PDK name, identical to the PDK IO library's copy (XOR 0 on every layer). The repo's `ip/sg13cmos5l_io_custom` GDS lacks the 3 PolyRes 128/0 marker shapes in that cell, as it did for 6dd2926.

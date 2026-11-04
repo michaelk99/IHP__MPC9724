@@ -22,6 +22,12 @@ Ports, all on datatype 25 of their layer:
                   outer edge)
   <rail>ring_<k>  the core ring, eight points per rail, where the core decap
                   and the core circuits attach
+  vddadsm, vssdsm where dsm2's VDDA strap and VSS strap leave the clip, the pins of the abstract dsm2 box in the ESD model
+  vddadcp, vssdcp the same on decap_vdda's two straps, where its DECAPHV bank attaches
+
+The vdd band of the pad cells between the two cut_vdd cells is VDDA: those cells carry `vdda` for `vdd` in every port name, and `seg` in ports.json.
+
+The pad slots come from the GDS instances of all four sides. CORE_BOX, RING, RING_AT and DSM_PORTS are constants read off the flow DEF by hand, not parsed.
 """
 
 import json
@@ -49,19 +55,27 @@ STACK = [("Metal1", 8), ("Via1", 19), ("Metal2", 10), ("Via2", 29), ("Metal3", 3
          ("Via3", 49), ("Metal4", 50), ("TopVia1", 125), ("TopMetal1", 126)]
 METALS = {n: l for n, l in STACK if "Via" not in n}
 RAILS = ("vdd", "vss", "iovdd", "iovss")
-DIE = 1600.0
-# inside the core ring's inner conductor (W 363.4, S 364.24, N 1235.12, E 1236.8)
-CORE_BOX = (364.5, 364.5, 1235.0, 1235.0)
-# core ring conductor centre lines (W, E, S, N), read off the GDS: Metal4 on
-# W and E, TopMetal1 on S and N, vdd inner on every side
-RING = {"vss": (335.9, 1264.3, 336.74, 1262.62), "vdd": (355.9, 1244.3, 356.74, 1242.62)}
+NETS = RAILS + ("vdda",)
+DIE = 1300.0
+# inside the core ring's inner conductor (W 343.24, S 344.08, E 947.0, N 956.24)
+CORE_BOX = (344.5, 344.5, 946.0, 955.5)
+# core ring conductor centre lines (W, E, S, N), read off the flow DEF: Metal4 on
+# W and E, TopMetal1 on S and N, vdd inner on every side, 5 um wide
+RING = {"vss": (330.74, 959.5, 331.58, 968.74), "vdd": (340.74, 949.5, 341.58, 958.74)}
+RING_AT = (500.0, 800.0)     # the two ring points per side, along the side
+# dsm2's two straps in the annulus, on Metal3 (flow DEF): VDDA at x 947 to 957, VSS from y 705
+# decap_vdda's straps: VDDA at y 913.36 to 923.36 into the band, VSS at y 927.36 to 937.36 to the VSS ring
+DSM_PORTS = (("vdda", "vddadsm", "Metal3", 952.0, 550.0),
+             ("vss", "vssdsm", "Metal3", 955.0, 705.0),
+             ("vdda", "vddadcp", "Metal3", 970.0, 918.36),
+             ("vss", "vssdcp", "Metal3", 955.0, 932.36))
+CUT = "sg13cmos5l_ip__cut_vdd"
 # bond pad label -> slot name (no brackets, no "__", for SPICE node names)
 SIGNAL = {"output_PAD[0]": "miso", "output_PAD[1]": "adcconv",
-          **{f"output_PAD[{i}]": f"tst{i - 2}" for i in range(2, 18)},
           "input_PAD[0]": "datain", "input_PAD[1]": "sclk", "input_PAD[2]": "mosi",
           "input_PAD[3]": "ss", "rst_n_PAD": "rstn", "clk_PAD": "clk",
-          "analog_PAD[0]": "ana0", "analog_PAD[1]": "ana1",
-          "bidir_PAD[0]": "bidir0", "bidir_PAD[1]": "bidir1"}
+          "analog_PAD[0]": "vi", "analog_PAD[1]": "vcm", "analog_PAD[2]": "ibiastest",
+          "dsm_clk_PAD": "dsmclk", "do_q_PAD": "doq", "do_q_b_PAD": "doqb"}
 
 
 def die(msg):
@@ -100,6 +114,11 @@ def side_along(t, w, h):
                key=lambda e: e[2])[:2]
 
 
+def ring_pos(side, a):
+    """Distance along the ring, counter-clockwise from the south-west corner."""
+    return {"s": a, "e": DIE + a, "n": 3 * DIE - a, "w": 4 * DIE - a}[side]
+
+
 def slot_numbers(cells):
     """{instance index: (side, slot)}: the pad cells numbered per side in their
     order, bottom to top (W, E) and left to right (S, N), as in doc/pinout.md.
@@ -110,7 +129,7 @@ def slot_numbers(cells):
     return {i: (side, k + 1) for side, lst in per.items() for k, (_, i) in enumerate(sorted(lst))}
 
 
-def band_labels(macro, pins, t, w=80.0):
+def band_labels(macro, pins, t, w=80.0, seg=False):
     """[(rail, layer, x, y)] at the centre of each rail rectangle, on the
     cell's centre line across the ring (the rectangles run along it)."""
     out, xc = [], w / 2
@@ -125,11 +144,11 @@ def band_labels(macro, pins, t, w=80.0):
         for lay, x0, y0, x1, y1 in full:
             x = xc if x0 <= xc <= x1 else (x0 + x1) / 2
             p = t * pya.DPoint(x, (y0 + y1) / 2)
-            out.append((rail, lay, p.x, p.y))
+            out.append(("vdda" if seg and rail == "vdd" else rail, lay, p.x, p.y))
     return out
 
 
-def clamp_labels(t):
+def clamp_labels(t, seg=False):
     """[(rail, x, y)] of the clamp: every Metal2 stripe of its three blocks, at
     the fingers' centroid, so the stripes up to the bands are extracted."""
     m = clamp.Mos(clamp.CL_COLS, clamp.CL_Y0, clamp.CL_GATES, 0.6, ("vss", "vdd"),
@@ -139,7 +158,7 @@ def clamp_labels(t):
     for s0, s1, rail in clamp.CL_STRIPES:
         for xf in clamp.BLOCKS.values():
             p = t * pya.DPoint(clamp.xmap((s0 + s1) / 2, xf), yc)
-            out.append((rail, p.x, p.y))
+            out.append(("vdda" if seg and rail == "vdd" else rail, p.x, p.y))
     return out
 
 
@@ -187,35 +206,54 @@ def main(out):
     centre = {}                  # (side, slot) -> pad cell centre
     insts = [i for i in top.each_inst() if i.cell.name.startswith("sg13cmos5l_IOPad")]
     clamps = [i for i in top.each_inst() if i.cell.name == CLAMP]
+    cuts = [i for i in top.each_inst() if i.cell.name == CUT]
+    # the VDDA segment is the stretch of the ring between the two cut cells
+    if len(cuts) != 2:
+        die(f"{len(cuts)} instances of {CUT}, want 2")
+    cw, ch = cuts[0].cell.dbbox().width(), cuts[0].cell.dbbox().height()
+    cp = sorted(ring_pos(*side_along(c.dcplx_trans, cw, ch)) for c in cuts)
+
+    def in_seg(inst, w):
+        pos = ring_pos(*side_along(inst.dcplx_trans, w, inst.cell.dbbox().height()))
+        return cp[0] < pos < cp[1]
     numbers = slot_numbers({j: side_along(i.dcplx_trans, 80.0, i.cell.dbbox().height())
                             for j, i in enumerate(insts)})
+    names = {}
     for j, inst in enumerate(insts):
         m = inst.cell.name
         t = inst.dcplx_trans
         h = inst.cell.dbbox().height()
         side, k = numbers[j]
+        seg = in_seg(inst, 80.0)
         centre[(side, k)] = t * pya.DPoint(40.0, h / 2)
-        for rail, lay, x, y in band_labels(m, io[m], t):
+        for rail, lay, x, y in band_labels(m, io[m], t, seg=seg):
             ports.append(dict(kind="rail", rail=rail, layer=lay, x=x, y=y,
-                              side=side, k=k, master=m))
+                              side=side, k=k, master=m, seg=seg))
         p = t * pya.DPoint(40.0, 1.5)
         ports.append(dict(kind="padc", layer="TopMetal1", x=p.x, y=p.y,
-                          side=side, k=k, master=m))
-    # the clamp cell: its bands, and a port on every stripe for the clamp itself
-    if len(clamps) != 1:
-        die(f"{len(clamps)} instances of {CLAMP}, want 1")
-    t = clamps[0].dcplx_trans
-    w, h = clamps[0].cell.dbbox().width(), clamps[0].cell.dbbox().height()
-    side = side_along(t, w, h)[0]
-    for rail, lay, x, y in band_labels(CLAMP, io[CLAMP], t, w):
-        ports.append(dict(kind="rail", rail=rail, layer=lay, x=x, y=y,
-                          side=side, k=0, master=CLAMP))
-    for rail, x, y in clamp_labels(t):
-        ports.append(dict(kind="clamp", rail=rail, layer="Metal2", x=x, y=y,
-                          side=side, k=0, master=CLAMP))
+                          side=side, k=k, master=m, seg=seg))
+    # the clamp cells: their bands, and a port on every stripe for the clamp itself.
+    # Slot k 0 of their side, named clamp (VDD) and clamp_vdda (the segment's).
+    if len(clamps) != 2:
+        die(f"{len(clamps)} instances of {CLAMP}, want 2")
+    clamp_keys = []
+    for c in clamps:
+        t = c.dcplx_trans
+        w, h = c.cell.dbbox().width(), c.cell.dbbox().height()
+        side = side_along(t, w, h)[0]
+        seg = in_seg(c, w)
+        names[(side, 0)] = "clamp_vdda" if seg else "clamp"
+        clamp_keys.append((side, 0))
+        for rail, lay, x, y in band_labels(CLAMP, io[CLAMP], t, w, seg=seg):
+            ports.append(dict(kind="rail", rail=rail, layer=lay, x=x, y=y,
+                              side=side, k=0, master=CLAMP, seg=seg))
+        for rail, x, y in clamp_labels(t, seg=seg):
+            ports.append(dict(kind="clamp", rail=rail, layer="Metal2", x=x, y=y,
+                              side=side, k=0, master=CLAMP, seg=seg))
+    if sorted(names.values()) != ["clamp", "clamp_vdda"] or len(set(clamp_keys)) != 2:
+        die(f"want one clamp in the segment and one outside, got {names}")
 
     # bond pad plates: the chip's own pad labels name them
-    names = {}
     tm_lbl = ly.find_layer(126, 25)
     for s in top.shapes(tm_lbl).each(pya.Shapes.STexts):
         x, y = s.text.trans.disp.x * dbu, s.text.trans.disp.y * dbu
@@ -224,43 +262,49 @@ def main(out):
         if key in names:
             die(f"two pad labels on slot {key}: {names[key]} and {name}")
         base = name.lower()
-        if base in RAILS:
+        if base in NETS:
             names[key] = f"{base}_{key[0]}{key[1]}"
         elif name in SIGNAL:
             names[key] = SIGNAL[name]
         else:
             die(f"pad label {name} has no slot name")
         ports.append(dict(kind="pad", layer="TopMetal1", x=x, y=y,
-                          side=key[0], k=key[1], master="bondpad"))
+                          side=key[0], k=key[1], master="bondpad",
+                          seg=any(q.get("seg") for q in ports
+                                  if (q["side"], q["k"]) == key)))
     # every pad slot must reach all four rails: a slot missing one leaves that
     # node of its HBM subcircuit floating, which simulates as a clamp that is
     # not there and fails nothing
-    names[(side, 0)] = "clamp"
-    for key in list(centre) + [(side, 0)]:
+    for key in list(centre) + clamp_keys:
         have = {p["rail"] for p in ports if p["kind"] == "rail"
                 and (p["side"], p["k"]) == key}
-        if have != set(RAILS):
-            die(f"pad slot {key}: no port on {sorted(set(RAILS) - have)}")
+        seg = any(p["seg"] for p in ports if p["kind"] == "rail" and (p["side"], p["k"]) == key)
+        want = {"vdda" if seg and r == "vdd" else r for r in RAILS}
+        if have != want:
+            die(f"pad slot {key}: no port on {sorted(want - have)}")
     slots = {(p["side"], p["k"]) for p in ports if p["kind"] == "padc"}
-    if slots != set(names) - {(side, 0)}:
+    if slots != set(names) - set(clamp_keys):
         die(f"pad slots without a label: {sorted(slots - set(names))}")
 
     # core ring, eight points per rail on its Metal4 sides and TopMetal1 top/bottom
     ring = []
+    a0, a1 = RING_AT
     for rail, (w, e, so, no) in RING.items():
-        for i, (x, y, lay) in enumerate([(w, 600.0, "Metal4"), (w, 1000.0, "Metal4"),
-                                         (e, 600.0, "Metal4"), (e, 1000.0, "Metal4"),
-                                         (600.0, so, "TopMetal1"), (1000.0, so, "TopMetal1"),
-                                         (600.0, no, "TopMetal1"), (1000.0, no, "TopMetal1")]):
+        for i, (x, y, lay) in enumerate([(w, a0, "Metal4"), (w, a1, "Metal4"),
+                                         (e, a0, "Metal4"), (e, a1, "Metal4"),
+                                         (a0, so, "TopMetal1"), (a1, so, "TopMetal1"),
+                                         (a0, no, "TopMetal1"), (a1, no, "TopMetal1")]):
             ring.append(dict(kind="ring", rail=rail, layer=lay, x=x, y=y, k=i,
                              name=f"{rail}ring_{i}"))
+    for rail, name, lay, x, y in DSM_PORTS:
+        ring.append(dict(kind="dsm", rail=rail, layer=lay, x=x, y=y, k=0, name=name))
 
     for p in ports:
         slot = names[(p["side"], p["k"])]
         p["slot"] = slot
         p["name"] = {"rail": f"{p.get('rail')}_{slot}", "pad": f"pad_{slot}",
                      "padc": f"padc_{slot}",
-                     "clamp": f"{'clv' if p.get('rail') == 'vdd' else 'cls'}_{slot}"}[p["kind"]]
+                     "clamp": f"{'cls' if p.get('rail') == 'vss' else 'clv'}_{slot}"}[p["kind"]]
     ports += ring
 
     # every port must land on its own layer's metal
@@ -295,7 +339,7 @@ def main(out):
     groups = {}
     for p in ports:
         net = p.get("rail") or p["slot"]
-        if p["kind"] in ("pad", "padc") and p["slot"].split("_")[0] in RAILS:
+        if p["kind"] in ("pad", "padc") and p["slot"].split("_")[0] in NETS:
             net = p["slot"].split("_")[0]      # a supply pad's plate is its rail
         p["net"] = net
         groups.setdefault(net, []).append(p)

@@ -74,6 +74,8 @@ DEFAULTS = {
     "PACKAGE_PIN_LABEL_LAYER": "211/0",
     "PACKAGE_PIN_LABEL_OFFSET": 250.0,  # um, pin number outside the outline
     "PACKAGE_PIN_LABEL_SIZE": None,     # um; default: size of the sheet pin texts
+    "PIN_NAMES": {},                    # pin number --> signal name, drawn outside the pin number
+    "PIN_NAME_SIZE": None,              # um, default 0.6 x the pin number size
     "TABLE_TEXT_SIZE": 100.0,           # um, bond table font size
     "TABLE_GAP": 400.0,                 # um, between the plan and the bond table
     "BONDPLAN_TEXT_POLYGONS": True,     # render all texts as polygon glyphs
@@ -94,6 +96,7 @@ DEFAULTS = {
     "GUARD_SPACING": 100.0,             # um, min gap around guarded wires
     "EPAD_WIRE_LENGTH": 500.0,
     "EPAD_NETS": [],                    # nets bonded only via the cavity
+    "UNBONDED_PADS": {},                # pad name -> count left unbonded on purpose
     "EPAD_LEAD_WIRE_LENGTH": 500.0,     # um, lead-to-cavity bond length
     "EPAD_DIE_CLEARANCE": 100.0,        # um, cavity landing to die edge
     "PACKAGE_PADDLE": None,             # um, paddle side; default: lead tips
@@ -107,6 +110,7 @@ DEFAULTS = {
     "IMAGE_WIDTH": 2000,
     "IMAGE_OVERSAMPLING": 2,
     "IMAGE_REGION": "package",      # package | full
+    "IMAGE_MARGIN": 0.0,            # um, blank border around the image crop
     "IMAGE_TOP_METAL": "134/0",     # die top metal drawn in the images
 }
 
@@ -171,6 +175,16 @@ def load_config(path, overrides=None):
     if not merged["PACKAGE_GDS"] and not (merged["PACKAGE_LIBRARY_GDS"]
                                           and merged["PACKAGE_NAME"]):
         die("set PACKAGE_GDS, or PACKAGE_LIBRARY_GDS + PACKAGE_NAME")
+    # A name per numbered PINOUT pin, so the drawn names cannot drift from the pinout
+    names = merged["PIN_NAMES"] or {}
+    if names:
+        leads = {k for k in merged["PINOUT"] if isinstance(k, int)}
+        if set(names) != leads:
+            die("PIN_NAMES must name exactly the PINOUT pins: missing %s, extra %s"
+                % (sorted(leads - set(names)), sorted(set(names) - leads)))
+        for pin, name in names.items():
+            if not merged["PINOUT"][pin] and str(name).upper() != "NC":
+                die("PIN_NAMES %s: pin is NC in PINOUT but named %r" % (pin, name))
     merged["_dir"] = os.path.dirname(os.path.abspath(path))
     return merged
 
@@ -637,12 +651,38 @@ def analyze_package(cfg):
             lx = pt[0]
             ly_ = (bb.top * dbu + label_off if direction[1] > 0
                    else bb.bottom * dbu - label_off)
-        pin_labels[num] = {"pt": fp_trans * pya.DPoint(lx, ly_),
-                           "size": size}
         half_w = len(str(num)) * size * 0.35     # centered glyph extent
         glyph_box = pya.DBox(lx - half_w, ly_ - size * 0.55,
                              lx + half_w, ly_ + size * 0.55)
         text_box = glyph_box if text_box is None else text_box + glyph_box
+
+        # Signal name further out than the number: horizontal on east / west,
+        # turned 90 deg on north / south so it fits the lead pitch
+        name = None
+        pin_name = (cfg["PIN_NAMES"] or {}).get(num)
+        if pin_name:
+            nsize = float(cfg["PIN_NAME_SIZE"] or 0.6 * size)
+            nlen = len(str(pin_name)) * nsize * 0.70
+            gap = 0.3 * size
+            if abs(direction[0]) >= abs(direction[1]):
+                sign = 1 if direction[0] > 0 else -1
+                nx, ny = lx + sign * (half_w + gap), ly_
+                halign = pya.HAlign.HAlignLeft if sign > 0 else pya.HAlign.HAlignRight
+                nbox = pya.DBox(min(nx, nx + sign * nlen), ny - nsize * 0.55,
+                                max(nx, nx + sign * nlen), ny + nsize * 0.55)
+                rot = 0
+            else:
+                sign = 1 if direction[1] > 0 else -1
+                nx, ny = lx, ly_ + sign * (size * 0.55 + gap)
+                halign = pya.HAlign.HAlignLeft if sign > 0 else pya.HAlign.HAlignRight
+                nbox = pya.DBox(nx - nsize * 0.55, min(ny, ny + sign * nlen),
+                                nx + nsize * 0.55, max(ny, ny + sign * nlen))
+                rot = 1
+            name = {"text": str(pin_name), "pt": fp_trans * pya.DPoint(nx, ny),
+                    "size": nsize, "rot": rot, "halign": halign}
+            text_box += nbox
+        pin_labels[num] = {"pt": fp_trans * pya.DPoint(lx, ly_),
+                           "size": size, "name": name}
 
     center = fp_trans * pya.DPoint(*center)
     inner *= fp_trans.mag
@@ -763,6 +803,16 @@ def assign_wires(cfg, pads, pkg, die_box):
         if pad["name"]:
             pads_by_name.setdefault(pad["name"], []).append(pad)
 
+    # Pads left unbonded on purpose: the last ones of a name in (x, y) order, so the north end of the west side. They are marked used and get no wire.
+    reserved = []
+    for name, count in (cfg["UNBONDED_PADS"] or {}).items():
+        found = sorted(pads_by_name.get(name, []), key=lambda p: (p["x"], p["y"]))
+        if len(found) < int(count):
+            die("UNBONDED_PADS wants %d x '%s' but the die has %d" % (count, name, len(found)))
+        for pad in (found[len(found) - int(count):] if int(count) else []):
+            pad["used"] = True
+            reserved.append(pad)
+
     # Collect lead-bond requests: (pin, name)
     requests = {}
     for pin, value in pinout.items():
@@ -782,7 +832,7 @@ def assign_wires(cfg, pads, pkg, die_box):
     # Shortest-wire assignment per pad name (handles VDD/VSS/... groups)
     wires = []
     for name, pin_list in sorted(requests.items()):
-        candidates = pads_by_name.get(name, [])
+        candidates = [p for p in pads_by_name.get(name, []) if p not in reserved]
         if len(candidates) < len(pin_list):
             die("pinout requests %d x pad '%s' but the die has %d "
                 "(known pads: %s)"
@@ -841,7 +891,7 @@ def assign_wires(cfg, pads, pkg, die_box):
     # Every pad of an EPAD net downbonds, on top of any explicit EPAD list
     for net in sorted(epad_nets):
         free = [p for p in pads_by_name.get(net, []) if not p.get("used")]
-        if not free:
+        if not free and not any(p in reserved for p in pads_by_name.get(net, [])):
             die("EPAD_NETS names '%s' but the die has no free pad of that name"
                 % net)
         epad_names += [net] * len(free)
@@ -930,9 +980,14 @@ def assign_wires(cfg, pads, pkg, die_box):
             die("cavity bond pin %s (%s) lands within %.0f um of the die"
                 % (wire["pin"], wire["name"], clear))
 
-    unbonded = [p["name"] for p in pads if p["name"] and not p.get("used")]
-    if unbonded:
-        info("unbonded named pads: %s" % ", ".join(sorted(unbonded)))
+    # Only the pads reserved above may stay without a wire. A pad of a PINOUT name that nothing bonded is a pinout mistake.
+    pinout_names = {n for k, v in pinout.items() for n in normalize_targets(v)}
+    stray = [p["name"] for p in pads if p["name"] in pinout_names
+             and p not in reserved and not p.get("used")]
+    if stray:
+        die("PINOUT pads left unbonded: %s" % ", ".join(sorted(stray)))
+    if reserved:
+        info("unbonded on purpose: %s" % ", ".join(sorted(p["name"] for p in reserved)))
     nc = sorted(set(pkg["bond_pts"]) - {w["pin"] for w in wires})
     if nc:
         info("NC package pins: %s" % ", ".join(map(str, nc)))
@@ -1140,6 +1195,22 @@ def textify(cfg, ly):
     info("textify: %d texts converted to polygon glyphs" % count)
 
 
+def pin_signal(cfg, wire):
+    """Signal name of a wire's pin, or None without PIN_NAMES."""
+    if wire["pin"] == "EPAD":
+        return wire["name"] if cfg["PIN_NAMES"] else None
+    return (cfg["PIN_NAMES"] or {}).get(wire["pin"])
+
+
+def table_row(cfg, wire):
+    signal = pin_signal(cfg, wire)
+    if signal is None or wire["pin"] == "EPAD":
+        return "%s %s" % (wire["pin"], wire["name"])
+    if signal.upper() == wire["name"].upper():
+        return "%s %s" % (wire["pin"], signal)
+    return "%s %s (%s)" % (wire["pin"], signal, wire["name"])
+
+
 def build_bondplan(cfg, pkg, die_layout, die_cell, die_trans, wires, stats):
     if abs(die_layout.dbu - pkg["layout"].dbu) > 1e-12:
         die("die dbu (%g) != package dbu (%g) - not supported"
@@ -1157,7 +1228,11 @@ def build_bondplan(cfg, pkg, die_layout, die_cell, die_trans, wires, stats):
 
         def key(w):
             return (1, 0) if w["pin"] == "EPAD" else (0, w["pin"])
-        rows = ["%s %s" % (w["pin"], w["name"]) for w in sorted(wires, key=key)]
+        rows = [(key(w), table_row(cfg, w)) for w in wires]
+        rows += [((0, pin), "%s NC" % pin)
+                 for pin, name in (cfg["PIN_NAMES"] or {}).items()
+                 if str(name).upper() == "NC"]
+        rows = [text for _, text in sorted(rows, key=lambda r: r[0])]
         width_est = max(map(len, rows)) * size * 0.70
 
     pkg_copy = ly.create_cell(pkg["cell"].name)
@@ -1238,6 +1313,13 @@ def build_bondplan(cfg, pkg, die_layout, die_cell, die_trans, wires, stats):
         text.halign = pya.HAlign.HAlignCenter
         text.valign = pya.VAlign.VAlignCenter
         top.shapes(pin_li).insert(text)
+        name = label.get("name")
+        if name:
+            text = pya.DText(name["text"], pya.DTrans(name["rot"], False,
+                             pya.DVector(name["pt"].x, name["pt"].y)), name["size"], 0)
+            text.halign = name["halign"]
+            text.valign = pya.VAlign.VAlignCenter
+            top.shapes(pin_li).insert(text)
 
     fill_sheet_fields(cfg, ly, top, stats)
     textify(cfg, ly)
@@ -1396,17 +1478,23 @@ def _write_markdown_report(cfg, rows, stats, out):
             ("Max lead skew", "%.1f deg" % max(skews) if skews else "-")]:
         lines.append("| %s | %s |" % (name, value))
 
+    named = bool(cfg["PIN_NAMES"])
     lines += ["", "## Bond Table", "",
-              "| Pin | Die pad | Die x/y (um) | Package x/y (um) | "
-              "Length (um) | Angle (deg) | Skew (deg) | Min gap (um) |",
-              "|---|---|---|---|---|---|---|---|"]
+              "| Pin |%s Die pad | Die x/y (um) | Package x/y (um) | "
+              "Length (um) | Angle (deg) | Skew (deg) | Min gap (um) |"
+              % (" Signal |" if named else ""),
+              "|---|---|---|---|---|---|---|---|" + ("---|" if named else "")]
     for w in rows:
         lines.append(
-            "| %s | %s | %.1f / %.1f | %.1f / %.1f | %.1f | %.1f | %s | %s |"
-            % (w["pin"], w["name"], w["p0"][0], w["p0"][1],
+            "| %s |%s %s | %.1f / %.1f | %.1f / %.1f | %.1f | %.1f | %s | %s |"
+            % (w["pin"], (" %s |" % pin_signal(cfg, w)) if named else "",
+               w["name"], w["p0"][0], w["p0"][1],
                w["p1"][0], w["p1"][1], w["length"], w["angle"],
                "-" if w.get("skew") is None else "%.1f" % w["skew"],
                "-" if w.get("min_gap") is None else "%.1f" % w["min_gap"]))
+    nc = sorted(p for p, n in (cfg["PIN_NAMES"] or {}).items() if str(n).upper() == "NC")
+    if nc:
+        lines += ["", "Not connected: pins %s." % ", ".join(map(str, nc))]
     with open(ensure_dir(out), "w") as f:
         f.write("\n".join(lines) + "\n")
 
@@ -1549,6 +1637,7 @@ def export_images(cfg, pkg, gds_path, ly, top, table_box):
         crop = pkg["view_box"]
     if table_box:
         crop += table_box
+    crop = crop.enlarged(float(cfg["IMAGE_MARGIN"]))
     if cfg["BONDPLAN_PNG"]:
         export_png(cfg, gds_path, crop)
     if cfg["BONDPLAN_SVG"]:

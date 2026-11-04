@@ -85,7 +85,7 @@ Die pads per side, in the flow's ring order (west and east bottom to top, north 
 
 | Side | Cells | Gaps |
 |---|---|---|
-| W | VSS, clamp_vddvss, VDD, IOVSS, IOVDD | 36 um, ends 38 um |
+| W | VSS, clamp_vddvss, VDD, IOVSS, IOVDD, IOVDD (no wire) | 20 um, ends 20 um |
 | N | `rst_n`, `clk`, `sclk`, `mosi`, `ss`, `miso` | 24 um, ends 30 um |
 | E | `vi`, `vcm`, `ibias_test`, VDDA, clamp_vddvss, cut_vdd | 30 um, ends 30 um |
 | S | `data_in`, `adc_conv`, VSS, cut_vdd, `dsm_clk`, `do_q`, `do_q_b` | 20 um, ends 25 um |
@@ -161,7 +161,9 @@ In `rtl/sg13cmos5l_dsa1_dig_core.sv`, beside the existing `data_in` synchronizer
 ## Clocks
 
 - `clk` still drives the decimator only. With `DEC_SRC` it runs at 1.024 MHz (976.6 ns), faster than the 1000 ns the SDCs constrain today, so the chip and the macro SDC constrain `clk` at 950 ns.
-- `dsm_clk` goes from its `IOPadIn` to `di_clk` and nowhere else. No SDC clock, `RSZ_DONT_TOUCH_RX` keeps the resizer off it.
+- `dsm_clk` goes from its pad's `p2c` to `di_clk` and nowhere else. No SDC clock, `RSZ_DONT_TOUCH_RX` keeps the resizer off it.
+- The oscillator variant (2026-11-02) makes the pad an `IOPadInOut4mA`. dsm2's `do_clk_osc` drives its `c2p` and `do_osc_oe` its `c2p_en`, both 1.5 V in the VDDA segment and both in `RSZ_DONT_TOUCH_RX`. `di_osc_en` and `di_clk_sel` come from `BIAS_CFG_0` bits 7 and 8 (`DSM_SPARE`), reset 0, so after reset the pad is an input. With `di_clk_sel` set, dsm2 runs from its oscillator and drives the pad. The host must stop driving `dsm_clk` first. The decimator stays on `clk`.
+- After `di_rst_b` rises the integrator needs about 17 clocks to leave saturation, so the first decimator word after the release is discarded.
 
 ## VDDA, the segment and the analog nets
 
@@ -187,6 +189,7 @@ In `rtl/sg13cmos5l_dsa1_dig_core.sv`, beside the existing `data_in` synchronizer
 - `vi` and `vcm` stay within 0 V to VDDA. With VDDA down during sequencing they must be at 0 V or high-Z, at most 0.1 V: at 0.75 V `vi` draws 55 uA and back-powers dsm2 to 0.46 V (dsm2 sim). The `padres` diodes go to IOVDD, so nothing on the die limits this. It goes into the board notes.
 - dsm2's inputs have one thick-oxide inverter each, so 1.2 V highs from the registers give full 1.5 V levels inside (a plain LV gate leaked and mistrimmed, dsm2 sim on `:next`). The receivers are sized for VDD 1.08 V against VDDA 1.55 V. Each draws from VDDA while its input is high: 7 nA at tt, 1.13 uA with a 1.08 V high at ff 125 C, 29 nA with a 1.32 V high. After reset only `di_trim[2]` is high, so the DSA1 state costs VDDA up to about 1.1 uA at that corner, 7 nA at tt, and VDD nothing but leakage.
 - VDD off with VDDA on: all inputs are 0, `di_ena` is low, dsm2 stays off and draws 134 nA at tt 27 C, 2.65 uA at ff 125 C (sim, not fully settled).
+- dsm2 running: the chip is designed to 32 uA average, 220 uA over 100 ns and 600 uA over 10 ns from VDDA, dsm2's values for the oscillator variant at ff 1.55 V 125 C (2026-11-01). Its schematic run there gave 29.0 uA running, 215.3 uA over 100 ns and 546.4 uA over 10 ns, both peaks at the first clock after di_ena. The baseline was designed to 28 uA, 140 uA and 370 uA. The EM check rates VDDA at 1 mA.
 - The decimator path samples `do_q_dec` on the inverted edge, about 488 ns after it changes, so the 5 ns do not matter there.
 
 ## Tools

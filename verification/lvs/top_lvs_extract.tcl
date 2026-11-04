@@ -15,9 +15,9 @@ gds read $::env(LVS_GDS)
 readspice $::env(EZ130_DIR)/cdl/ez130_8t.cdl
 readspice $::env(DECAPHV_DIR)/cdl/ez130_8t_decap_hv.cdl
 
-# the VDD cut cell and the dsm2 box are kept abstract by the same loop, so they are compared by their pins
+# the VDD cut cell is kept abstract by the same loop, so it is compared by its pins. dsm2 is extracted whole.
 foreach cell [cellname list allcells] {
-    if {([regexp {^sg13cmos5l_(IOPad|Filler[0-9]|Corner|ip__)} $cell] || $cell eq "dsm2_core") && $cell ne "sg13cmos5l_ip__clamp_vddvss"} {
+    if {[regexp {^sg13cmos5l_(IOPad|Filler[0-9]|Corner|ip__)} $cell] && $cell ne "sg13cmos5l_ip__clamp_vddvss"} {
         load $cell
         property LEFview true
         puts "abstract: $cell"

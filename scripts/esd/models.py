@@ -6,17 +6,18 @@
 dantenna/dpantenna replaced by esd_dn/esd_dp, a high-current diode, and every
 `ptap1 R=` substrate tie as `esd_ptap`: the PDK's own ptap1 subcircuit takes
 w/l and not the R= the IO netlist writes. Appended: the EZ130 cells the core
-hangs on the pads (BUFX3 behind every output pad, TIELO behind the bidir
-pads' c2p and c2p_en), from $EZ130_DIR's CDL with M cards turned into X.
+hangs on the pads (BUFX3 behind every output pad, AND2X1 behind adc_conv),
+from $EZ130_DIR's CDL with M cards turned into X, and dsm2's input protection
+(esd_dsm2_secprot), checked against dsm2's CDL.
 
 The PDK diode cards are fitted from -15 V to +1 V for reverse bias only, with
 an area-scaled rs of kilohms and a high-injection knee near 5 uA, so at HBM
 current they read kilovolts forward.
 
 Needs the IO netlist with the substrate (`sub!`) and its ties drawn in, which
-ships as `.spice` in hpretl/iic-osic-tools:2026.09 (PDK c271a7e). The sign-off
-image 2026.08 ships a `.spi` without either and with another port order, so
-the bench reads the port order from the file.
+ships as `.spice` in the pinned :next image (scripts/image.env). The 2026.08
+image ships a `.spi` without either and with another port order, so the bench
+reads the port order from the file.
 
 RON is the on-resistance of a 35 um^2 junction, the esd PCell's 2 kV diode,
 and every diode scales from it by area. It is unknown for this process, so the
@@ -33,7 +34,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
-CORE_CELLS = ("BUFX3", "TIELO")   # what the core drives the pads with
+CORE_CELLS = ("BUFX3", "AND2X1")   # what the core drives the pads with
 # area parameters from the PDK cards (diodes.lib darea/dparea, per um^2),
 # normalized to a 35 um^2 device
 MODELS = """\
@@ -90,6 +91,35 @@ Rtrig clv rc 129.3k
 """
 
 
+# dsm2's input protection on each analog pin: sg13cmos5l_SecondaryProtection as its CDL draws it,
+# the diodes on dsm2's vdd (VDDA) and vss. The IO library's copy has its dn diode on sub! instead.
+DSM2_CDL = os.path.join(REPO, "ip", "dsm2_core", "cdl", "dsm2_core.cdl")
+DSM2_SECPROT = {"rppd": "w=1e-6 l=2e-6", "dpantenna": "l=0.64u w=4.98u", "dantenna": "l=3.1u w=0.64u"}
+DSM2 = """
+* dsm2's sg13cmos5l_SecondaryProtection, one per analog pin, from ip/dsm2_core/cdl/dsm2_core.cdl
+.subckt esd_dsm2_secprot pad core vdda vss
+XR0 pad core vss rppd l=2u w=1u
+XD0 core vdda esd_dp l=0.64u w=4.98u
+XD1 vss core esd_dn l=3.1u w=0.64u
+.ends esd_dsm2_secprot
+"""
+
+
+def dsm2_missing(cdl=DSM2_CDL):
+    """The devices of DSM2 that dsm2's CDL does not draw, empty when they agree."""
+    body, keep = [], False
+    for ln in open(cdl):
+        t = ln.split()
+        if t[:2] == [".subckt", "sg13cmos5l_SecondaryProtection"]:
+            keep = True
+        elif keep and t and t[0] == ".ends":
+            break
+        elif keep and t and t[0][0] in "RD":
+            body.append(ln)
+    return [f"{dev} {par}" for dev, par in DSM2_SECPROT.items()
+            if not any(dev in ln and par in ln for ln in body)]
+
+
 def die(msg):
     sys.stderr.write(f"models: {msg}\n")
     sys.exit(1)
@@ -132,10 +162,13 @@ def build(run):
                        os.environ.get("PDK", "ihp-sg13cmos5l"))
     spi = os.path.join(pdk, "libs.ref", "sg13cmos5l_io", "spice", "sg13cmos5l_io.spice")
     if not os.path.isfile(spi):
-        die(f"no {spi}: run in hpretl/iic-osic-tools:2026.09 (see the docstring)")
+        die(f"no {spi}: run in the pinned :next image (see the docstring)")
     lines = open(spi).readlines()
     if not any("ptap1" in ln for ln in lines):
         die(f"{spi} carries no substrate ties: not the netlist this was written for")
+    miss = dsm2_missing()
+    if miss:
+        die(f"{DSM2_CDL}: sg13cmos5l_SecondaryProtection has no {', '.join(miss)}, update DSM2")
     lines, nd = patch(lines)
     if nd < 10:
         die(f"only {nd} diodes swapped: has the library changed?")
@@ -150,6 +183,7 @@ def build(run):
         f.write(".global sub!\n")
         f.write(MODELS)
         f.write(CLAMP)
+        f.write(DSM2)
         f.writelines(lines)
         f.write(f"\n* EZ130 core cells behind the pads, from {ez}/cdl/ez130_8t.cdl\n")
         f.writelines(core)
@@ -172,6 +206,10 @@ def selftest():
                        ".ENDS\n")
     got = core_cells(p, ("BUFX3",))
     assert got[0].startswith(".SUBCKT BUFX3") and got[1].startswith("XP1 ") and len(got) == 3, got
+    assert dsm2_missing() == [], dsm2_missing()
+    p = os.path.join(tempfile.mkdtemp(), "d.cdl")
+    open(p, "w").write(open(DSM2_CDL).read().replace("l=3.1u w=0.64u", "l=3.1u w=0.5u"))
+    assert dsm2_missing(p) == ["dantenna l=3.1u w=0.64u"], dsm2_missing(p)
     print("models: selftest passed")
 
 

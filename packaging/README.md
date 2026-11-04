@@ -175,11 +175,13 @@ Every key has a sensible default. A minimal config only needs `DIE_GDS`, `DIE_EX
 | `GUARDED_PINS` ([]) / `GUARD_SPACING` (100 um) | clearance check around sensitive wires |
 | `EPAD_WIRE_LENGTH` (500 um) | length of exposed-pad downbond stubs |
 | `EPAD_NETS` ([]) | nets bonded only through the cavity, see above |
+| `UNBONDED_PADS` ({}) | pad name to count of pads left without a wire on purpose, the last ones in (x, y) order. Any other pad of a `PINOUT` name without a wire fails the run |
 | `EPAD_LEAD_WIRE_LENGTH` (500 um), `EPAD_DIE_CLEARANCE` (100 um) | lead-to-cavity bond length, cavity landing to die edge |
 | `PACKAGE_PADDLE` (lead tips), `EPAD_PADDLE_CLEARANCE` (0 um) | paddle side, cavity landing to paddle edge |
 | `EPAD_LANDING_GAP` (0 um) | a pad downbond stops this short of its lead bond's landing |
 | `PACKAGE_PIN_LABEL_OFFSET` (250 um) | pin number distance outside the package outline |
 | `PACKAGE_PIN_LABEL_SIZE` (from sheet) / `TABLE_TEXT_SIZE` (100 um) | font sizes of pin numbers / bond table |
+| `PIN_NAMES` ({}) / `PIN_NAME_SIZE` (0.6 x pin number) | pin number to signal name, drawn outside the number and listed in the bond table. It must name every `PINOUT` pin, NC pins say NC |
 | `TABLE_GAP` (400 um) | gap between plan and bond table (side margins stay equal automatically) |
 | `BONDPLAN_TEXT_POLYGONS` (true) | convert texts to polygon glyphs so they scale in images and prints (the stroke font is uppercase-only) |
 | `BONDPLAN_DELETE_LAYERS` ([]) | layers stripped from the output GDS |
@@ -187,6 +189,7 @@ Every key has a sensible default. A minimal config only needs `DIE_GDS`, `DIE_EX
 | `BONDPLAN_PNG` / `BONDPLAN_SVG` (off) | image export targets |
 | `IMAGE_WIDTH` (2000 px), `IMAGE_OVERSAMPLING` (2) | image quality |
 | `IMAGE_REGION` (`package`) | `package` = footprint + bond table, `full` = everything |
+| `IMAGE_MARGIN` (0 um) | blank border around the image crop |
 | `IMAGE_TOP_METAL` (`134/0`) | the die's top metal in the images, `126/0` on this stack |
 
 ### Porting to another Package / Chip

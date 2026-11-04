@@ -85,11 +85,14 @@ def build_overlay(dst):
     ml = {l["name"]: l for l in t["process_stack"]["layers"]}
     m4 = ml["Metal4"]["metal_layer"]
     if m4.get("contact_above"):
-        sys.exit("kpex_cmos5l: kpex's Metal4 has a contact above now, drop this patch")
-    m4["contact_above"] = dict(
-        name="topvia1_n_cap", layer_below="metal4_con", metal_above="topmetal1_con",
-        thickness=round(ml["TopMetal1"]["metal_layer"]["z"] - m4["z"] - m4["thickness"], 4),
-        width=0.42, spacing=0.42)
+        # kpex 0.6.x names it (checked in the :next image), nothing to add
+        if m4["contact_above"].get("metal_above") != "topmetal1_con":
+            sys.exit("kpex_cmos5l: Metal4's contact above is not to TopMetal1, re-check")
+    else:
+        m4["contact_above"] = dict(
+            name="topvia1_n_cap", layer_below="metal4_con", metal_above="topmetal1_con",
+            thickness=round(ml["TopMetal1"]["metal_layer"]["z"] - m4["z"] - m4["thickness"], 4),
+            width=0.42, spacing=0.42)
     tech = os.path.join(dst, "ihp-sg13cmos5l_tech.pb.json")
     json.dump(t, open(tech, "w"), indent=1)
     return top, tech
@@ -722,8 +725,8 @@ def main():
         a.pop(0)
         rc = os.path.abspath(a.pop(0))
     import klayout_pex.version as v
-    if v.__version__ != "0.4.4":
-        sys.exit(f"kpex_cmos5l: written against kpex 0.4.4, this is {v.__version__}")
+    if v.__version__ not in ("0.4.4", "0.6.3"):
+        sys.exit(f"kpex_cmos5l: written against kpex 0.4.4 and 0.6.3, this is {v.__version__}")
     patch_crashes(top, tech)
     if rc:
         patch_recorders()

@@ -28,14 +28,13 @@ endif
 # ================================================================================================
 
 
-# EZ130 8T standard cells and the thick-oxide decoupling. Both are read in
-# place from outside this repo: EZ130 is a prerelease and does not ship here.
+# EZ130 8T standard cells and the thick-oxide decoupling, from the repo's ip/.
 # librelane_scl.py writes a copy of the library's LibreLane fragment with every
 # dir:: made absolute and prints its path, which has to come FIRST on the
 # librelane command line. Without it the run silently hardens on the PDK's own
 # sg13cmos5l_stdcell.
-EZ130_DIR   ?= $(HOME)/projects/OpenBLAU/ip/ez130_8t_v1p1
-DECAPHV_DIR ?= $(HOME)/projects/OpenBLAU/ip/ez130_8t_decap_hv
+EZ130_DIR   ?= $(abspath ../../ip/ez130_8t_v1p1)
+DECAPHV_DIR ?= $(abspath ../../ip/ez130_8t_decap_hv)
 EZ130_SCL    = $(shell python3 $(EZ130_DIR)/scripts/librelane_scl.py $(LIBRELANE_DIR))
 # The decap fragment must follow the SCL fragment and precede the design
 # config: it rewrites LIB to carry both liberties per corner, and a later

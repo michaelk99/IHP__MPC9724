@@ -1,18 +1,18 @@
-Warning 198: final/nl/dsa1_dig_top.nl.v line 11420, module FILLER1 not found. Creating black box for FILLER_0_0.
-Warning 198: final/nl/dsa1_dig_top.nl.v line 11421, module FILLER4 not found. Creating black box for FILLER_0_118.
-Warning 198: final/nl/dsa1_dig_top.nl.v line 11423, module FILLER2 not found. Creating black box for FILLER_0_127.
-Warning 198: final/nl/dsa1_dig_top.nl.v line 11561, module DECAPHV8 not found. Creating black box for FILLER_100_15.
-Warning 198: final/nl/dsa1_dig_top.nl.v line 11607, module DECAPHV16 not found. Creating black box for FILLER_100_440.
-Warning 198: final/nl/dsa1_dig_top.nl.v line 12304, module DECAPHV32 not found. Creating black box for FILLER_106_445.
-Warning 198: final/nl/dsa1_dig_top.nl.v line 29524, module WELLTAP not found. Creating black box for TAP_TAPCELL_ROW_0_0.
+Warning 198: final/nl/dsa1_dig_top.nl.v line 11448, module DECAPHV32 not found. Creating black box for FILLER_0_0.
+Warning 198: final/nl/dsa1_dig_top.nl.v line 11449, module FILLER1 not found. Creating black box for FILLER_0_114.
+Warning 198: final/nl/dsa1_dig_top.nl.v line 11450, module FILLER2 not found. Creating black box for FILLER_0_146.
+Warning 198: final/nl/dsa1_dig_top.nl.v line 11460, module DECAPHV8 not found. Creating black box for FILLER_0_261.
+Warning 198: final/nl/dsa1_dig_top.nl.v line 11473, module FILLER4 not found. Creating black box for FILLER_0_502.
+Warning 198: final/nl/dsa1_dig_top.nl.v line 11536, module DECAPHV16 not found. Creating black box for FILLER_0_919.
+Warning 198: final/nl/dsa1_dig_top.nl.v line 22377, module WELLTAP not found. Creating black box for TAP_TAPCELL_ROW_0_0.
 Group                    Internal    Switching      Leakage        Total
                             Power        Power        Power        Power (Watts)
 ------------------------------------------------------------------------
-Sequential           7.280148e-07 8.043214e-08 8.479639e-07 1.656411e-06  35.9%
-Combinational        2.085558e-07 3.586609e-07 1.143944e-06 1.711161e-06  37.1%
-Clock                5.341618e-07 4.706776e-07 2.360030e-07 1.240842e-06  26.9%
+Sequential           7.285516e-07 7.542358e-08 8.479635e-07 1.651939e-06  36.8%
+Combinational        2.070975e-07 3.229068e-07 1.144275e-06 1.674279e-06  37.3%
+Clock                5.024637e-07 4.269510e-07 2.344333e-07 1.163848e-06  25.9%
 Macro                0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00   0.0%
 Pad                  0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00   0.0%
 ------------------------------------------------------------------------
-Total                1.470727e-06 9.097718e-07 2.227942e-06 4.608441e-06 100.0%
-                            31.9%        19.7%        48.3%
+Total                1.438106e-06 8.252827e-07 2.226706e-06 4.490094e-06 100.0%
+                            32.0%        18.4%        49.6%

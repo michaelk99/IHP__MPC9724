@@ -8,8 +8,10 @@ V {}
 S {}
 F {}
 E {}
-L 7 0 -180 0 -160 {}
-L 7 0 180 0 160 {}
+L 7 -40 -240 -40 -220 {}
+L 7 40 -240 40 -220 {}
+L 7 0 240 0 220 {}
+L 7 160 -180 140 -180 {}
 L 7 160 -140 140 -140 {}
 L 7 160 -100 140 -100 {}
 L 7 160 -60 140 -60 {}
@@ -18,26 +20,33 @@ L 7 160 20 140 20 {}
 L 7 160 60 140 60 {}
 L 7 160 100 140 100 {}
 L 7 160 140 140 140 {}
-B 5 -2.5 -182.5 2.5 -177.5 {name=VDD dir=inout sim_pinname=VDD}
-B 5 -2.5 177.5 2.5 182.5 {name=VSS dir=inout sim_pinname=VSS}
-B 5 157.5 -142.5 162.5 -137.5 {name=clk_PAD dir=inout sim_pinname=clk_PAD}
-B 5 157.5 -102.5 162.5 -97.5 {name=rst_n_PAD dir=inout sim_pinname=rst_n_PAD}
-B 5 157.5 -62.5 162.5 -57.5 {name=IOVSS dir=inout sim_pinname=IOVSS}
-B 5 157.5 -22.5 162.5 -17.5 {name=IOVDD dir=inout sim_pinname=IOVDD}
-B 5 157.5 17.5 162.5 22.5 {name=analog_PAD[0..1] dir=inout sim_pinname=analog_PAD}
-B 5 157.5 57.5 162.5 62.5 {name=bidir_PAD[0..1] dir=inout sim_pinname=bidir_PAD}
-B 5 157.5 97.5 162.5 102.5 {name=input_PAD[0..3] dir=inout sim_pinname=input_PAD}
-B 5 157.5 137.5 162.5 142.5 {name=output_PAD[0..17] dir=inout sim_pinname=output_PAD}
-P 4 5 -140 -160 140 -160 140 160 -140 160 -140 -160 {}
-T {@symname} 20 -181 0 0 0.2 0.2 {}
-T {@name} 20 -197 0 0 0.2 0.2 {}
-T {VDD} -5 -184 0 1 0.2 0.2 {}
-T {VSS} -5 176 0 1 0.2 0.2 {}
-T {clk_PAD} 135 -144 0 1 0.2 0.2 {}
-T {rst_n_PAD} 135 -104 0 1 0.2 0.2 {}
-T {IOVSS} 135 -64 0 1 0.2 0.2 {}
-T {IOVDD} 135 -24 0 1 0.2 0.2 {}
-T {analog_PAD[0..1]} 135 16 0 1 0.2 0.2 {}
-T {bidir_PAD[0..1]} 135 56 0 1 0.2 0.2 {}
-T {input_PAD[0..3]} 135 96 0 1 0.2 0.2 {}
-T {output_PAD[0..17]} 135 136 0 1 0.2 0.2 {}
+L 7 160 180 140 180 {}
+B 5 -42.5 -242.5 -37.5 -237.5 {name=VDD dir=inout sim_pinname=VDD}
+B 5 37.5 -242.5 42.5 -237.5 {name=VDDA dir=inout sim_pinname=VDDA}
+B 5 -2.5 237.5 2.5 242.5 {name=VSS dir=inout sim_pinname=VSS}
+B 5 157.5 -182.5 162.5 -177.5 {name=clk_PAD dir=inout sim_pinname=clk_PAD}
+B 5 157.5 -142.5 162.5 -137.5 {name=rst_n_PAD dir=inout sim_pinname=rst_n_PAD}
+B 5 157.5 -102.5 162.5 -97.5 {name=IOVSS dir=inout sim_pinname=IOVSS}
+B 5 157.5 -62.5 162.5 -57.5 {name=IOVDD dir=inout sim_pinname=IOVDD}
+B 5 157.5 -22.5 162.5 -17.5 {name=analog_PAD[0..2] dir=inout sim_pinname=analog_PAD}
+B 5 157.5 17.5 162.5 22.5 {name=input_PAD[0..3] dir=inout sim_pinname=input_PAD}
+B 5 157.5 57.5 162.5 62.5 {name=output_PAD[0..1] dir=inout sim_pinname=output_PAD}
+B 5 157.5 97.5 162.5 102.5 {name=dsm_clk_PAD dir=inout sim_pinname=dsm_clk_PAD}
+B 5 157.5 137.5 162.5 142.5 {name=do_q_PAD dir=inout sim_pinname=do_q_PAD}
+B 5 157.5 177.5 162.5 182.5 {name=do_q_b_PAD dir=inout sim_pinname=do_q_b_PAD}
+P 4 5 -140 -220 140 -220 140 220 -140 220 -140 -220 {}
+T {@symname} 20 -221 0 0 0.2 0.2 {}
+T {@name} 20 -237 0 0 0.2 0.2 {}
+T {VDD} -45 -244 0 1 0.2 0.2 {}
+T {VDDA} 35 -244 0 1 0.2 0.2 {}
+T {VSS} -5 244 0 1 0.2 0.2 {}
+T {clk_PAD} 135 -176 0 1 0.2 0.2 {}
+T {rst_n_PAD} 135 -136 0 1 0.2 0.2 {}
+T {IOVSS} 135 -96 0 1 0.2 0.2 {}
+T {IOVDD} 135 -56 0 1 0.2 0.2 {}
+T {analog_PAD[0..2]} 135 -16 0 1 0.2 0.2 {}
+T {input_PAD[0..3]} 135 24 0 1 0.2 0.2 {}
+T {output_PAD[0..1]} 135 64 0 1 0.2 0.2 {}
+T {dsm_clk_PAD} 135 104 0 1 0.2 0.2 {}
+T {do_q_PAD} 135 144 0 1 0.2 0.2 {}
+T {do_q_b_PAD} 135 184 0 1 0.2 0.2 {}

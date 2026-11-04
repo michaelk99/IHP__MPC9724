@@ -24,7 +24,7 @@ module sg13cmos5l_dsa1_dig_top #(
     parameter int unsigned NUM_VSS_PADS    = 2,
 
     // Power / ground pads for I/O
-    parameter int unsigned NUM_IOVDD_PADS  = 1,
+    parameter int unsigned NUM_IOVDD_PADS  = 2,
     parameter int unsigned NUM_IOVSS_PADS  = 1,
 
     // Signal pads. The chip needs 8 signals of its own: the modulator bitstream, the four SPI lines,
@@ -229,6 +229,8 @@ module sg13cmos5l_dsa1_dig_top #(
     // dsm2 analog nets, here and not in the core so the netlist keeps these names
     wire vi, vcm, ibias_test;
     logic dsm_clk_PAD2CORE, dsm_do_q, dsm_do_q_b, dsm_do_q_dec;
+    // dsm2's oscillator and its pad enable, 1.5 V like do_q
+    logic do_clk_osc, do_osc_oe;
 
     // The VDDA segment of the pad ring, between cut_vdd_s and cut_vdd_e. Nothing in it is on VDD.
     (* keep *) sg13cmos5l_ip__cut_vdd cut_vdd_s (
@@ -236,7 +238,8 @@ module sg13cmos5l_dsa1_dig_top #(
         .iovdd (IOVDD), .iovss (IOVSS), .vss (VSS)
         `endif
     );
-    sg13cmos5l_IOPadIn     dsm_clk_pad (`SEG_SUPPLIES .p2c(dsm_clk_PAD2CORE), .pad(dsm_clk_PAD));
+    // dsm_clk is an input until dsm2 selects its oscillator, then dsm2 drives it. p2c follows the pad either way.
+    sg13cmos5l_IOPadInOut4mA dsm_clk_pad (`SEG_SUPPLIES .c2p(do_clk_osc), .c2p_en(do_osc_oe), .p2c(dsm_clk_PAD2CORE), .pad(dsm_clk_PAD));
     sg13cmos5l_IOPadOut4mA do_q_pad    (`SEG_SUPPLIES .c2p(dsm_do_q),         .pad(do_q_PAD));
     sg13cmos5l_IOPadOut4mA do_q_b_pad  (`SEG_SUPPLIES .c2p(dsm_do_q_b),       .pad(do_q_b_PAD));
     /* verilator lint_off PINCONNECTEMPTY */
@@ -255,13 +258,19 @@ module sg13cmos5l_dsa1_dig_top #(
         .iovdd (IOVDD), .iovss (IOVSS), .vdd (VDDA), .vss (VSS)
         `endif
     );
+    // VDDA decoupling north of dsm2, DECAPHV only
+    (* keep *) decap_vdda vdda_decap (
+        `ifdef USE_POWER_PINS
+        .VDD (VDDA), .VSS (VSS)
+        `endif
+    );
     (* keep *) sg13cmos5l_ip__cut_vdd cut_vdd_e (
         `ifdef USE_POWER_PINS
         .iovdd (IOVDD), .iovss (IOVSS), .vss (VSS)
         `endif
     );
 
-    logic       dsm_ena, dsm_rst_b, dsm_dith_en, dsm_vcm_ext, dsm_btest_en, dsm_qout_en;
+    logic       dsm_ena, dsm_rst_b, dsm_dith_en, dsm_vcm_ext, dsm_btest_en, dsm_qout_en, dsm_osc_en, dsm_clk_sel;
     logic [3:0] dsm_trim;
     logic [1:0] dsm_dith_amp;
     dsm2_core dsm2 (
@@ -274,7 +283,8 @@ module sg13cmos5l_dsa1_dig_top #(
         .di_clk (dsm_clk_PAD2CORE), .di_ena (dsm_ena), .di_rst_b (dsm_rst_b), .di_trim (dsm_trim),
         .di_dith_en (dsm_dith_en), .di_dith_amp (dsm_dith_amp), .di_vcm_ext (dsm_vcm_ext),
         .di_btest_en (dsm_btest_en), .di_qout_en (dsm_qout_en),
-        .do_q (dsm_do_q), .do_q_b (dsm_do_q_b), .do_q_dec (dsm_do_q_dec)
+        .do_q (dsm_do_q), .do_q_b (dsm_do_q_b), .do_q_dec (dsm_do_q_dec),
+        .di_osc_en (dsm_osc_en), .di_clk_sel (dsm_clk_sel), .do_clk_osc (do_clk_osc), .do_osc_oe (do_osc_oe)
     );
     // ======================================================
 
@@ -305,7 +315,9 @@ module sg13cmos5l_dsa1_dig_top #(
         .dsm_dith_amp   (dsm_dith_amp),
         .dsm_vcm_ext    (dsm_vcm_ext),
         .dsm_btest_en   (dsm_btest_en),
-        .dsm_qout_en    (dsm_qout_en)
+        .dsm_qout_en    (dsm_qout_en),
+        .dsm_osc_en     (dsm_osc_en),
+        .dsm_clk_sel    (dsm_clk_sel)
     );
     // ======================================================
 
@@ -319,6 +331,14 @@ module sg13cmos5l_dsa1_dig_top #(
     // JKU names
     (* keep *)
     sg13cmos5l_ip__jku_names jku_names ();
+
+    // Helmet chip art
+    (* keep *)
+    sg13cmos5l_ip__helm helm_art ();
+
+    // Title block
+    (* keep *)
+    sg13cmos5l_ip__title title_art ();
     // ======================================================
 
 `undef SEG_SUPPLIES

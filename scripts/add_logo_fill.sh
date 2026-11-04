@@ -62,9 +62,12 @@ LOGO_IMG="${IMG_DIR}/chip_logo_mono.png"
 # by this script. Set CHIP_LOGO=1 to put a top-metal logo back.
 CHIP_LOGO="${CHIP_LOGO:-0}"
 
-# dsm2_core box (x 780 to 935, y 375 to 560 um) grown by its 10 um halo, kept free of filler on every metal
-DSM2_KEEPOUT="770,365,945,570"
+# dsm2_core box (x 784.5 to 935, y 375 to 553 um) grown by its 10 um halo, kept free of filler on every metal
+DSM2_KEEPOUT="774.5,365,945,563"
 DSM2_KEEPOUT_LAYERS="8/23 10/23 30/23 50/23 126/23"
+# Activ and GatPoly filler stay out of the dsm2 outline only, the halo keeps them for density
+DSM2_OUTLINE="784.5,375,935,553"
+DSM2_OUTLINE_LAYERS="1/23 5/23"
 
 # ─── Logo sizing guide, numbers are for the old 1600 um die and the logo is off ───
 # meerkat.py maps each image pixel to one GDS pixel of size PIXSZ = 2 µm.
@@ -171,6 +174,14 @@ for KEEPOUT_LAYER in $DSM2_KEEPOUT_LAYERS; do
         -rd "layer=$KEEPOUT_LAYER" \
         -rd "margin=0" \
         -rd "box=$DSM2_KEEPOUT" \
+        -r add_rectangle.py
+done
+for KEEPOUT_LAYER in $DSM2_OUTLINE_LAYERS; do
+    klayout -zz \
+        -rd "gds_file=$GDS_OUT" \
+        -rd "layer=$KEEPOUT_LAYER" \
+        -rd "margin=0" \
+        -rd "box=$DSM2_OUTLINE" \
         -r add_rectangle.py
 done
 

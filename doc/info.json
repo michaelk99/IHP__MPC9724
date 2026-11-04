@@ -1,0 +1,57 @@
+{
+  "name": "MPC9724",
+  "design_type": "M",
+  "technology": "IHP",
+  "unique_id": "9724",
+  "license": "Apache-2.0 WITH SHL-2.1",
+  "trl": 0,
+  "sealring_x": 1300.0,
+  "sealring_y": 1300.0,
+  "repository": "https://github.com/michaelk99/IHP__MPC9724",
+  "pdk_version": "5eddf3e96c4b1a42bffe90dd58daa6089a77fc23",
+  "process": "SG13CMOS5L",
+  "dependencies": {
+    "ez130_8t_v1p1": {
+      "dependencies": {}
+    },
+    "ez130_8t_decap_hv": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_io": {
+      "dependencies": {}
+    },
+    "dsm2_core": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_ip__clamp_vddvss": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_ip__cut_vdd": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_io_custom": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_ip__bondpad_70x70": {
+      "dependencies": {}
+    }
+  },
+  "tools": {
+    "IIC-OSIC-TOOLS": "2026-10-08 :next build, scripts/image.env",
+    "KLayout": "0.30.12",
+    "Magic": "8.3.684",
+    "Netgen": "1.5.324",
+    "Yosys": "0.69",
+    "OpenROAD": "26Q4-168-g2721361cf",
+    "LibreLane": "3.1.0.dev3",
+    "Icarus Verilog": "14.0",
+    "GHDL": "7.0.0-dev"
+  },
+  "top_cell_name": "MPC9724",
+  "release": {
+    "version": "v.1.2.0",
+    "gds": "release/v.1.2.0/gds",
+    "netlist": "release/v.1.2.0/netlist",
+    "doc": "release/v.1.2.0/doc"
+  }
+}

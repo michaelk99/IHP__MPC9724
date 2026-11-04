@@ -7,9 +7,15 @@
  <tags>
  </tags>
  <categories>
-  <category>
+ <category>
    <name>AFil.c1</name>
    <description>5.6. AFil.c1 Min. Activ:filler space to Activ is 0.42 um</description>
+   <categories>
+   </categories>
+  </category>
+ <category>
+   <name>TGO.f</name>
+   <description>5.7. TGO.f : Min. ThickGateOx width: 0.86 µm</description>
    <categories>
    </categories>
   </category>
@@ -44,26 +50,8 @@
    </categories>
   </category>
  <category>
-   <name>TGO.f</name>
-   <description>5.7. TGO.f : Min. ThickGateOx width: 0.86 µm</description>
-   <categories>
-   </categories>
-  </category>
- <category>
    <name>GFil.d</name>
    <description>5.9. GFil.d : Min. GatPoly:filler space to Activ, GatPoly, Cont, pSD, nSD:block, SalBlock is 1.1 um</description>
-   <categories>
-   </categories>
-  </category>
- <category>
-   <name>V1.a</name>
-   <description>5.19. V1.a : Min. and max. Via1 width: 0.19 um</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>V1.b</name>
-   <description>5.19. V1.b : Min. Via1 space: 0.22 um</description>
    <categories>
    </categories>
   </category>
@@ -100,6 +88,18 @@
   <category>
    <name>TV1.b</name>
    <description>5.21. TV1.b : Min. TopVia1 space: 0.42 um</description>
+   <categories>
+   </categories>
+  </category>
+ <category>
+   <name>V1.a</name>
+   <description>5.19. V1.a : Min. and max. Via1 width: 0.19 um</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>V1.b</name>
+   <description>5.19. V1.b : Min. Via1 space: 0.22 um</description>
    <categories>
    </categories>
   </category>
@@ -194,6 +194,18 @@
    </categories>
   </category>
  <category>
+   <name>TM1.a</name>
+   <description>5.22. TM1.a: Min. TopMetal1 width: 1.64 μm.</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>TM1.b</name>
+   <description>5.22. TM1.b: Min. TopMetal1 (drawing + filler) space or notch: 1.64 μm.</description>
+   <categories>
+   </categories>
+  </category>
+ <category>
    <name>Seal.l</name>
    <description>6.10. Seal.l : No structures outside sealring boundary allowed</description>
    <categories>
@@ -208,18 +220,6 @@
  <category>
    <name>TM1Fil.c</name>
    <description>5.23. TM1Fil.c : Min. TopMetal1:filler space to TopMetal1 is 3.0 um</description>
-   <categories>
-   </categories>
-  </category>
- <category>
-   <name>TM1.a</name>
-   <description>5.22. TM1.a: Min. TopMetal1 width: 1.64 μm.</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>TM1.b</name>
-   <description>5.22. TM1.b: Min. TopMetal1 (drawing + filler) space or notch: 1.64 μm.</description>
    <categories>
    </categories>
   </category>
@@ -410,18 +410,6 @@
    </categories>
   </category>
  <category>
-   <name>M1.a</name>
-   <description>5.16. M1.a: Min. Metal1 width: 0.16 μm.</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>M1.b</name>
-   <description>5.16. M1.b: Min. Metal1 (drawing + filler) space or notch: 0.18 μm.</description>
-   <categories>
-   </categories>
-  </category>
- <category>
    <name>Pin.a</name>
    <description>Pin.a : 7.4. Pin.a: Min. activ enclosure of activ:pin = 0um</description>
    <categories>
@@ -496,6 +484,18 @@
   <category>
    <name>M4.b</name>
    <description>5.17. M4.b: Min. Metal4 space or notch: 0.21 um.</description>
+   <categories>
+   </categories>
+  </category>
+ <category>
+   <name>M1.a</name>
+   <description>5.16. M1.a: Min. Metal1 width: 0.16 μm.</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>M1.b</name>
+   <description>5.16. M1.b: Min. Metal1 (drawing + filler) space or notch: 0.18 μm.</description>
    <categories>
    </categories>
   </category>

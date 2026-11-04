@@ -5,10 +5,9 @@
 #
 # It runs the template's counter and inverter archetypes, so it proves the
 # container and the toolchain still work. It does NOT build this chip's macros
-# and cannot: decimator and dsa1_dig harden on the EZ130 8T cells, which are a
-# prerelease, live outside this repository, and are read from EZ130_DIR. A
-# GitHub runner has no access to that checkout, so the real design is verified
-# locally instead. See doc/rtl2gds.md.
+# and cannot: decimator and dsa1_dig harden on the EZ130 8T cells, which are read
+# from EZ130_DIR, which the workflow does not set, so the real design is
+# verified locally instead. See doc/rtl2gds.md.
 
 name: regression
 

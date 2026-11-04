@@ -41,6 +41,7 @@ sed -E 's/^([Mm][^ ]* )/X\1/; s/^R([^ ]+) ([^ ]+) ([^ ]+) [^ ]+ \$SUB=([^ ]+) \$
 # the VDD cut cell has no device, so it is compared by its pins
 cp ip/sg13cmos5l_ip__cut_vdd/cdl/sg13cmos5l_ip__cut_vdd.cdl "$LVS_OUT/"
 python3 verification/lvs/verilog_tie_wells.py "${cdls[@]}" macros/dsa1_dig/final/pnl/dsa1_dig_top.pnl.v "$LVS_OUT/dsa1_dig_top.pnl.v"
+python3 verification/lvs/verilog_tie_wells.py "${cdls[@]}" macros/decap_vdda/final/pnl/decap_vdda.pnl.v "$LVS_OUT/decap_vdda.pnl.v"
 python3 verification/lvs/verilog_tie_wells.py "${cdls[@]}" netlist/pnl/$LVS_TOP.pnl.v "$LVS_OUT/$LVS_TOP.pnl.v"
 # VSS and IOVSS both tap the one substrate, which Magic extracts as one node, so the reference joins
 # them too. A metal short between them is then invisible here, and LibreLane's LVS, which keeps them
@@ -53,8 +54,17 @@ grep -q '^\.subckt sg13cmos5l_Filler200 .*\bvss\b' "$LVS_OUT/$LVS_TOP.spice" || 
 python3 verification/lvs/verilog_drop_pin.py "^sg13cmos5l_(?!$f200\$|ip__clamp_vddvss\$|ip__cut_vdd\$)" vss "$LVS_OUT/$LVS_TOP.pnl.v" "$LVS_OUT/$LVS_TOP.pnl.v"
 awk -v keep="$f200" 'tolower($1) == ".subckt" && $2 != keep { l = $1 " " $2; for (i = 3; i <= NF; i++) if ($i != "vss") l = l " " $i; print l; next } 1' \
     "$io" > "$LVS_OUT/sg13cmos5l_io.spi"
-# The PDK's IO cells, the bondpad and the logos as black boxes, compared by their pins as LibreLane's LVS does: Magic extracts the IO cells from the GDS whatever LEFview says, and their clamps then disagree with the IO SPICE, the trigger resistor shorted for a missing PolyRes marker, which is the PDK's, not this design's. Every cell the IO SPICE defines is emptied.
-awk -v names="$(awk 'tolower($1) == ".subckt" {print $2}' "$io" | tr '\n' ' ')" '
+# dsm2 compared device by device from its CDL. A subckt the reference already has is dropped from dsm2's copy when the same, else dsm2's is kept.
+# A different one may only be an IO cell's: it leaves the IO SPICE, and the layout cell stays whole. The IO cells around it are black boxes anyway.
+python3 verification/lvs/cdl_magic.py ip/dsm2_core/cdl/dsm2_core.cdl "$LVS_OUT/dsm2_core.spice" --different "$LVS_OUT/dsm2_different.txt" \
+    --reference "$LVS_OUT"/ez130_8t.cdl "$LVS_OUT"/ez130_8t_decap_hv.cdl "$LVS_OUT/sg13cmos5l_io.spi" "$LVS_OUT"/sg13cmos5l_ip__*.cdl
+while read -r name; do
+    grep -qi "^\.subckt $name " "$LVS_OUT/sg13cmos5l_io.spi" || { echo "FAIL: dsm2 subckt $name differs from a non-IO reference cell"; exit 1; }
+    awk -v n="$name" 'tolower($1) == ".subckt" && $2 == n { skip = 1 } !skip; tolower($1) == ".ends" { skip = 0 }' "$LVS_OUT/sg13cmos5l_io.spi" > "$LVS_OUT/io.tmp"
+    mv "$LVS_OUT/io.tmp" "$LVS_OUT/sg13cmos5l_io.spi"
+done < "$LVS_OUT/dsm2_different.txt"
+# The PDK's IO cells, the bondpad and the logos as black boxes, compared by their pins as LibreLane's LVS does, every cell the IO SPICE copy still defines: Magic extracts the IO cells from the GDS whatever LEFview says, and their clamps then disagree with the IO SPICE, the trigger resistor shorted for a missing PolyRes marker, which is the PDK's, not this design's.
+awk -v names="$(awk 'tolower($1) == ".subckt" {print $2}' "$LVS_OUT/sg13cmos5l_io.spi" | tr '\n' ' ')" '
     BEGIN { n = split(names, a, " "); for (i = 1; i <= n; i++) box[a[i]] = 1 }
     tolower($1) == ".subckt" && ($2 in box || ($2 ~ /^sg13cmos5l_ip__/ && $2 != "sg13cmos5l_ip__clamp_vddvss")) { print; skip = 1; next }
     tolower($1) == ".ends" && skip { print; skip = 0; next }
@@ -64,7 +74,8 @@ case "${LVS_MUTANT:-}" in
     "") ;;
     vdda_to_vdd) python3 verification/lvs/mutate_reference.py vdda_to_vdd "$LVS_OUT/$LVS_TOP.pnl.v" ;;
     and3bx1_swap) python3 verification/lvs/mutate_reference.py and3bx1_swap "$LVS_OUT/dsa1_dig_top.pnl.v" ;;
-    cut_pin|dsm2_pins) python3 verification/lvs/mutate_reference.py "$LVS_MUTANT" "$LVS_OUT/$LVS_TOP.pnl.v" ;;
+    cut_pin|dsm2_pins|decap_vdd) python3 verification/lvs/mutate_reference.py "$LVS_MUTANT" "$LVS_OUT/$LVS_TOP.pnl.v" ;;
+    dsm2_device) python3 verification/lvs/mutate_reference.py dsm2_device "$LVS_OUT/dsm2_core.spice" ;;
     *) echo "unknown LVS_MUTANT ${LVS_MUTANT}"; exit 2 ;;
 esac
 netgen -batch source verification/lvs/top_lvs.tcl > "$LVS_OUT/netgen.log" 2>&1
@@ -75,4 +86,4 @@ grep -q '^Final result: Circuits match uniquely\.$' "$LVS_OUT/lvs.rpt" || {
 if grep -q 'property errors' "$LVS_OUT/lvs.rpt"; then
     echo "FAIL: top LVS property errors, see $LVS_OUT/lvs.rpt"; grep -A2 'property errors' "$LVS_OUT/lvs.rpt" | head; exit 1
 fi
-echo "PASS: top LVS from the GDS, the macro and every standard cell device by device"
+echo "PASS: top LVS from the GDS, the two digital macros, dsm2 and every standard cell device by device"

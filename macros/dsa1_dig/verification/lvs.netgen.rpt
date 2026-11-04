@@ -1,4 +1,16 @@
 
+Cell FILLER4 (0) disconnected node: VDD
+Cell FILLER4 (0) disconnected node: VSS
+
+Subcircuit pins:
+Circuit 1: FILLER4                         |Circuit 2: FILLER4                         
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes FILLER4 and FILLER4 are equivalent.
+
 Cell FILLER2 (0) disconnected node: VSS
 Cell FILLER2 (0) disconnected node: VDD
 
@@ -35,26 +47,6 @@ Y                                          |Y
 Cell pin lists for MUXI2X1 and MUXI2X1 altered to match.
 Device classes MUXI2X1 and MUXI2X1 are equivalent.
 
-Cell WELLTAP (0) disconnected node: VDD
-Cell WELLTAP (0) disconnected node: VSS
-Cell WELLTAP (1) disconnected node: VDD
-Cell WELLTAP (1) disconnected node: VNW
-Cell WELLTAP (1) disconnected node: VPW
-Cell WELLTAP (1) disconnected node: VSS
-
-Subcircuit pins:
-Circuit 1: WELLTAP                         |Circuit 2: WELLTAP                         
--------------------------------------------|-------------------------------------------
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists are equivalent.
-Device classes WELLTAP and WELLTAP are equivalent.
-
 Cell DFFQX1 (0) disconnected node: CK
 Cell DFFQX1 (0) disconnected node: D
 Cell DFFQX1 (0) disconnected node: Q
@@ -77,18 +69,6 @@ VSS                                        |VSS
 Cell pin lists for DFFQX1 and DFFQX1 altered to match.
 Device classes DFFQX1 and DFFQX1 are equivalent.
 
-Cell FILLER4 (0) disconnected node: VDD
-Cell FILLER4 (0) disconnected node: VSS
-
-Subcircuit pins:
-Circuit 1: FILLER4                         |Circuit 2: FILLER4                         
--------------------------------------------|-------------------------------------------
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
----------------------------------------------------------------------------------------
-Cell pin lists are equivalent.
-Device classes FILLER4 and FILLER4 are equivalent.
-
 Cell FILLER1 (0) disconnected node: VDD
 Cell FILLER1 (0) disconnected node: VSS
 
@@ -101,21 +81,25 @@ VSS                                        |VSS
 Cell pin lists are equivalent.
 Device classes FILLER1 and FILLER1 are equivalent.
 
-Cell DECAPHV16 (0) disconnected node: VDD
-Cell DECAPHV16 (0) disconnected node: VSS
-Cell DECAPHV16 (1) disconnected node: VPW
+Cell WELLTAP (0) disconnected node: VDD
+Cell WELLTAP (0) disconnected node: VSS
+Cell WELLTAP (1) disconnected node: VDD
+Cell WELLTAP (1) disconnected node: VNW
+Cell WELLTAP (1) disconnected node: VPW
+Cell WELLTAP (1) disconnected node: VSS
 
 Subcircuit pins:
-Circuit 1: DECAPHV16                       |Circuit 2: DECAPHV16                       
+Circuit 1: WELLTAP                         |Circuit 2: WELLTAP                         
 -------------------------------------------|-------------------------------------------
 VDD                                        |VDD                                        
 VSS                                        |VSS                                        
 (no matching pin)                          |VNW                                        
 (no matching pin)                          |VNW                                        
 (no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
 ---------------------------------------------------------------------------------------
-Cell pin lists for DECAPHV16 and DECAPHV16 altered to match.
-Device classes DECAPHV16 and DECAPHV16 are equivalent.
+Cell pin lists are equivalent.
+Device classes WELLTAP and WELLTAP are equivalent.
 
 Cell BUFX3 (0) disconnected node: A
 Cell BUFX3 (0) disconnected node: VDD
@@ -136,6 +120,28 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for BUFX3 and BUFX3 altered to match.
 Device classes BUFX3 and BUFX3 are equivalent.
+
+Cell XOR2X1 (0) disconnected node: A
+Cell XOR2X1 (0) disconnected node: B
+Cell XOR2X1 (0) disconnected node: VDD
+Cell XOR2X1 (0) disconnected node: VSS
+Cell XOR2X1 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: XOR2X1                          |Circuit 2: XOR2X1                          
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+B                                          |B                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for XOR2X1 and XOR2X1 altered to match.
+Device classes XOR2X1 and XOR2X1 are equivalent.
 
 Cell DFFRQX1 (0) disconnected node: CK
 Cell DFFRQX1 (0) disconnected node: D
@@ -161,44 +167,6 @@ VSS                                        |VSS
 Cell pin lists for DFFRQX1 and DFFRQX1 altered to match.
 Device classes DFFRQX1 and DFFRQX1 are equivalent.
 
-Cell XOR2X1 (0) disconnected node: A
-Cell XOR2X1 (0) disconnected node: B
-Cell XOR2X1 (0) disconnected node: VDD
-Cell XOR2X1 (0) disconnected node: VSS
-Cell XOR2X1 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: XOR2X1                          |Circuit 2: XOR2X1                          
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-B                                          |B                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for XOR2X1 and XOR2X1 altered to match.
-Device classes XOR2X1 and XOR2X1 are equivalent.
-
-Cell DECAPHV8 (0) disconnected node: VDD
-Cell DECAPHV8 (0) disconnected node: VSS
-Cell DECAPHV8 (1) disconnected node: VPW
-
-Subcircuit pins:
-Circuit 1: DECAPHV8                        |Circuit 2: DECAPHV8                        
--------------------------------------------|-------------------------------------------
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for DECAPHV8 and DECAPHV8 altered to match.
-Device classes DECAPHV8 and DECAPHV8 are equivalent.
-
 Cell XNOR3X1 (0) disconnected node: A
 Cell XNOR3X1 (0) disconnected node: B
 Cell XNOR3X1 (0) disconnected node: C
@@ -222,6 +190,22 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for XNOR3X1 and XNOR3X1 altered to match.
 Device classes XNOR3X1 and XNOR3X1 are equivalent.
+
+Cell DECAPHV8 (0) disconnected node: VDD
+Cell DECAPHV8 (0) disconnected node: VSS
+Cell DECAPHV8 (1) disconnected node: VPW
+
+Subcircuit pins:
+Circuit 1: DECAPHV8                        |Circuit 2: DECAPHV8                        
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for DECAPHV8 and DECAPHV8 altered to match.
+Device classes DECAPHV8 and DECAPHV8 are equivalent.
 
 Cell INVX1 (0) disconnected node: A
 Cell INVX1 (0) disconnected node: VDD
@@ -359,6 +343,30 @@ Y                                          |Y
 Cell pin lists for NOR3X1 and NOR3X1 altered to match.
 Device classes NOR3X1 and NOR3X1 are equivalent.
 
+Cell OAI21X1 (0) disconnected node: A
+Cell OAI21X1 (0) disconnected node: B
+Cell OAI21X1 (0) disconnected node: C
+Cell OAI21X1 (0) disconnected node: VDD
+Cell OAI21X1 (0) disconnected node: VSS
+Cell OAI21X1 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: OAI21X1                         |Circuit 2: OAI21X1                         
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+B                                          |B                                          
+C                                          |C                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for OAI21X1 and OAI21X1 altered to match.
+Device classes OAI21X1 and OAI21X1 are equivalent.
+
 Cell OAOI211X1 (0) disconnected node: A
 Cell OAOI211X1 (0) disconnected node: B
 Cell OAOI211X1 (0) disconnected node: C
@@ -384,76 +392,6 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for OAOI211X1 and OAOI211X1 altered to match.
 Device classes OAOI211X1 and OAOI211X1 are equivalent.
-
-Cell OAI21X1 (0) disconnected node: A
-Cell OAI21X1 (0) disconnected node: B
-Cell OAI21X1 (0) disconnected node: C
-Cell OAI21X1 (0) disconnected node: VDD
-Cell OAI21X1 (0) disconnected node: VSS
-Cell OAI21X1 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: OAI21X1                         |Circuit 2: OAI21X1                         
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-B                                          |B                                          
-C                                          |C                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for OAI21X1 and OAI21X1 altered to match.
-Device classes OAI21X1 and OAI21X1 are equivalent.
-
-Cell NOR2BX1 (0) disconnected node: AB
-Cell NOR2BX1 (0) disconnected node: B
-Cell NOR2BX1 (0) disconnected node: VDD
-Cell NOR2BX1 (0) disconnected node: VSS
-Cell NOR2BX1 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: NOR2BX1                         |Circuit 2: NOR2BX1                         
--------------------------------------------|-------------------------------------------
-AB                                         |AB                                         
-B                                          |B                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for NOR2BX1 and NOR2BX1 altered to match.
-Device classes NOR2BX1 and NOR2BX1 are equivalent.
-
-Cell AND3BX1 (0) disconnected node: AB
-Cell AND3BX1 (0) disconnected node: B
-Cell AND3BX1 (0) disconnected node: C
-Cell AND3BX1 (0) disconnected node: VDD
-Cell AND3BX1 (0) disconnected node: VSS
-Cell AND3BX1 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: AND3BX1                         |Circuit 2: AND3BX1                         
--------------------------------------------|-------------------------------------------
-AB                                         |AB                                         
-B                                          |B                                          
-C                                          |C                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for AND3BX1 and AND3BX1 altered to match.
-Device classes AND3BX1 and AND3BX1 are equivalent.
 
 Cell AOAI211X1 (0) disconnected node: A
 Cell AOAI211X1 (0) disconnected node: B
@@ -481,16 +419,40 @@ Y                                          |Y
 Cell pin lists for AOAI211X1 and AOAI211X1 altered to match.
 Device classes AOAI211X1 and AOAI211X1 are equivalent.
 
-Cell OR2X2 (0) disconnected node: A
-Cell OR2X2 (0) disconnected node: B
-Cell OR2X2 (0) disconnected node: VDD
-Cell OR2X2 (0) disconnected node: VSS
-Cell OR2X2 (0) disconnected node: Y
+Cell AND3BX1 (0) disconnected node: AB
+Cell AND3BX1 (0) disconnected node: B
+Cell AND3BX1 (0) disconnected node: C
+Cell AND3BX1 (0) disconnected node: VDD
+Cell AND3BX1 (0) disconnected node: VSS
+Cell AND3BX1 (0) disconnected node: Y
 
 Subcircuit pins:
-Circuit 1: OR2X2                           |Circuit 2: OR2X2                           
+Circuit 1: AND3BX1                         |Circuit 2: AND3BX1                         
 -------------------------------------------|-------------------------------------------
-A                                          |A                                          
+AB                                         |AB                                         
+B                                          |B                                          
+C                                          |C                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for AND3BX1 and AND3BX1 altered to match.
+Device classes AND3BX1 and AND3BX1 are equivalent.
+
+Cell NOR2BX1 (0) disconnected node: AB
+Cell NOR2BX1 (0) disconnected node: B
+Cell NOR2BX1 (0) disconnected node: VDD
+Cell NOR2BX1 (0) disconnected node: VSS
+Cell NOR2BX1 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: NOR2BX1                         |Circuit 2: NOR2BX1                         
+-------------------------------------------|-------------------------------------------
+AB                                         |AB                                         
 B                                          |B                                          
 VDD                                        |VDD                                        
 VSS                                        |VSS                                        
@@ -500,8 +462,8 @@ Y                                          |Y
 (no matching pin)                          |VPW                                        
 (no matching pin)                          |VPW                                        
 ---------------------------------------------------------------------------------------
-Cell pin lists for OR2X2 and OR2X2 altered to match.
-Device classes OR2X2 and OR2X2 are equivalent.
+Cell pin lists for NOR2BX1 and NOR2BX1 altered to match.
+Device classes NOR2BX1 and NOR2BX1 are equivalent.
 
 Cell OA21X2 (0) disconnected node: A
 Cell OA21X2 (0) disconnected node: B
@@ -526,6 +488,28 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for OA21X2 and OA21X2 altered to match.
 Device classes OA21X2 and OA21X2 are equivalent.
+
+Cell OR2X2 (0) disconnected node: A
+Cell OR2X2 (0) disconnected node: B
+Cell OR2X2 (0) disconnected node: VDD
+Cell OR2X2 (0) disconnected node: VSS
+Cell OR2X2 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: OR2X2                           |Circuit 2: OR2X2                           
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+B                                          |B                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for OR2X2 and OR2X2 altered to match.
+Device classes OR2X2 and OR2X2 are equivalent.
 
 Cell NOR2X1 (0) disconnected node: A
 Cell NOR2X1 (0) disconnected node: B
@@ -620,6 +604,22 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for AOI21X1 and AOI21X1 altered to match.
 Device classes AOI21X1 and AOI21X1 are equivalent.
+
+Cell DECAPHV16 (0) disconnected node: VDD
+Cell DECAPHV16 (0) disconnected node: VSS
+Cell DECAPHV16 (1) disconnected node: VPW
+
+Subcircuit pins:
+Circuit 1: DECAPHV16                       |Circuit 2: DECAPHV16                       
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for DECAPHV16 and DECAPHV16 altered to match.
+Device classes DECAPHV16 and DECAPHV16 are equivalent.
 
 Cell OAI31X1 (0) disconnected node: A
 Cell OAI31X1 (0) disconnected node: B
@@ -725,22 +725,6 @@ Y                                          |Y
 Cell pin lists for AO22X2 and AO22X2 altered to match.
 Device classes AO22X2 and AO22X2 are equivalent.
 
-Cell DECAPHV32 (0) disconnected node: VDD
-Cell DECAPHV32 (0) disconnected node: VSS
-Cell DECAPHV32 (1) disconnected node: VPW
-
-Subcircuit pins:
-Circuit 1: DECAPHV32                       |Circuit 2: DECAPHV32                       
--------------------------------------------|-------------------------------------------
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for DECAPHV32 and DECAPHV32 altered to match.
-Device classes DECAPHV32 and DECAPHV32 are equivalent.
-
 Cell AO21X2 (0) disconnected node: A
 Cell AO21X2 (0) disconnected node: B
 Cell AO21X2 (0) disconnected node: C
@@ -811,26 +795,6 @@ C                                          |C
 Cell pin lists for AND3X2 and AND3X2 altered to match.
 Device classes AND3X2 and AND3X2 are equivalent.
 
-Cell BUFX12 (0) disconnected node: A
-Cell BUFX12 (0) disconnected node: VDD
-Cell BUFX12 (0) disconnected node: VSS
-Cell BUFX12 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: BUFX12                          |Circuit 2: BUFX12                          
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for BUFX12 and BUFX12 altered to match.
-Device classes BUFX12 and BUFX12 are equivalent.
-
 Cell OR3BX1 (0) disconnected node: AB
 Cell OR3BX1 (0) disconnected node: B
 Cell OR3BX1 (0) disconnected node: C
@@ -855,26 +819,6 @@ Y                                          |Y
 Cell pin lists for OR3BX1 and OR3BX1 altered to match.
 Device classes OR3BX1 and OR3BX1 are equivalent.
 
-Cell BUFX6 (0) disconnected node: A
-Cell BUFX6 (0) disconnected node: VDD
-Cell BUFX6 (0) disconnected node: VSS
-Cell BUFX6 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: BUFX6                           |Circuit 2: BUFX6                           
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for BUFX6 and BUFX6 altered to match.
-Device classes BUFX6 and BUFX6 are equivalent.
-
 Cell BUFX4 (0) disconnected node: A
 Cell BUFX4 (0) disconnected node: VDD
 Cell BUFX4 (0) disconnected node: VSS
@@ -894,6 +838,26 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for BUFX4 and BUFX4 altered to match.
 Device classes BUFX4 and BUFX4 are equivalent.
+
+Cell BUFX6 (0) disconnected node: A
+Cell BUFX6 (0) disconnected node: VDD
+Cell BUFX6 (0) disconnected node: VSS
+Cell BUFX6 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: BUFX6                           |Circuit 2: BUFX6                           
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for BUFX6 and BUFX6 altered to match.
+Device classes BUFX6 and BUFX6 are equivalent.
 
 Cell NOR3BX1 (0) disconnected node: AB
 Cell NOR3BX1 (0) disconnected node: B
@@ -966,6 +930,26 @@ VSS                                        |VSS
 ---------------------------------------------------------------------------------------
 Cell pin lists for ANTENNA2 and ANTENNA2 altered to match.
 Device classes ANTENNA2 and ANTENNA2 are equivalent.
+
+Cell BUFX12 (0) disconnected node: A
+Cell BUFX12 (0) disconnected node: VDD
+Cell BUFX12 (0) disconnected node: VSS
+Cell BUFX12 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: BUFX12                          |Circuit 2: BUFX12                          
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for BUFX12 and BUFX12 altered to match.
+Device classes BUFX12 and BUFX12 are equivalent.
 
 Cell OA211X2 (0) disconnected node: A
 Cell OA211X2 (0) disconnected node: B
@@ -1069,13 +1053,13 @@ Y                                          |Y
 Cell pin lists for OAI211X1 and OAI211X1 altered to match.
 Device classes OAI211X1 and OAI211X1 are equivalent.
 
-Cell INVX4 (0) disconnected node: A
-Cell INVX4 (0) disconnected node: VDD
-Cell INVX4 (0) disconnected node: VSS
-Cell INVX4 (0) disconnected node: Y
+Cell INVX2 (0) disconnected node: A
+Cell INVX2 (0) disconnected node: VDD
+Cell INVX2 (0) disconnected node: VSS
+Cell INVX2 (0) disconnected node: Y
 
 Subcircuit pins:
-Circuit 1: INVX4                           |Circuit 2: INVX4                           
+Circuit 1: INVX2                           |Circuit 2: INVX2                           
 -------------------------------------------|-------------------------------------------
 A                                          |A                                          
 VDD                                        |VDD                                        
@@ -1086,8 +1070,8 @@ Y                                          |Y
 (no matching pin)                          |VPW                                        
 (no matching pin)                          |VPW                                        
 ---------------------------------------------------------------------------------------
-Cell pin lists for INVX4 and INVX4 altered to match.
-Device classes INVX4 and INVX4 are equivalent.
+Cell pin lists for INVX2 and INVX2 altered to match.
+Device classes INVX2 and INVX2 are equivalent.
 
 Cell AOI21BX1 (0) disconnected node: A
 Cell AOI21BX1 (0) disconnected node: B
@@ -1213,6 +1197,22 @@ Y                                          |Y
 Cell pin lists for AOI2B1X1 and AOI2B1X1 altered to match.
 Device classes AOI2B1X1 and AOI2B1X1 are equivalent.
 
+Cell DECAPHV32 (0) disconnected node: VDD
+Cell DECAPHV32 (0) disconnected node: VSS
+Cell DECAPHV32 (1) disconnected node: VPW
+
+Subcircuit pins:
+Circuit 1: DECAPHV32                       |Circuit 2: DECAPHV32                       
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for DECAPHV32 and DECAPHV32 altered to match.
+Device classes DECAPHV32 and DECAPHV32 are equivalent.
+
 Cell MUX2X1 (0) disconnected node: A0
 Cell MUX2X1 (0) disconnected node: A1
 Cell MUX2X1 (0) disconnected node: S0
@@ -1236,46 +1236,6 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for MUX2X1 and MUX2X1 altered to match.
 Device classes MUX2X1 and MUX2X1 are equivalent.
-
-Cell INVX2 (0) disconnected node: A
-Cell INVX2 (0) disconnected node: VDD
-Cell INVX2 (0) disconnected node: VSS
-Cell INVX2 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: INVX2                           |Circuit 2: INVX2                           
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for INVX2 and INVX2 altered to match.
-Device classes INVX2 and INVX2 are equivalent.
-
-Cell BUFX8 (0) disconnected node: A
-Cell BUFX8 (0) disconnected node: VDD
-Cell BUFX8 (0) disconnected node: VSS
-Cell BUFX8 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: BUFX8                           |Circuit 2: BUFX8                           
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for BUFX8 and BUFX8 altered to match.
-Device classes BUFX8 and BUFX8 are equivalent.
 
 Cell NOR4X2 (0) disconnected node: A
 Cell NOR4X2 (0) disconnected node: B
@@ -1355,26 +1315,6 @@ Y                                          |Y
 Cell pin lists for AO211X2 and AO211X2 altered to match.
 Device classes AO211X2 and AO211X2 are equivalent.
 
-Cell INVX14 (0) disconnected node: A
-Cell INVX14 (0) disconnected node: VDD
-Cell INVX14 (0) disconnected node: VSS
-Cell INVX14 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: INVX14                          |Circuit 2: INVX14                          
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for INVX14 and INVX14 altered to match.
-Device classes INVX14 and INVX14 are equivalent.
-
 Cell AND4X2 (0) disconnected node: A
 Cell AND4X2 (0) disconnected node: B
 Cell AND4X2 (0) disconnected node: C
@@ -1425,26 +1365,6 @@ Y                                          |Y
 Cell pin lists for NAND3BX1 and NAND3BX1 altered to match.
 Device classes NAND3BX1 and NAND3BX1 are equivalent.
 
-Cell INVX16 (0) disconnected node: A
-Cell INVX16 (0) disconnected node: VDD
-Cell INVX16 (0) disconnected node: VSS
-Cell INVX16 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: INVX16                          |Circuit 2: INVX16                          
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for INVX16 and INVX16 altered to match.
-Device classes INVX16 and INVX16 are equivalent.
-
 Cell CGX3 (0) disconnected node: CK
 Cell CGX3 (0) disconnected node: E
 Cell CGX3 (0) disconnected node: ECK
@@ -1492,26 +1412,6 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for OAI22X1 and OAI22X1 altered to match.
 Device classes OAI22X1 and OAI22X1 are equivalent.
-
-Cell INVX6 (0) disconnected node: A
-Cell INVX6 (0) disconnected node: VDD
-Cell INVX6 (0) disconnected node: VSS
-Cell INVX6 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: INVX6                           |Circuit 2: INVX6                           
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for INVX6 and INVX6 altered to match.
-Device classes INVX6 and INVX6 are equivalent.
 
 Cell INVX8 (0) disconnected node: A
 Cell INVX8 (0) disconnected node: VDD
@@ -1587,6 +1487,26 @@ Y                                          |Y
 Cell pin lists for OAI2B2BX1 and OAI2B2BX1 altered to match.
 Device classes OAI2B2BX1 and OAI2B2BX1 are equivalent.
 
+Cell INVX6 (0) disconnected node: A
+Cell INVX6 (0) disconnected node: VDD
+Cell INVX6 (0) disconnected node: VSS
+Cell INVX6 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: INVX6                           |Circuit 2: INVX6                           
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for INVX6 and INVX6 altered to match.
+Device classes INVX6 and INVX6 are equivalent.
+
 Cell OR3BX2 (0) disconnected node: AB
 Cell OR3BX2 (0) disconnected node: B
 Cell OR3BX2 (0) disconnected node: C
@@ -1632,6 +1552,46 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for NOR2X2 and NOR2X2 altered to match.
 Device classes NOR2X2 and NOR2X2 are equivalent.
+
+Cell INVX4 (0) disconnected node: A
+Cell INVX4 (0) disconnected node: VDD
+Cell INVX4 (0) disconnected node: VSS
+Cell INVX4 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: INVX4                           |Circuit 2: INVX4                           
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for INVX4 and INVX4 altered to match.
+Device classes INVX4 and INVX4 are equivalent.
+
+Cell INVX14 (0) disconnected node: A
+Cell INVX14 (0) disconnected node: VDD
+Cell INVX14 (0) disconnected node: VSS
+Cell INVX14 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: INVX14                          |Circuit 2: INVX14                          
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for INVX14 and INVX14 altered to match.
+Device classes INVX14 and INVX14 are equivalent.
 
 Cell AOI2B2X1 (0) disconnected node: AB
 Cell AOI2B2X1 (0) disconnected node: B
@@ -1685,34 +1645,6 @@ Y                                          |Y
 Cell pin lists for AOI2BB2X1 and AOI2BB2X1 altered to match.
 Device classes AOI2BB2X1 and AOI2BB2X1 are equivalent.
 
-Cell AOI221X2 (0) disconnected node: A
-Cell AOI221X2 (0) disconnected node: B
-Cell AOI221X2 (0) disconnected node: C
-Cell AOI221X2 (0) disconnected node: D
-Cell AOI221X2 (0) disconnected node: E
-Cell AOI221X2 (0) disconnected node: VDD
-Cell AOI221X2 (0) disconnected node: VSS
-Cell AOI221X2 (0) disconnected node: Y
-
-Subcircuit pins:
-Circuit 1: AOI221X2                        |Circuit 2: AOI221X2                        
--------------------------------------------|-------------------------------------------
-A                                          |A                                          
-B                                          |B                                          
-C                                          |C                                          
-D                                          |D                                          
-E                                          |E                                          
-VDD                                        |VDD                                        
-VSS                                        |VSS                                        
-Y                                          |Y                                          
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VNW                                        
-(no matching pin)                          |VPW                                        
-(no matching pin)                          |VPW                                        
----------------------------------------------------------------------------------------
-Cell pin lists for AOI221X2 and AOI221X2 altered to match.
-Device classes AOI221X2 and AOI221X2 are equivalent.
-
 Cell NAND3BX2 (0) disconnected node: AB
 Cell NAND3BX2 (0) disconnected node: B
 Cell NAND3BX2 (0) disconnected node: C
@@ -1736,6 +1668,26 @@ Y                                          |Y
 ---------------------------------------------------------------------------------------
 Cell pin lists for NAND3BX2 and NAND3BX2 altered to match.
 Device classes NAND3BX2 and NAND3BX2 are equivalent.
+
+Cell BUFX8 (0) disconnected node: A
+Cell BUFX8 (0) disconnected node: VDD
+Cell BUFX8 (0) disconnected node: VSS
+Cell BUFX8 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: BUFX8                           |Circuit 2: BUFX8                           
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for BUFX8 and BUFX8 altered to match.
+Device classes BUFX8 and BUFX8 are equivalent.
 
 Cell OR4X1 (0) disconnected node: A
 Cell OR4X1 (0) disconnected node: B
@@ -1836,93 +1788,91 @@ Device classes NAND4BX1 and NAND4BX1 are equivalent.
 Subcircuit summary:
 Circuit 1: dsa1_dig_top                    |Circuit 2: dsa1_dig_top                    
 -------------------------------------------|-------------------------------------------
-FILLER2 (10592)                            |FILLER2 (10592)                            
+FILLER4 (2214)                             |FILLER4 (2214)                             
+FILLER2 (3136)                             |FILLER2 (3136)                             
 MUXI2X1 (139)                              |MUXI2X1 (139)                              
-WELLTAP (1521)                             |WELLTAP (1521)                             
 DFFQX1 (1503)                              |DFFQX1 (1503)                              
-FILLER4 (3483)                             |FILLER4 (3483)                             
-FILLER1 (2994)                             |FILLER1 (2994)                             
-DECAPHV16 (185)                            |DECAPHV16 (185)                            
-BUFX3 (602)                                |BUFX3 (602)                                
-DFFRQX1 (343)                              |DFFRQX1 (343)                              
+FILLER1 (3348)                             |FILLER1 (3348)                             
+WELLTAP (1472)                             |WELLTAP (1472)                             
+BUFX3 (598)                                |BUFX3 (598)                                
 XOR2X1 (494)                               |XOR2X1 (494)                               
-DECAPHV8 (841)                             |DECAPHV8 (841)                             
+DFFRQX1 (343)                              |DFFRQX1 (343)                              
 XNOR3X1 (529)                              |XNOR3X1 (529)                              
-INVX1 (610)                                |INVX1 (610)                                
+DECAPHV8 (1578)                            |DECAPHV8 (1578)                            
+INVX1 (617)                                |INVX1 (617)                                
 AND2X1 (644)                               |AND2X1 (644)                               
 MIN3X1 (461)                               |MIN3X1 (461)                               
 NAND3X1 (156)                              |NAND3X1 (156)                              
 XNOR2X1 (944)                              |XNOR2X1 (944)                              
 NOR3X1 (287)                               |NOR3X1 (287)                               
-OAOI211X1 (206)                            |OAOI211X1 (206)                            
 OAI21X1 (421)                              |OAI21X1 (421)                              
-NOR2BX1 (260)                              |NOR2BX1 (260)                              
-AND3BX1 (194)                              |AND3BX1 (194)                              
+OAOI211X1 (206)                            |OAOI211X1 (206)                            
 AOAI211X1 (248)                            |AOAI211X1 (248)                            
-OR2X2 (87)                                 |OR2X2 (87)                                 
+AND3BX1 (194)                              |AND3BX1 (194)                              
+NOR2BX1 (260)                              |NOR2BX1 (260)                              
 OA21X2 (110)                               |OA21X2 (110)                               
+OR2X2 (87)                                 |OR2X2 (87)                                 
 NOR2X1 (923)                               |NOR2X1 (923)                               
 NAND2X1 (453)                              |NAND2X1 (453)                              
 AOI211X1 (107)                             |AOI211X1 (107)                             
 AOI21X1 (501)                              |AOI21X1 (501)                              
+DECAPHV16 (575)                            |DECAPHV16 (575)                            
 OAI31X1 (22)                               |OAI31X1 (22)                               
 AOI31X1 (71)                               |AOI31X1 (71)                               
 AOI22X1 (37)                               |AOI22X1 (37)                               
 AO22X2 (19)                                |AO22X2 (19)                                
-DECAPHV32 (9)                              |DECAPHV32 (9)                              
 AO21X2 (72)                                |AO21X2 (72)                                
 NAND2BX1 (118)                             |NAND2BX1 (118)                             
 AND3X2 (55)                                |AND3X2 (55)                                
-BUFX12 (272)                               |BUFX12 (272)                               
 OR3BX1 (93)                                |OR3BX1 (93)                                
-BUFX6 (8)                                  |BUFX6 (8)                                  
-BUFX4 (11)                                 |BUFX4 (11)                                 
+BUFX4 (14)                                 |BUFX4 (14)                                 
+BUFX6 (6)                                  |BUFX6 (6)                                  
 NOR3BX1 (17)                               |NOR3BX1 (17)                               
-AOI221X1 (48)                              |AOI221X1 (48)                              
-ANTENNA2 (16)                              |ANTENNA2 (16)                              
+AOI221X1 (49)                              |AOI221X1 (49)                              
+ANTENNA2 (42)                              |ANTENNA2 (42)                              
+BUFX12 (271)                               |BUFX12 (271)                               
 OA211X2 (35)                               |OA211X2 (35)                               
 OAOI211X2 (12)                             |OAOI211X2 (12)                             
 OR3X2 (23)                                 |OR3X2 (23)                                 
 OAI211X1 (84)                              |OAI211X1 (84)                              
-INVX4 (10)                                 |INVX4 (10)                                 
+INVX2 (43)                                 |INVX2 (43)                                 
 AOI21BX1 (27)                              |AOI21BX1 (27)                              
 XOR3X1 (43)                                |XOR3X1 (43)                                
 AOI2B2BX1 (3)                              |AOI2B2BX1 (3)                              
 NAND4X2 (10)                               |NAND4X2 (10)                               
 AOI2B1X1 (77)                              |AOI2B1X1 (77)                              
+DECAPHV32 (78)                             |DECAPHV32 (78)                             
 MUX2X1 (50)                                |MUX2X1 (50)                                
-INVX2 (38)                                 |INVX2 (38)                                 
-BUFX8 (5)                                  |BUFX8 (5)                                  
 NOR4X2 (1)                                 |NOR4X2 (1)                                 
 AO31X2 (21)                                |AO31X2 (21)                                
 AO211X2 (21)                               |AO211X2 (21)                               
-INVX14 (2)                                 |INVX14 (2)                                 
 AND4X2 (18)                                |AND4X2 (18)                                
 NAND3BX1 (9)                               |NAND3BX1 (9)                               
-INVX16 (1)                                 |INVX16 (1)                                 
 CGX3 (26)                                  |CGX3 (26)                                  
 OAI22X1 (11)                               |OAI22X1 (11)                               
-INVX6 (6)                                  |INVX6 (6)                                  
-INVX8 (5)                                  |INVX8 (5)                                  
+INVX8 (6)                                  |INVX8 (6)                                  
 OAI221X1 (15)                              |OAI221X1 (15)                              
 OAI2B2BX1 (3)                              |OAI2B2BX1 (3)                              
+INVX6 (6)                                  |INVX6 (6)                                  
 OR3BX2 (1)                                 |OR3BX2 (1)                                 
 NOR2X2 (3)                                 |NOR2X2 (3)                                 
+INVX4 (13)                                 |INVX4 (13)                                 
+INVX14 (2)                                 |INVX14 (2)                                 
 AOI2B2X1 (8)                               |AOI2B2X1 (8)                               
 AOI2BB2X1 (1)                              |AOI2BB2X1 (1)                              
-AOI221X2 (1)                               |AOI221X2 (1)                               
 NAND3BX2 (1)                               |NAND3BX2 (1)                               
+BUFX8 (4)                                  |BUFX8 (4)                                  
 OR4X1 (2)                                  |OR4X1 (2)                                  
 NOR2BX2 (1)                                |NOR2BX2 (1)                                
 NAND2X1P5 (1)                              |NAND2X1P5 (1)                              
 NAND4BX1 (1)                               |NAND4BX1 (1)                               
-Number of devices: 31282                   |Number of devices: 31282                   
-Number of nets: 39024                      |Number of nets: 39024                      
+Number of devices: 24094                   |Number of devices: 24094                   
+Number of nets: 40178                      |Number of nets: 40178                      
 ---------------------------------------------------------------------------------------
 Resolving symmetries by property value.
 Resolving symmetries by pin name.
 Resolving symmetries by net name.
-Netlists match with 14 symmetries.
+Netlists match with 22 symmetries.
 
 Subcircuit pins:
 Circuit 1: dsa1_dig_top                    |Circuit 2: dsa1_dig_top                    
@@ -1933,60 +1883,62 @@ mosi                                       |mosi
 rst_b                                      |rst_b                                      
 adc_conv                                   |adc_conv                                   
 miso                                       |miso                                       
+o_bias_cfg[16]                             |o_bias_cfg[16]                             
+o_bias_cfg[17]                             |o_bias_cfg[17]                             
+o_bias_cfg[24]                             |o_bias_cfg[24]                             
 o_bias_cfg[34]                             |o_bias_cfg[34]                             
-o_lf_cfg[15]                               |o_lf_cfg[15]                               
+o_bias_cfg[3]                              |o_bias_cfg[3]                              
+o_clk_cfg[4]                               |o_clk_cfg[4]                               
+o_clk_cfg[5]                               |o_clk_cfg[5]                               
 o_tst_ctrl[11]                             |o_tst_ctrl[11]                             
 o_tst_ctrl[12]                             |o_tst_ctrl[12]                             
 o_tst_ctrl[13]                             |o_tst_ctrl[13]                             
 o_tst_ctrl[14]                             |o_tst_ctrl[14]                             
 o_tst_ctrl[15]                             |o_tst_ctrl[15]                             
-o_bias_cfg[15]                             |o_bias_cfg[15]                             
-o_bias_cfg[4]                              |o_bias_cfg[4]                              
+o_uwb_tx_cfg[25]                           |o_uwb_tx_cfg[25]                           
+o_rst_ctrl_b[1]                            |o_rst_ctrl_b[1]                            
+o_uwb_tx_cfg[17]                           |o_uwb_tx_cfg[17]                           
+o_aux_ctrl[10]                             |o_aux_ctrl[10]                             
 o_en_ctrl[7]                               |o_en_ctrl[7]                               
-o_en_ctrl[6]                               |o_en_ctrl[6]                               
 o_clk_cfg[13]                              |o_clk_cfg[13]                              
 o_en_ctrl[5]                               |o_en_ctrl[5]                               
 o_clk_cfg[12]                              |o_clk_cfg[12]                              
 o_en_ctrl[4]                               |o_en_ctrl[4]                               
+o_clk_cfg[11]                              |o_clk_cfg[11]                              
 o_en_ctrl[3]                               |o_en_ctrl[3]                               
-o_uwb_tx_cfg[25]                           |o_uwb_tx_cfg[25]                           
+o_uwb_tx_cfg[16]                           |o_uwb_tx_cfg[16]                           
 o_uwb_tx_cfg[15]                           |o_uwb_tx_cfg[15]                           
-o_rst_ctrl_b[1]                            |o_rst_ctrl_b[1]                            
 o_uwb_tx_cfg[13]                           |o_uwb_tx_cfg[13]                           
 o_rst_ctrl_b[0]                            |o_rst_ctrl_b[0]                            
 o_uwb_tx_cfg[22]                           |o_uwb_tx_cfg[22]                           
-o_uwb_tx_cfg[12]                           |o_uwb_tx_cfg[12]                           
 o_uwb_tx_cfg[21]                           |o_uwb_tx_cfg[21]                           
 o_uwb_tx_cfg[20]                           |o_uwb_tx_cfg[20]                           
 o_lf_cfg[7]                                |o_lf_cfg[7]                                
 o_lf_cfg[6]                                |o_lf_cfg[6]                                
 o_uwb_tx_cfg[28]                           |o_uwb_tx_cfg[28]                           
+o_uwb_tx_cfg[12]                           |o_uwb_tx_cfg[12]                           
 o_uwb_tx_cfg[27]                           |o_uwb_tx_cfg[27]                           
-o_uwb_tx_cfg[17]                           |o_uwb_tx_cfg[17]                           
+o_clk_cfg[2]                               |o_clk_cfg[2]                               
 o_en_ctrl[1]                               |o_en_ctrl[1]                               
 o_clk_cfg[1]                               |o_clk_cfg[1]                               
-o_clk_cfg[2]                               |o_clk_cfg[2]                               
+o_aux_ctrl[15]                             |o_aux_ctrl[15]                             
 o_en_ctrl[10]                              |o_en_ctrl[10]                              
 o_bias_cfg[8]                              |o_bias_cfg[8]                              
 o_aux_ctrl[14]                             |o_aux_ctrl[14]                             
-o_aux_ctrl[15]                             |o_aux_ctrl[15]                             
-o_uwb_tx_cfg[16]                           |o_uwb_tx_cfg[16]                           
+o_bias_cfg[1]                              |o_bias_cfg[1]                              
 o_uwb_tx_cfg[19]                           |o_uwb_tx_cfg[19]                           
 o_lf_cfg[5]                                |o_lf_cfg[5]                                
 o_en_ctrl[0]                               |o_en_ctrl[0]                               
-o_aux_ctrl[11]                             |o_aux_ctrl[11]                             
 o_aux_ctrl[13]                             |o_aux_ctrl[13]                             
 o_clk_cfg[16]                              |o_clk_cfg[16]                              
-o_aux_ctrl[10]                             |o_aux_ctrl[10]                             
 o_en_ctrl[8]                               |o_en_ctrl[8]                               
 o_en_ctrl[9]                               |o_en_ctrl[9]                               
 o_aux_ctrl[12]                             |o_aux_ctrl[12]                             
 o_lf_cfg[8]                                |o_lf_cfg[8]                                
 o_lf_cfg[9]                                |o_lf_cfg[9]                                
-o_tst_ctrl[0]                              |o_tst_ctrl[0]                              
 o_tst_ctrl[10]                             |o_tst_ctrl[10]                             
-o_tst_ctrl[2]                              |o_tst_ctrl[2]                              
 o_tst_ctrl[1]                              |o_tst_ctrl[1]                              
+o_tst_ctrl[2]                              |o_tst_ctrl[2]                              
 o_tst_ctrl[3]                              |o_tst_ctrl[3]                              
 o_tst_ctrl[4]                              |o_tst_ctrl[4]                              
 o_tst_ctrl[5]                              |o_tst_ctrl[5]                              
@@ -1999,7 +1951,6 @@ o_uwb_tx_cfg[10]                           |o_uwb_tx_cfg[10]
 o_uwb_tx_cfg[11]                           |o_uwb_tx_cfg[11]                           
 o_uwb_tx_cfg[14]                           |o_uwb_tx_cfg[14]                           
 o_uwb_tx_cfg[18]                           |o_uwb_tx_cfg[18]                           
-o_uwb_tx_cfg[1]                            |o_uwb_tx_cfg[1]                            
 o_uwb_tx_cfg[23]                           |o_uwb_tx_cfg[23]                           
 o_uwb_tx_cfg[24]                           |o_uwb_tx_cfg[24]                           
 o_aux_ctrl[1]                              |o_aux_ctrl[1]                              
@@ -2008,12 +1959,13 @@ o_uwb_tx_cfg[29]                           |o_uwb_tx_cfg[29]
 o_uwb_tx_cfg[2]                            |o_uwb_tx_cfg[2]                            
 o_uwb_tx_cfg[3]                            |o_uwb_tx_cfg[3]                            
 o_uwb_tx_cfg[4]                            |o_uwb_tx_cfg[4]                            
+o_uwb_tx_cfg[1]                            |o_uwb_tx_cfg[1]                            
 o_uwb_tx_cfg[5]                            |o_uwb_tx_cfg[5]                            
 o_uwb_tx_cfg[6]                            |o_uwb_tx_cfg[6]                            
+o_aux_ctrl[2]                              |o_aux_ctrl[2]                              
 o_uwb_tx_cfg[8]                            |o_uwb_tx_cfg[8]                            
 o_uwb_tx_cfg[9]                            |o_uwb_tx_cfg[9]                            
 o_aux_ctrl[3]                              |o_aux_ctrl[3]                              
-o_aux_ctrl[2]                              |o_aux_ctrl[2]                              
 o_aux_ctrl[4]                              |o_aux_ctrl[4]                              
 o_aux_ctrl[5]                              |o_aux_ctrl[5]                              
 o_aux_ctrl[6]                              |o_aux_ctrl[6]                              
@@ -2021,38 +1973,36 @@ o_aux_ctrl[7]                              |o_aux_ctrl[7]
 o_uwb_tx_cfg[7]                            |o_uwb_tx_cfg[7]                            
 o_aux_ctrl[9]                              |o_aux_ctrl[9]                              
 o_bias_cfg[0]                              |o_bias_cfg[0]                              
-o_bias_cfg[11]                             |o_bias_cfg[11]                             
 o_bias_cfg[10]                             |o_bias_cfg[10]                             
+o_bias_cfg[11]                             |o_bias_cfg[11]                             
 o_bias_cfg[12]                             |o_bias_cfg[12]                             
 o_bias_cfg[13]                             |o_bias_cfg[13]                             
 o_bias_cfg[14]                             |o_bias_cfg[14]                             
-o_bias_cfg[16]                             |o_bias_cfg[16]                             
+o_bias_cfg[15]                             |o_bias_cfg[15]                             
 o_bias_cfg[18]                             |o_bias_cfg[18]                             
-o_bias_cfg[17]                             |o_bias_cfg[17]                             
 o_bias_cfg[19]                             |o_bias_cfg[19]                             
+o_tst_ctrl[0]                              |o_tst_ctrl[0]                              
 o_bias_cfg[20]                             |o_bias_cfg[20]                             
 o_bias_cfg[21]                             |o_bias_cfg[21]                             
 o_bias_cfg[22]                             |o_bias_cfg[22]                             
 o_bias_cfg[23]                             |o_bias_cfg[23]                             
-o_bias_cfg[24]                             |o_bias_cfg[24]                             
 o_bias_cfg[25]                             |o_bias_cfg[25]                             
 o_bias_cfg[26]                             |o_bias_cfg[26]                             
 o_bias_cfg[27]                             |o_bias_cfg[27]                             
+o_bias_cfg[28]                             |o_bias_cfg[28]                             
 o_bias_cfg[29]                             |o_bias_cfg[29]                             
 o_bias_cfg[2]                              |o_bias_cfg[2]                              
 o_bias_cfg[30]                             |o_bias_cfg[30]                             
-o_bias_cfg[28]                             |o_bias_cfg[28]                             
 o_bias_cfg[31]                             |o_bias_cfg[31]                             
 o_bias_cfg[32]                             |o_bias_cfg[32]                             
 o_bias_cfg[33]                             |o_bias_cfg[33]                             
-o_bias_cfg[3]                              |o_bias_cfg[3]                              
+o_bias_cfg[4]                              |o_bias_cfg[4]                              
+o_bias_cfg[5]                              |o_bias_cfg[5]                              
 o_bias_cfg[6]                              |o_bias_cfg[6]                              
 o_bias_cfg[7]                              |o_bias_cfg[7]                              
 o_bias_cfg[9]                              |o_bias_cfg[9]                              
 o_clk_cfg[0]                               |o_clk_cfg[0]                               
 o_clk_cfg[10]                              |o_clk_cfg[10]                              
-o_clk_cfg[11]                              |o_clk_cfg[11]                              
-o_bias_cfg[1]                              |o_bias_cfg[1]                              
 o_clk_cfg[14]                              |o_clk_cfg[14]                              
 o_aux_ctrl[8]                              |o_aux_ctrl[8]                              
 o_clk_cfg[15]                              |o_clk_cfg[15]                              
@@ -2060,26 +2010,26 @@ o_clk_cfg[17]                              |o_clk_cfg[17]
 o_clk_cfg[18]                              |o_clk_cfg[18]                              
 o_aux_ctrl[0]                              |o_aux_ctrl[0]                              
 o_clk_cfg[3]                               |o_clk_cfg[3]                               
-o_clk_cfg[4]                               |o_clk_cfg[4]                               
-o_clk_cfg[5]                               |o_clk_cfg[5]                               
 o_clk_cfg[6]                               |o_clk_cfg[6]                               
 o_clk_cfg[7]                               |o_clk_cfg[7]                               
-o_bias_cfg[5]                              |o_bias_cfg[5]                              
 o_clk_cfg[8]                               |o_clk_cfg[8]                               
 o_clk_cfg[9]                               |o_clk_cfg[9]                               
 o_en_ctrl[2]                               |o_en_ctrl[2]                               
 o_lf_cfg[0]                                |o_lf_cfg[0]                                
 o_lf_cfg[10]                               |o_lf_cfg[10]                               
+o_en_ctrl[6]                               |o_en_ctrl[6]                               
+o_aux_ctrl[11]                             |o_aux_ctrl[11]                             
 o_lf_cfg[11]                               |o_lf_cfg[11]                               
 o_lf_cfg[12]                               |o_lf_cfg[12]                               
 o_lf_cfg[13]                               |o_lf_cfg[13]                               
 o_lf_cfg[14]                               |o_lf_cfg[14]                               
+o_lf_cfg[15]                               |o_lf_cfg[15]                               
 o_lf_cfg[2]                                |o_lf_cfg[2]                                
 o_lf_cfg[3]                                |o_lf_cfg[3]                                
 o_lf_cfg[1]                                |o_lf_cfg[1]                                
 o_lf_cfg[4]                                |o_lf_cfg[4]                                
-clk                                        |clk                                        
 sclk                                       |sclk                                       
+clk                                        |clk                                        
 VDD                                        |VDD                                        
 VSS                                        |VSS                                        
 ---------------------------------------------------------------------------------------

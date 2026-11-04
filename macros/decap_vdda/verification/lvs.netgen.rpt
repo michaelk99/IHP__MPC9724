@@ -1,0 +1,174 @@
+
+Cell FILLER2 (0) disconnected node: VSS
+Cell FILLER2 (0) disconnected node: VDD
+
+Subcircuit pins:
+Circuit 1: FILLER2                         |Circuit 2: FILLER2                         
+-------------------------------------------|-------------------------------------------
+VSS                                        |VSS                                        
+VDD                                        |VDD                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes FILLER2 and FILLER2 are equivalent.
+
+Cell DECAPHV16 (0) disconnected node: VDD
+Cell DECAPHV16 (0) disconnected node: VSS
+Cell DECAPHV16 (1) disconnected node: VPW
+
+Subcircuit pins:
+Circuit 1: DECAPHV16                       |Circuit 2: DECAPHV16                       
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for DECAPHV16 and DECAPHV16 altered to match.
+Device classes DECAPHV16 and DECAPHV16 are equivalent.
+
+Cell WELLTAP (0) disconnected node: VDD
+Cell WELLTAP (0) disconnected node: VSS
+Cell WELLTAP (1) disconnected node: VDD
+Cell WELLTAP (1) disconnected node: VNW
+Cell WELLTAP (1) disconnected node: VPW
+Cell WELLTAP (1) disconnected node: VSS
+
+Subcircuit pins:
+Circuit 1: WELLTAP                         |Circuit 2: WELLTAP                         
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes WELLTAP and WELLTAP are equivalent.
+
+Cell DECAPHV8 (0) disconnected node: VDD
+Cell DECAPHV8 (0) disconnected node: VSS
+Cell DECAPHV8 (1) disconnected node: VPW
+
+Subcircuit pins:
+Circuit 1: DECAPHV8                        |Circuit 2: DECAPHV8                        
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for DECAPHV8 and DECAPHV8 altered to match.
+Device classes DECAPHV8 and DECAPHV8 are equivalent.
+
+Cell FILLER4 (0) disconnected node: VDD
+Cell FILLER4 (0) disconnected node: VSS
+
+Subcircuit pins:
+Circuit 1: FILLER4                         |Circuit 2: FILLER4                         
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes FILLER4 and FILLER4 are equivalent.
+
+Cell FILLER1 (0) disconnected node: VDD
+Cell FILLER1 (0) disconnected node: VSS
+
+Subcircuit pins:
+Circuit 1: FILLER1                         |Circuit 2: FILLER1                         
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes FILLER1 and FILLER1 are equivalent.
+
+Cell DECAPHV32 (0) disconnected node: VDD
+Cell DECAPHV32 (0) disconnected node: VSS
+Cell DECAPHV32 (1) disconnected node: VPW
+
+Subcircuit pins:
+Circuit 1: DECAPHV32                       |Circuit 2: DECAPHV32                       
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for DECAPHV32 and DECAPHV32 altered to match.
+Device classes DECAPHV32 and DECAPHV32 are equivalent.
+
+Cell TIEHI (0) disconnected node: VDD
+Cell TIEHI (0) disconnected node: VSS
+Cell TIEHI (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: TIEHI                           |Circuit 2: TIEHI                           
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for TIEHI and TIEHI altered to match.
+Device classes TIEHI and TIEHI are equivalent.
+
+Cell INVX1 (0) disconnected node: A
+Cell INVX1 (0) disconnected node: VDD
+Cell INVX1 (0) disconnected node: VSS
+Cell INVX1 (0) disconnected node: Y
+
+Subcircuit pins:
+Circuit 1: INVX1                           |Circuit 2: INVX1                           
+-------------------------------------------|-------------------------------------------
+A                                          |A                                          
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VNW                                        
+(no matching pin)                          |VPW                                        
+(no matching pin)                          |VPW                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for INVX1 and INVX1 altered to match.
+Device classes INVX1 and INVX1 are equivalent.
+
+Subcircuit summary:
+Circuit 1: decap_vdda                      |Circuit 2: decap_vdda                      
+-------------------------------------------|-------------------------------------------
+FILLER2 (333)                              |FILLER2 (333)                              
+DECAPHV16 (323)                            |DECAPHV16 (323)                            
+WELLTAP (336)                              |WELLTAP (336)                              
+DECAPHV8 (339)                             |DECAPHV8 (339)                             
+FILLER4 (97)                               |FILLER4 (97)                               
+FILLER1 (48)                               |FILLER1 (48)                               
+DECAPHV32 (704)                            |DECAPHV32 (704)                            
+TIEHI (1)                                  |TIEHI (1)                                  
+INVX1 (1)                                  |INVX1 (1)                                  
+Number of devices: 2182                    |Number of devices: 2182                    
+Number of nets: 2046                       |Number of nets: 2046                       
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Resolving symmetries by net name.
+Netlists match with 12 symmetries.
+
+Subcircuit pins:
+Circuit 1: decap_vdda                      |Circuit 2: decap_vdda                      
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes decap_vdda and decap_vdda are equivalent.
+
+Final result: Circuits match uniquely.
+.

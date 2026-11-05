@@ -54,6 +54,8 @@ DSM2_DIR = "ip/dsm2_core/spice"
 DSM2_VIEWS = {"sch": ("dsm2_core_sch.spice", "dsm2_core"), "pex": ("dsm2_core_pex3.spice", "dsm2_core_pex")}
 DSM2_PORTS = ("vi vcm di_clk di_ena di_rst_b di_trim[3] di_trim[2] di_trim[1] di_trim[0] di_dith_en di_dith_amp[1] "
               "di_dith_amp[0] di_vcm_ext di_btest_en di_qout_en do_q do_q_b do_q_dec ibias_test vdd vss").split()
+# the oscillator variant (2026-11-02) appends these, its pads' c2p and c2p_en
+DSM2_OSC = ["di_osc_en", "di_clk_sel", "do_clk_osc", "do_osc_oe"]
 C_DEC_IN = 15e-15                   # the DEC_SRC gate on do_q_dec, dsm2's bench load
 # the files of one tree, this one or a worktree of an older tag (--tree)
 TREE_FILES = {"chip_pnl": "netlist/pnl/sg13cmos5l_dsa1_dig_top.pnl.v", "bond_report": "packaging/result.md",
@@ -62,7 +64,7 @@ TREE_FILES = {"chip_pnl": "netlist/pnl/sg13cmos5l_dsa1_dig_top.pnl.v", "bond_rep
 BOND_REPORT = os.path.join(ROOT, TREE_FILES["bond_report"])
 MACRO = "dsa1_dig_top"
 IO_CELL = re.compile(r"^sg13cmos5l_(IOPad|Filler|Corner|ip__)")
-NO_LOGIC = re.compile(r"^(FILLER\d+|DECAPHV\d+|WELLTAP|ANTENNA\d*)$")
+NO_LOGIC = re.compile(r"^(FILLER\d+|DECAPHV\d+|WELLTAP|ANTENNA\d*|decap_vdda)$")             # decap_vdda holds only DECAPHV
 SUPPLIES = {"VDD", "VDDA", "VSS", "IOVDD", "IOVSS"}
 # The adc_conv gate is left out of the core and its pad is bench driven, the real pulse comes once per 1.95 ms output sample, too rarely for the bounce case
 BENCH_DRIVEN = re.compile(r"(^|\.)u_adc_conv_gate$")
@@ -263,11 +265,12 @@ def build(chip_pnl, macro_pnl, cdl, io_spi, clamp_cdl=None, cut_cdl=None, dsm2="
 
     core_nets = {n for _, _, c in core for ns in c.values() for n in ns}
     io_nets = {n for _, _, c in io for ns in c.values() for n in ns}
-    if dsm and sorted(dsm) != sorted(DSM2_PORTS):
-        raise SystemExit(f"dsm2_core pins {sorted(dsm)} are not {DSM2_PORTS}")
+    dports = DSM2_PORTS + (DSM2_OSC if "di_osc_en" in dsm else [])
+    if dsm and sorted(dsm) != sorted(dports):
+        raise SystemExit(f"dsm2_core pins {sorted(dsm)} are not {dports}")
     if dsm2 != "box" and not dsm:
         raise SystemExit(f"{chip_pnl} has no dsm2_core to simulate, use --dsm2 box")
-    dsm_out = {dsm[p] for p in ("do_q", "do_q_b", "do_q_dec")} if dsm else set()
+    dsm_out = {dsm[p] for p in ("do_q", "do_q_b", "do_q_dec", "do_clk_osc") if p in dsm}
     ports = sorted((core_nets & (io_nets | set(dsm.values()))) - SUPPLIES)
 
     names = {}
@@ -312,11 +315,11 @@ def build(chip_pnl, macro_pnl, cdl, io_spi, clamp_cdl=None, cut_cdl=None, dsm2="
     for n, rail in sorted(external.items()):
         chip_lines += [f"Bx_{safe(n)} x_{safe(n)} 0 V=V(c_{safe(n)})*V({rail}_s)", f"Rx_{safe(n)} x_{safe(n)} {safe(n)} 1k"]
     if dsm and dsm2 == "box":
-        chip_lines.append(f"Rx_{safe(dsm['do_q_dec'])} {safe(dsm['do_q_dec'])} 0 1G")
+        chip_lines += [f"Rx_{safe(dsm[p])} {safe(dsm[p])} 0 1G" for p in ("do_q_dec", "do_osc_oe") if p in dsm]
     elif dsm:
         # a 0 V source in dsm2's supply measures its own current, the pin stays on the chip's net
-        nets = [f"dsm2_{safe(dsm['vdd'])}" if p == "vdd" else safe(dsm[p]) for p in DSM2_PORTS]
-        chip_lines += [f"Vdsm2_vdd {safe(dsm['vdd'])} {nets[DSM2_PORTS.index('vdd')]} 0", f"Xdsm2 {' '.join(nets)} dsm2_wrap",
+        nets = [f"dsm2_{safe(dsm['vdd'])}" if p == "vdd" else safe(dsm[p]) for p in dports]
+        chip_lines += [f"Vdsm2_vdd {safe(dsm['vdd'])} {nets[dports.index('vdd')]} 0", f"Xdsm2 {' '.join(nets)} dsm2_wrap",
                        f"Cdsm2_dec {safe(dsm['do_q_dec'])} 0 {C_DEC_IN:.3g}"]
     chip_lines.append(".ends chip")
     return {"core": "\n".join(stubs + lines) + "\n", "chip": "\n".join(chip_lines) + "\n",
@@ -325,14 +328,14 @@ def build(chip_pnl, macro_pnl, cdl, io_spi, clamp_cdl=None, cut_cdl=None, dsm2="
             "dsm2": {p: safe(n) for p, n in dsm.items()} if dsm2 != "box" else {}}
 
 
-def dsm2_wrapper(path, subckt):
+def dsm2_wrapper(path, subckt, ports=DSM2_PORTS):
     """dsm2's netlist inside dsm2_wrap. Nested, its subcircuits are local, so its 5-pin
     sg13cmos5l_SecondaryProtection does not replace the IO cells' 4-pin one."""
     return "\n".join([f"* dsm2_core from {path}, written by gen_startup.py",
                       "* rshunt, 1 TOhm from every node to ground, is in dsm2's header: its operating point needs it.",
                       ".options rshunt=1e12",
-                      f".subckt dsm2_wrap {' '.join(DSM2_PORTS)}", f".include {path}",
-                      f"X1 {' '.join(DSM2_PORTS)} {subckt}", ".ends dsm2_wrap"]) + "\n"
+                      f".subckt dsm2_wrap {' '.join(ports)}", f".include {path}",
+                      f"X1 {' '.join(ports)} {subckt}", ".ends dsm2_wrap"]) + "\n"
 
 
 # ---- the bench --------------------------------------------------------------------------
@@ -385,6 +388,10 @@ T_END_BOUNCE_DSM2 = 650e-6
 ADC_CONV_AT_DSM2 = 586e-6
 # dsm_clk starts this long before DSM_RST_B: dsm2's clocks cost minutes each, so the 130 us wait runs without them
 T_DSM_LEAD = 2 * T_SCLK
+# STARTUP_DEFON=1: the chip since v1.2.1, dsm2 on from reset with no SPI write. di_ena and di_qout_en follow VDD up,
+# di_rst_b rises on the 10th rising clk edge after rst_n. Start-up orders only.
+DEFON = os.environ.get("STARTUP_DEFON", "") == "1"
+T_DEFON_RUN = T_SCLK_ON + (-(-(T_RST - T_SCLK_ON) // T_CLK) + 9) * T_CLK
 VI_PAD = "analog_PAD_0_"            # dsm2's vi, which a source at half of VDDA drives when dsm2 is in
 # Breakpoints every 0.25 ns from 1 to 6 ns after both dsm_clk edges, as dsm2's loop benches place them from 1 to 4 ns
 # after di_clk, plus 2 ns for the dsm_clk pad. Without them dsm2 stalls about 16 clocks in at its vi ESD diode.
@@ -395,17 +402,27 @@ def frames(order, dsm2=False):
     if order in POWER_ORDERS:
         return []
     if order == "bounce":
+        assert not (dsm2 and DEFON), "STARTUP_DEFON has no bounce"
         return BOUNCE_DSM2_FRAMES if dsm2 else BOUNCE_FRAMES
-    return DSM2_FRAMES if dsm2 else FRAMES
+    return DSM2_FRAMES if dsm2 and not DEFON else FRAMES
 
 
 def dsm2_times(order):
-    """(DSM_EN, DSM_RST_B) as they reach dsm2, the store edges of the two BIAS_CFG_1 writes."""
+    """(DSM_EN, DSM_RST_B) as they reach dsm2, the store edges of the two BIAS_CFG_1 writes.
+    With DEFON VDD's ramp at half, then the 10th clk edge after rst_n."""
+    if DEFON:
+        return (T_SECOND if order == "io_first" else T_FIRST) + RAMP / 2, T_DEFON_RUN
     on, run = [t0 + T_STORE for t0, a, _, _, wd in frames(order, True) if a == BIAS_CFG_1 and wd is not None]
     return on, run
 
 
+def dsm2_run_specified():
+    return DSM2_FRAMES[-1][0] + T_STORE
+
+
 def t_end(order, dsm2=False):
+    if dsm2 and DEFON and order not in POWER_ORDERS:
+        return max(T_END, T_DEFON_RUN + T_END_DSM2 - dsm2_run_specified())
     if dsm2 and order not in POWER_ORDERS:
         return T_END_BOUNCE_DSM2 if order == "bounce" else T_END_DSM2
     return T_END_BOUNCE if order == "bounce" else T_END_POWER if order in POWER_ORDERS else T_END
@@ -899,7 +916,8 @@ def main(argv=None):
         assert real["core"] == r["core"], "the core must not depend on the dsm2 view"
         open(os.path.join(a.out, "chip.spice"), "w").write(real["chip"])
         name, subckt = DSM2_VIEWS[a.dsm2]
-        open(os.path.join(a.out, "dsm2.spice"), "w").write(dsm2_wrapper(os.path.join(a.tree or ROOT, DSM2_DIR, name), subckt))
+        open(os.path.join(a.out, "dsm2.spice"), "w").write(dsm2_wrapper(os.path.join(a.tree or ROOT, DSM2_DIR, name), subckt,
+                                                                          DSM2_PORTS + (DSM2_OSC if "di_osc_en" in real["dsm2"] else [])))
         open(os.path.join(a.out, "dsm2_probes.json"), "w").write(json.dumps({"view": a.dsm2, **dsm2_probes(real["dsm2"])}, indent=1))
     elif os.path.exists(os.path.join(a.out, "dsm2_probes.json")):
         os.remove(os.path.join(a.out, "dsm2_probes.json"))      # the checker reads it as dsm2 being in

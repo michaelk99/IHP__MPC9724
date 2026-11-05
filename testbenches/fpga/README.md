@@ -79,14 +79,14 @@ Then, on the host, open the master's port and press the master's reset button, b
 python3 models/bench_capture.py --port /dev/ttyUSB0 --records 60 --save p2.bin --stream testbenches/fpga/build/stream.mem
 ```
 
-Every step must end in `OK: every check passes`. Expect the first failure to be pin assignment or SPI polarity, which programs 0 and 1 separate from the filter.
+Every step must end in `OK: every check passes`. Expect the first failure to be pin assignment or SPI polarity, which programs 0 and 8 separate from the filter.
 
 1. **DUT alone on on-chip stimulus.** Programs 2 to 6 with DUT SW1 off, so the DUT runs on its own clock. Wire only `sclk`, `mosi`, `ss`, `miso`, `adc_conv`, `rst_n` and GND, no `clk_fs` and no `data_in`. The checker prints `step+: N words match the model at offset k`, and likewise `impulse`, `steady`, `step-`, `prbs23`.
 2. **Master alone.** Program 0, no DUT needed. `8 of 8 SPI transactions checked`.
-3. **Register access.** Program 1, all wires. `72 of 72 SPI transactions checked`. Watch `o_tst_ctrl[6:0]` on the DUT LEDs follow the `0x0545` and `0x052A` writes. Against a chip with analog, the SG13G2 DSADC1, program 1 needs the analog owner's OK first: it writes the inverse of every bias, trim and clock register while the blocks are enabled. On the CMOS5L die nothing reads those bits.
+3. **Register access.** Program 8, all wires. `67 of 67 SPI transactions checked`. Watch `o_tst_ctrl[6:0]` on the DUT LEDs follow the `0x0545` and `0x052A` writes. The DUT reads `CHIP_ID` 0x0001 as this die does, so program 1 stops at its `CHIP_ID` check (`END at pc` after one read). Program 1 is for the SG13G2 DSADC1 only and needs the analog owner's OK first: it writes the inverse of every bias, trim and clock register while the blocks are enabled. On this die `BIAS_CFG_0` and `BIAS_CFG_1` drive dsm2, so program 8 only reads them.
 4. **On-chip stimulus from the master's sequencer.** Programs 2 to 6, all wires, DUT SW1 on.
 5. **Real bitstream.** Program 7, all wires, DUT SW1 on. `stream: N words match the model, lag 3, index steps 128`. The lag must be 3, as in simulation. Steps other than 128 mean the DUT is not on the master's clock.
-6. **The silicon hosts against the DUT board.** They and their PC tools are kept with the evaluation setup in the IIC svn, `r_tapeouts/2024_DSADC/TO_IHPSG13G2/eval/dsa1`, see its `README.txt`. They run programs 1 to 6 of this folder and have to pass the same checks. Programs 0 and 7 stay ULX3S only. The DUT for this step can also be an Arty A7-35T with the XIAO ESP32-S3 on a Pmod adapter, or, as the fallback, a Lattice ECP5 Versa wired to the adapter's probe header, see [the Arty section](../../macros/dsa1_dig/fpga/README.md#arty-a7-35t) and [the Versa section](../../macros/dsa1_dig/fpga/README.md#ecp5-versa), which have the wiring and the bench checklist.
+6. **The silicon hosts against the DUT board.** They and their PC tools are kept with the evaluation setup in the IIC svn, `r_tapeouts/2024_DSADC/TO_IHPSG13G2/eval/dsa1`, see its `README.txt`. They run programs 2 to 6 of this folder, and program 8 on this die or program 1 on the DSA1 die, and have to pass the same checks. Programs 0 and 7 stay ULX3S only. The DUT for this step can also be an Arty A7-35T with the XIAO ESP32-S3 on a Pmod adapter, or, as the fallback, a Lattice ECP5 Versa wired to the adapter's probe header, see [the Arty section](../../macros/dsa1_dig/fpga/README.md#arty-a7-35t) and [the Versa section](../../macros/dsa1_dig/fpga/README.md#ecp5-versa), which have the wiring and the bench checklist.
 
 ## Protocol
 
@@ -97,7 +97,7 @@ The program and record formats, the UART framing, and what the chip requires of 
 ```sh
 make -C testbenches/fpga sim-unit            # seven unit benches: the Arty, Versa and versa_duo builds, and the bus switch of both duo builds, which needs the legacy RTL from JKU_PHD_DIR
 make -C testbenches/fpga sim PROGRAM=2       # both boards on one program, then the checker
-make -C testbenches/fpga sim-all             # the unit benches, all eight programs, and sim-slip
+make -C testbenches/fpga sim-all             # the unit benches, all nine programs, and sim-slip
 ```
 
 `sim` compiles both board tops with Icarus, wires them pin for pin with oscillators 50 ppm apart, logs the UART bytes, and runs `models/bench_capture.py` on the log, the same checker that reads the real port. `sim-slip` runs program 7 with the DUT on its own oscillator, 2000 ppm off, and passes only if the checker fails on the stream index: a DUT that is not on the master's `clk_fs` has to be caught.

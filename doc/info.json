@@ -49,9 +49,9 @@
   },
   "top_cell_name": "MPC9724",
   "release": {
-    "version": "v.1.2.0",
-    "gds": "release/v.1.2.0/gds",
-    "netlist": "release/v.1.2.0/netlist",
-    "doc": "release/v.1.2.0/doc"
+    "version": "v.1.2.1",
+    "gds": "release/v.1.2.1/gds",
+    "netlist": "release/v.1.2.1/netlist",
+    "doc": "release/v.1.2.1/doc"
   }
 }

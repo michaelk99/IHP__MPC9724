@@ -10,7 +10,7 @@ Words 0 to 15 are the start address of the program on each DIP switch
 setting, word 16 is a HALT that every unused setting points at.
 
 Every TEST_CTRL_0 write is checked against regmap.py, so a program that could
-short the bias nodes on silicon does not assemble.
+short the bias nodes on silicon does not assemble. The BIAS_CFG_0 and BIAS_CFG_1 writes are checked against dsm2's rules on this die, unless a require before them limits the program to another CHIP_ID.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "models"))
 import regmap  # noqa: E402
 
-OP_HALT, OP_SPI, OP_WAITC, OP_STREAM, OP_CAPT, OP_LOOP, OP_RESET = range(7)
+OP_HALT, OP_SPI, OP_WAITC, OP_STREAM, OP_CAPT, OP_LOOP, OP_RESET, OP_REQ = range(8)
 ROM_DEPTH = 256
 N_PROGRAMS = 16
 HALT_PC = 16
@@ -75,6 +75,9 @@ def _op(op: str, args: list[str], where: str) -> int:
     if op == "loopback":
         nargs(1)
         return word(OP_LOOP, 0, _int(args[0], where, 1))
+    if op == "require":
+        nargs(1)
+        return word(OP_REQ, 0, _int(args[0], where, 0xFFFF))
     if op in ("stream", "reset", "halt"):
         nargs(0)
         return word({"stream": OP_STREAM, "reset": OP_RESET, "halt": OP_HALT}[op])
@@ -94,13 +97,42 @@ def _lines(path: Path, depth: int = 0):
             yield f"{path.name}:{n}", toks
 
 
+_B0 = {f["name"]: f for f in regmap.REGS["BIAS_CFG_0"]["fields"]}
+_B1 = {f["name"]: f for f in regmap.REGS["BIAS_CFG_1"]["fields"]}
+OSC_EN = 1 << _B0["DSM_SPARE"]["lsb"]
+CLK_SEL = OSC_EN << 1
+TRIM = 0xF << _B0["DSM_TRIM"]["lsb"]
+DSM_EN = 1 << _B1["DSM_EN"]["lsb"]          # 1 is dsm2 off on this die
+DSM_RST_B = 1 << _B1["DSM_RST_B"]["lsb"]    # 1 holds dsm2 in reset
+BIAS_CFG_0, BIAS_CFG_1 = regmap.ADDR["BIAS_CFG_0"], regmap.ADDR["BIAS_CFG_1"]
+NAME = {a: n for n, a in regmap.ADDR.items()}
+
+
+def dsm2_violation(cfg0: int, cfg1: int, reg: int, data: int) -> str | None:
+    """Why writing data to reg breaks a dsm2 rule, with cfg0 and cfg1 the values the chip holds."""
+    if reg == BIAS_CFG_0:
+        if data & CLK_SEL and not data & OSC_EN:
+            return "sets di_clk_sel without di_osc_en, dsm2 then drives dsm_clk low"
+        if (data ^ cfg0) & (TRIM | OSC_EN | CLK_SEL) and not cfg1 & DSM_EN:
+            return "changes the trim or the oscillator bits while dsm2 is on, write DSM_EN 1 first"
+    if reg == BIAS_CFG_1 and cfg1 & DSM_EN and not data & (DSM_EN | DSM_RST_B):
+        return "switches dsm2 on and releases its reset in one write, DSM_RST_B 0 needs 130 us more"
+    return None
+
+
 def parse(path: Path) -> dict[int, tuple[str, list[int]]]:
     """Program number to (name, ROM words)."""
     programs: dict[int, tuple[str, list[int]]] = {}
     cur: list[int] | None = None
     tst = regmap.RESET[regmap.TEST_CTRL_0]      # what the chip holds, for the core mux transitions
+    cfg0, cfg1 = regmap.RESET[BIAS_CFG_0], regmap.RESET[BIAS_CFG_1]
+    this_die = True                             # no require for another CHIP_ID yet
     for where, toks in _lines(Path(path)):
         op, args = toks[0], toks[1:]
+        if op in ("reset", "program"):
+            cfg0, cfg1 = regmap.RESET[BIAS_CFG_0], regmap.RESET[BIAS_CFG_1]
+        if op == "program":
+            this_die = True
         if op == "reset":
             tst = regmap.RESET[regmap.TEST_CTRL_0]
         if op == "program":
@@ -117,6 +149,15 @@ def parse(path: Path) -> dict[int, tuple[str, list[int]]]:
         else:
             w = _op(op, args, where)
             cur.append(w)
+            if w >> 28 == OP_REQ and w & 0xFFFF != regmap.RESET[regmap.CHIP_ID]:
+                this_die = False
+            if w >> 28 == OP_SPI and not (w >> 16) & 0x10 and this_die:
+                reg, data = (w >> 16) & 0xF, w & 0xFFFF
+                why = dsm2_violation(cfg0, cfg1, reg, data)
+                if why:
+                    raise AsmError(f"{where}: {NAME[reg]} = 0x{data:04X} {why}")
+                cfg0 = data if reg == BIAS_CFG_0 else cfg0
+                cfg1 = data if reg == BIAS_CFG_1 else cfg1
             if w >> 28 == OP_SPI and (w >> 16) & 0x1F == regmap.TEST_CTRL_0:
                 why = regmap.test_ctrl_transition(tst, w & 0xFFFF)
                 if why:
@@ -163,8 +204,11 @@ def self_test() -> int:
     progs = parse(here / "programs.seq")
     rom = assemble(progs)
     assert len(rom) == ROM_DEPTH
-    assert set(progs) == set(range(8)), sorted(progs)
-    assert rom[0] == 17 and rom[8] == HALT_PC and rom[HALT_PC] == 0
+    assert set(progs) == set(range(9)), sorted(progs)
+    assert rom[0] == 17 and rom[9] == HALT_PC and rom[HALT_PC] == 0
+    # program 1 stops at its CHIP_ID guard on this die
+    p1 = progs[1][1]
+    assert p1[1:3] == [word(OP_SPI, 0x10 | regmap.CHIP_ID), word(OP_REQ, 0, 0x0000)], [hex(w) for w in p1[:3]]
     assert rom[rom[0]] == word(OP_LOOP, 0, 1)
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -188,6 +232,17 @@ def self_test() -> int:
         bad("program 0 x\n  write TEST_CTRL_0 0x0530\n  halt\n", "page 11")
         bad("program 0 x\n  write TEST_CTRL_0 0x0591\n  write TEST_CTRL_0 0x0592\n  halt\n", "without going through neutral")
         bad("program 0 x\n  write TEST_CTRL_0 0x05A0\n  write TEST_CTRL_0 0x0591\n  halt\n", "without going through neutral")
+        # dsm2 on this die: di_clk_sel only with di_osc_en, trim and oscillator bits only with dsm2 off,
+        # and not on and out of reset in one write. A require for the DSA1 die lifts the rules.
+        bad("program 0 x\n  write BIAS_CFG_1 0x0043\n  write BIAS_CFG_0 0x0124\n  halt\n", "without di_osc_en")
+        bad("program 0 x\n  write BIAS_CFG_0 0x01A4\n  halt\n", "while dsm2 is on")
+        bad("program 0 x\n  write BIAS_CFG_0 0x0025\n  halt\n", "while dsm2 is on")
+        bad("program 0 x\n  write BIAS_CFG_1 0x0043\n  write BIAS_CFG_1 0x0040\n  halt\n", "in one write")
+        dsm = Path(tmp) / "dsm.seq"
+        dsm.write_text("program 0 x\n  write BIAS_CFG_1 0x0043\n  write BIAS_CFG_0 0x01A4\n  write BIAS_CFG_1 0x0042\n"
+                       "  waitc 1\n  write BIAS_CFG_1 0x0040\n  reset\n  write BIAS_CFG_1 0x0063\n  halt\n"
+                       "program 1 y\n  read CHIP_ID\n  require 0x0000\n  write BIAS_CFG_0 0x6F15\n  write BIAS_CFG_1 0x2FD3\n  halt\n")
+        parse(dsm)
         fine = Path(tmp) / "fine.seq"
         fine.write_text("program 1 z\n  write TEST_CTRL_0 0x0591\n  write TEST_CTRL_0 0x0580\n  write TEST_CTRL_0 0x0592\n"
                         "  reset\n  write TEST_CTRL_0 0x0594\n  reset\n  write TEST_CTRL_0 0x05A0\n  halt\n")

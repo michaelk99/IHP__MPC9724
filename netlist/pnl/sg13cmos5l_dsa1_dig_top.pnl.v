@@ -25,7 +25,16 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  inout [3:0] input_PAD;
  inout [1:0] output_PAD;
 
- wire _0_;
+ wire _00_;
+ wire _01_;
+ wire _02_;
+ wire _03_;
+ wire _04_;
+ wire _05_;
+ wire _06_;
+ wire _07_;
+ wire _08_;
+ wire _09_;
  wire clk_PAD2CORE;
  wire do_clk_osc;
  wire do_osc_oe;
@@ -33,6 +42,9 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  wire dsm_do_q;
  wire dsm_do_q_b;
  wire dsm_do_q_dec;
+ wire dsm_ena;
+ wire dsm_qout_en;
+ wire dsm_rst_b;
  wire \i_sg13cmos5l_dsa1_dig_core.adc_conv ;
  wire \i_sg13cmos5l_dsa1_dig_core.data_in_pad ;
  wire \i_sg13cmos5l_dsa1_dig_core.data_in_s1 ;
@@ -187,6 +199,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  wire \i_sg13cmos5l_dsa1_dig_core.o_uwb_tx_cfg[8] ;
  wire \i_sg13cmos5l_dsa1_dig_core.o_uwb_tx_cfg[9] ;
  wire \i_sg13cmos5l_dsa1_dig_core.output_out[1] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_done ;
  wire \i_sg13cmos5l_dsa1_dig_core.rst_n ;
  wire \i_sg13cmos5l_dsa1_dig_core.sclk ;
  wire \i_sg13cmos5l_dsa1_dig_core.ss ;
@@ -209,7 +226,6 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  wire delaynet_7_clk;
  wire delaynet_8_clk;
  wire delaynet_9_clk;
- wire delaynet_10_clk;
  wire net1;
  wire net2;
  wire net3;
@@ -419,19 +435,23 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD));
  DECAPHV32 FILLER_0_993 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_10_0 (.VDD(VDD),
+ DECAPHV8 FILLER_10_0 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_10_1009 (.VDD(VDD),
+ FILLER4 FILLER_10_1009 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_10_1017 (.VDD(VDD),
+ FILLER2 FILLER_10_1013 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_10_1015 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_10_1021 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_10_12 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV8 FILLER_10_125 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_10_133 (.VSS(VSS),
     .VDD(VDD));
  DECAPHV32 FILLER_10_138 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_10_14 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_10_170 (.VDD(VDD),
     .VSS(VSS));
@@ -443,38 +463,32 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_10_223 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_10_228 (.VDD(VDD),
+ DECAPHV16 FILLER_10_228 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_10_260 (.VDD(VDD),
+ DECAPHV16 FILLER_10_23 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_10_268 (.VSS(VSS),
+ DECAPHV8 FILLER_10_244 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_10_252 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_10_273 (.VDD(VDD),
-    .VSS(VSS));
- FILLER4 FILLER_10_305 (.VDD(VDD),
-    .VSS(VSS));
- FILLER1 FILLER_10_314 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV32 FILLER_10_318 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_10_32 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_10_350 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_10_358 (.VSS(VSS),
+ FILLER2 FILLER_10_293 (.VSS(VSS),
     .VDD(VDD));
+ DECAPHV16 FILLER_10_340 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_10_356 (.VDD(VDD),
+    .VSS(VSS));
  DECAPHV32 FILLER_10_363 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_10_395 (.VDD(VDD),
+ FILLER4 FILLER_10_39 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_10_40 (.VDD(VDD),
+ DECAPHV8 FILLER_10_395 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_10_403 (.VSS(VSS),
     .VDD(VDD));
  DECAPHV32 FILLER_10_408 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_10_44 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_10_43 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV8 FILLER_10_440 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_10_448 (.VSS(VSS),
@@ -523,15 +537,13 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_10_763 (.VSS(VSS),
     .VDD(VDD));
- FILLER1 FILLER_10_768 (.VDD(VDD),
+ DECAPHV32 FILLER_10_768 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_10_780 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_10_796 (.VDD(VDD),
+ FILLER4 FILLER_10_8 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_10_80 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_10_804 (.VDD(VDD),
+ DECAPHV8 FILLER_10_800 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_10_808 (.VSS(VSS),
     .VDD(VDD));
@@ -549,23 +561,23 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_10_898 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_10_908 (.VDD(VDD),
+ DECAPHV32 FILLER_10_903 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_10_93 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_10_940 (.VDD(VDD),
+ DECAPHV8 FILLER_10_935 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_10_944 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_10_943 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV32 FILLER_10_948 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_10_980 (.VDD(VDD),
+ FILLER4 FILLER_10_980 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_10_988 (.VSS(VSS),
-    .VDD(VDD));
+ FILLER1 FILLER_10_984 (.VDD(VDD),
+    .VSS(VSS));
  DECAPHV16 FILLER_10_993 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_12_0 (.VDD(VDD),
+ FILLER4 FILLER_12_0 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_12_1009 (.VDD(VDD),
     .VSS(VSS));
@@ -583,54 +595,54 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_12_178 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV8 FILLER_12_183 (.VDD(VDD),
+ DECAPHV32 FILLER_12_183 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_12_191 (.VSS(VSS),
+ DECAPHV8 FILLER_12_215 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_12_223 (.VSS(VSS),
     .VDD(VDD));
- FILLER1 FILLER_12_193 (.VDD(VDD),
+ DECAPHV16 FILLER_12_23 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_12_214 (.VDD(VDD),
+ DECAPHV16 FILLER_12_236 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_12_222 (.VSS(VSS),
+ DECAPHV8 FILLER_12_252 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_12_260 (.VSS(VSS),
     .VDD(VDD));
- FILLER1 FILLER_12_224 (.VDD(VDD),
+ DECAPHV32 FILLER_12_273 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_12_236 (.VDD(VDD),
+ DECAPHV8 FILLER_12_305 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_12_244 (.VDD(VDD),
-    .VSS(VSS));
- FILLER1 FILLER_12_248 (.VDD(VDD),
-    .VSS(VSS));
- FILLER4 FILLER_12_257 (.VDD(VDD),
-    .VSS(VSS));
- FILLER1 FILLER_12_261 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV16 FILLER_12_296 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_12_312 (.VSS(VSS),
+ FILLER2 FILLER_12_313 (.VSS(VSS),
     .VDD(VDD));
- FILLER1 FILLER_12_314 (.VDD(VDD),
+ DECAPHV8 FILLER_12_318 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_12_318 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_12_32 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_12_350 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_12_358 (.VSS(VSS),
+ FILLER2 FILLER_12_326 (.VSS(VSS),
     .VDD(VDD));
+ FILLER1 FILLER_12_336 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV8 FILLER_12_345 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_12_353 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_12_357 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_12_359 (.VDD(VDD),
+    .VSS(VSS));
  DECAPHV32 FILLER_12_363 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_12_39 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_12_395 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_12_40 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_12_4 (.VSS(VSS),
+    .VDD(VDD));
  FILLER2 FILLER_12_403 (.VSS(VSS),
     .VDD(VDD));
  DECAPHV32 FILLER_12_408 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_12_44 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_12_43 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV8 FILLER_12_440 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_12_448 (.VSS(VSS),
@@ -656,6 +668,8 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_12_583 (.VSS(VSS),
     .VDD(VDD));
  DECAPHV16 FILLER_12_588 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_12_6 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_12_604 (.VDD(VDD),
     .VSS(VSS));
@@ -723,13 +737,17 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD));
  DECAPHV16 FILLER_12_993 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_13_0 (.VDD(VDD),
+ DECAPHV8 FILLER_13_0 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_13_1013 (.VDD(VDD),
     .VSS(VSS));
  FILLER1 FILLER_13_1021 (.VDD(VDD),
     .VSS(VSS));
+ FILLER2 FILLER_13_12 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV32 FILLER_13_128 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_13_14 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_13_160 (.VDD(VDD),
     .VSS(VSS));
@@ -737,36 +755,28 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_13_184 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV16 FILLER_13_217 (.VDD(VDD),
+ DECAPHV32 FILLER_13_189 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_13_233 (.VDD(VDD),
+ DECAPHV32 FILLER_13_221 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_13_245 (.VDD(VDD),
+ DECAPHV32 FILLER_13_23 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_13_257 (.VDD(VDD),
+ DECAPHV16 FILLER_13_253 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_13_273 (.VDD(VDD),
+ DECAPHV8 FILLER_13_269 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_13_277 (.VSS(VSS),
     .VDD(VDD));
- FILLER2 FILLER_13_282 (.VSS(VSS),
+ DECAPHV32 FILLER_13_282 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV32 FILLER_13_314 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV16 FILLER_13_346 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV8 FILLER_13_362 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_13_370 (.VSS(VSS),
     .VDD(VDD));
- FILLER1 FILLER_13_284 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV32 FILLER_13_293 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV32 FILLER_13_32 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV32 FILLER_13_325 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_13_357 (.VDD(VDD),
-    .VSS(VSS));
- FILLER4 FILLER_13_365 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_13_369 (.VSS(VSS),
-    .VDD(VDD));
- FILLER1 FILLER_13_371 (.VDD(VDD),
-    .VSS(VSS));
  DECAPHV32 FILLER_13_375 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_13_407 (.VDD(VDD),
@@ -785,6 +795,8 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV8 FILLER_13_548 (.VDD(VDD),
     .VSS(VSS));
+ DECAPHV32 FILLER_13_55 (.VDD(VDD),
+    .VSS(VSS));
  FILLER2 FILLER_13_556 (.VSS(VSS),
     .VDD(VDD));
  DECAPHV32 FILLER_13_561 (.VDD(VDD),
@@ -792,8 +804,6 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_13_593 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_13_625 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV16 FILLER_13_64 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_13_641 (.VDD(VDD),
     .VSS(VSS));
@@ -813,7 +823,7 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV32 FILLER_13_779 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_13_80 (.VDD(VDD),
+ FILLER4 FILLER_13_8 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_13_811 (.VDD(VDD),
     .VSS(VSS));
@@ -823,14 +833,14 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD));
  DECAPHV32 FILLER_13_840 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_13_872 (.VDD(VDD),
+ FILLER4 FILLER_13_87 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_13_88 (.VDD(VDD),
+ DECAPHV32 FILLER_13_872 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_13_904 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_13_92 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_13_91 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV8 FILLER_13_920 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_13_928 (.VSS(VSS),
@@ -859,20 +869,14 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD));
  DECAPHV32 FILLER_14_142 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_14_174 (.VDD(VDD),
+ DECAPHV32 FILLER_14_174 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_14_190 (.VDD(VDD),
+ DECAPHV16 FILLER_14_206 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_14_198 (.VDD(VDD),
+ DECAPHV8 FILLER_14_222 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_14_203 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_14_219 (.VDD(VDD),
-    .VSS(VSS));
- FILLER4 FILLER_14_227 (.VDD(VDD),
-    .VSS(VSS));
- FILLER1 FILLER_14_231 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_14_230 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV32 FILLER_14_235 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_14_267 (.VDD(VDD),
@@ -983,14 +987,12 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV32 FILLER_15_221 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_15_253 (.VDD(VDD),
+ DECAPHV16 FILLER_15_253 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_15_257 (.VSS(VSS),
+ DECAPHV8 FILLER_15_269 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_15_277 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV8 FILLER_15_267 (.VDD(VDD),
-    .VSS(VSS));
- FILLER4 FILLER_15_275 (.VDD(VDD),
-    .VSS(VSS));
  DECAPHV32 FILLER_15_282 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_15_314 (.VDD(VDD),
@@ -1115,18 +1117,18 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_16_323 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_16_328 (.VDD(VDD),
+ DECAPHV16 FILLER_16_328 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_16_360 (.VDD(VDD),
+ FILLER1 FILLER_16_344 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_16_392 (.VDD(VDD),
+ DECAPHV32 FILLER_16_353 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV32 FILLER_16_385 (.VDD(VDD),
     .VSS(VSS));
  FILLER4 FILLER_16_40 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_16_408 (.VDD(VDD),
+ FILLER1 FILLER_16_417 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_16_416 (.VSS(VSS),
-    .VDD(VDD));
  DECAPHV32 FILLER_16_421 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_16_44 (.VSS(VSS),
@@ -1213,18 +1215,12 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV32 FILLER_17_221 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_17_253 (.VDD(VDD),
+ DECAPHV16 FILLER_17_253 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_17_261 (.VDD(VDD),
+ DECAPHV8 FILLER_17_269 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_17_265 (.VSS(VSS),
+ FILLER2 FILLER_17_277 (.VSS(VSS),
     .VDD(VDD));
- FILLER1 FILLER_17_267 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_17_276 (.VSS(VSS),
-    .VDD(VDD));
- FILLER1 FILLER_17_278 (.VDD(VDD),
-    .VSS(VSS));
  DECAPHV32 FILLER_17_282 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_17_314 (.VDD(VDD),
@@ -1339,18 +1335,16 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD));
  DECAPHV32 FILLER_18_235 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_18_267 (.VDD(VDD),
+ DECAPHV32 FILLER_18_267 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_18_275 (.VDD(VDD),
+ DECAPHV16 FILLER_18_299 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_18_284 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_18_316 (.VDD(VDD),
+ DECAPHV8 FILLER_18_315 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_18_32 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_18_324 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_18_323 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV32 FILLER_18_328 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_18_360 (.VDD(VDD),
@@ -1729,14 +1723,16 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD));
  DECAPHV32 FILLER_20_235 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_20_267 (.VDD(VDD),
+ DECAPHV32 FILLER_20_267 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_20_283 (.VSS(VSS),
-    .VDD(VDD));
- DECAPHV32 FILLER_20_293 (.VDD(VDD),
+ DECAPHV16 FILLER_20_299 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV8 FILLER_20_315 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_20_32 (.VDD(VDD),
     .VSS(VSS));
+ FILLER2 FILLER_20_323 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV32 FILLER_20_328 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_20_360 (.VDD(VDD),
@@ -1841,17 +1837,15 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_21_277 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV8 FILLER_21_282 (.VDD(VDD),
+ DECAPHV32 FILLER_21_282 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_21_290 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV32 FILLER_21_302 (.VDD(VDD),
+ DECAPHV32 FILLER_21_314 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_21_32 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_21_334 (.VDD(VDD),
+ DECAPHV16 FILLER_21_346 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_21_366 (.VDD(VDD),
+ DECAPHV8 FILLER_21_362 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_21_370 (.VSS(VSS),
     .VDD(VDD));
@@ -1961,24 +1955,20 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_22_268 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV16 FILLER_22_273 (.VDD(VDD),
+ DECAPHV32 FILLER_22_273 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_22_289 (.VDD(VDD),
+ DECAPHV8 FILLER_22_305 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_22_297 (.VSS(VSS),
+ FILLER2 FILLER_22_313 (.VSS(VSS),
     .VDD(VDD));
- FILLER2 FILLER_22_318 (.VSS(VSS),
-    .VDD(VDD));
+ DECAPHV32 FILLER_22_318 (.VDD(VDD),
+    .VSS(VSS));
  DECAPHV8 FILLER_22_32 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_22_336 (.VDD(VDD),
+ DECAPHV8 FILLER_22_350 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_22_353 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_22_357 (.VSS(VSS),
+ FILLER2 FILLER_22_358 (.VSS(VSS),
     .VDD(VDD));
- FILLER1 FILLER_22_359 (.VDD(VDD),
-    .VSS(VSS));
  DECAPHV32 FILLER_22_363 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_22_395 (.VDD(VDD),
@@ -2567,14 +2557,18 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_4_853 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_4_858 (.VDD(VDD),
+ DECAPHV16 FILLER_4_858 (.VDD(VDD),
     .VSS(VSS));
+ FILLER4 FILLER_4_874 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_4_878 (.VSS(VSS),
+    .VDD(VDD));
  FILLER2 FILLER_4_88 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV8 FILLER_4_890 (.VDD(VDD),
+ FILLER1 FILLER_4_880 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_4_898 (.VSS(VSS),
-    .VDD(VDD));
+ DECAPHV8 FILLER_4_892 (.VDD(VDD),
+    .VSS(VSS));
  DECAPHV32 FILLER_4_903 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_4_93 (.VDD(VDD),
@@ -2615,15 +2609,17 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_5_277 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_5_282 (.VDD(VDD),
+ DECAPHV16 FILLER_5_282 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_5_314 (.VDD(VDD),
+ DECAPHV8 FILLER_5_298 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_5_32 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_5_346 (.VDD(VDD),
+ DECAPHV32 FILLER_5_326 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_5_362 (.VDD(VDD),
+ DECAPHV8 FILLER_5_358 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_5_366 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_5_370 (.VSS(VSS),
     .VDD(VDD));
@@ -2727,18 +2723,24 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_6_230 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_6_235 (.VDD(VDD),
+ DECAPHV8 FILLER_6_255 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_6_267 (.VDD(VDD),
+ FILLER4 FILLER_6_263 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_6_299 (.VDD(VDD),
+ FILLER2 FILLER_6_267 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_6_269 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_6_315 (.VDD(VDD),
+ DECAPHV8 FILLER_6_290 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_6_298 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_6_302 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_6_304 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_6_32 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_6_323 (.VSS(VSS),
-    .VDD(VDD));
  DECAPHV32 FILLER_6_328 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_6_360 (.VDD(VDD),
@@ -2837,21 +2839,31 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV32 FILLER_7_221 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_7_253 (.VDD(VDD),
+ FILLER1 FILLER_7_253 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_7_269 (.VDD(VDD),
+ DECAPHV8 FILLER_7_266 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_7_277 (.VSS(VSS),
+ FILLER4 FILLER_7_274 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_7_278 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV8 FILLER_7_282 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_7_290 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_7_282 (.VDD(VDD),
+ DECAPHV16 FILLER_7_300 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_7_314 (.VDD(VDD),
+ FILLER2 FILLER_7_316 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_7_318 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_7_32 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_7_346 (.VDD(VDD),
+ DECAPHV32 FILLER_7_326 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_7_362 (.VDD(VDD),
+ DECAPHV8 FILLER_7_358 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_7_366 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_7_370 (.VSS(VSS),
     .VDD(VDD));
@@ -2949,24 +2961,36 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV32 FILLER_8_174 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_8_206 (.VDD(VDD),
+ DECAPHV8 FILLER_8_206 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_8_222 (.VDD(VDD),
+ FILLER4 FILLER_8_214 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_8_230 (.VSS(VSS),
+ FILLER2 FILLER_8_218 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_8_235 (.VDD(VDD),
+ DECAPHV8 FILLER_8_224 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_8_267 (.VDD(VDD),
+ DECAPHV16 FILLER_8_235 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_8_299 (.VDD(VDD),
+ FILLER4 FILLER_8_251 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_8_315 (.VDD(VDD),
+ FILLER2 FILLER_8_255 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_8_257 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV32 FILLER_8_266 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV8 FILLER_8_298 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_8_306 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_8_310 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_8_312 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_8_32 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_8_323 (.VSS(VSS),
-    .VDD(VDD));
+ FILLER1 FILLER_8_320 (.VDD(VDD),
+    .VSS(VSS));
  DECAPHV32 FILLER_8_328 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_8_360 (.VDD(VDD),
@@ -3039,21 +3063,27 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV32 FILLER_8_918 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_8_950 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_8_966 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_8_974 (.VSS(VSS),
+ FILLER2 FILLER_8_950 (.VSS(VSS),
     .VDD(VDD));
+ DECAPHV16 FILLER_8_957 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_8_973 (.VSS(VSS),
+    .VDD(VDD));
+ FILLER1 FILLER_8_975 (.VDD(VDD),
+    .VSS(VSS));
  DECAPHV32 FILLER_8_979 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_9_0 (.VDD(VDD),
+ DECAPHV8 FILLER_9_0 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_9_1013 (.VDD(VDD),
     .VSS(VSS));
  FILLER1 FILLER_9_1021 (.VDD(VDD),
     .VSS(VSS));
+ FILLER2 FILLER_9_12 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV32 FILLER_9_128 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_9_14 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_9_160 (.VDD(VDD),
     .VSS(VSS));
@@ -3061,28 +3091,32 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  FILLER2 FILLER_9_184 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_9_189 (.VDD(VDD),
+ FILLER1 FILLER_9_189 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_9_221 (.VDD(VDD),
+ DECAPHV32 FILLER_9_210 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV16 FILLER_9_253 (.VDD(VDD),
+ DECAPHV32 FILLER_9_23 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_9_269 (.VDD(VDD),
+ DECAPHV16 FILLER_9_242 (.VDD(VDD),
     .VSS(VSS));
- FILLER2 FILLER_9_277 (.VSS(VSS),
+ DECAPHV8 FILLER_9_258 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_9_266 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_9_270 (.VDD(VDD),
+    .VSS(VSS));
+ DECAPHV8 FILLER_9_282 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_9_290 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER4 FILLER_9_298 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER1 FILLER_9_302 (.VDD(VDD),
+    .VSS(VSS));
+ FILLER2 FILLER_9_327 (.VSS(VSS),
     .VDD(VDD));
- DECAPHV32 FILLER_9_282 (.VDD(VDD),
+ DECAPHV32 FILLER_9_340 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_9_314 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV32 FILLER_9_32 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV16 FILLER_9_346 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV8 FILLER_9_362 (.VDD(VDD),
-    .VSS(VSS));
- FILLER2 FILLER_9_370 (.VSS(VSS),
-    .VDD(VDD));
  DECAPHV32 FILLER_9_375 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV32 FILLER_9_407 (.VDD(VDD),
@@ -3101,6 +3135,8 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV8 FILLER_9_548 (.VDD(VDD),
     .VSS(VSS));
+ DECAPHV32 FILLER_9_55 (.VDD(VDD),
+    .VSS(VSS));
  FILLER2 FILLER_9_556 (.VSS(VSS),
     .VDD(VDD));
  DECAPHV32 FILLER_9_561 (.VDD(VDD),
@@ -3108,8 +3144,6 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_9_593 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_9_625 (.VDD(VDD),
-    .VSS(VSS));
- DECAPHV16 FILLER_9_64 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV8 FILLER_9_641 (.VDD(VDD),
     .VSS(VSS));
@@ -3129,7 +3163,7 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  DECAPHV32 FILLER_9_779 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV8 FILLER_9_80 (.VDD(VDD),
+ FILLER4 FILLER_9_8 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_9_811 (.VDD(VDD),
     .VSS(VSS));
@@ -3139,14 +3173,14 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD));
  DECAPHV32 FILLER_9_840 (.VDD(VDD),
     .VSS(VSS));
- DECAPHV32 FILLER_9_872 (.VDD(VDD),
+ FILLER4 FILLER_9_87 (.VDD(VDD),
     .VSS(VSS));
- FILLER4 FILLER_9_88 (.VDD(VDD),
+ DECAPHV32 FILLER_9_872 (.VDD(VDD),
     .VSS(VSS));
  DECAPHV16 FILLER_9_904 (.VDD(VDD),
     .VSS(VSS));
- FILLER1 FILLER_9_92 (.VDD(VDD),
-    .VSS(VSS));
+ FILLER2 FILLER_9_91 (.VSS(VSS),
+    .VDD(VDD));
  DECAPHV8 FILLER_9_920 (.VDD(VDD),
     .VSS(VSS));
  FILLER2 FILLER_9_928 (.VSS(VSS),
@@ -4034,28 +4068,122 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VSS(VSS));
  WELLTAP TAP_TAPCELL_ROW_9_1_148 (.VDD(VDD),
     .VSS(VSS));
- MUX2X1 _1_ (.A0(\i_sg13cmos5l_dsa1_dig_core.data_in_pad ),
+ INVX1 _10_ (.Y(dsm_qout_en),
+    .VSS(VSS),
+    .A(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[24] ),
+    .VDD(VDD));
+ INVX1 _11_ (.Y(dsm_ena),
+    .VSS(VSS),
+    .A(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[19] ),
+    .VDD(VDD));
+ NOR2X1 _12_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .Y(_06_),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ),
+    .VDD(VDD),
+    .VSS(VSS));
+ AO31X1 _13_ (.VDD(VDD),
+    .A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ),
+    .C(_06_),
+    .D(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .VSS(VSS),
+    .Y(_01_));
+ NOR2BX1 _14_ (.AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .Y(dsm_rst_b),
+    .B(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[20] ),
+    .VDD(VDD),
+    .VSS(VSS));
+ MUX2X1 _15_ (.A0(\i_sg13cmos5l_dsa1_dig_core.data_in_pad ),
     .A1(\i_sg13cmos5l_dsa1_dig_core.dsm_bit ),
     .S0(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[21] ),
     .VDD(VDD),
     .VSS(VSS),
-    .Y(_0_));
- DFFRQX1 _2_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
-    .D(net2),
+    .Y(_00_));
+ AND3BX1 _16_ (.AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .C(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .VDD(VDD),
+    .VSS(VSS),
+    .Y(_07_));
+ AOI2B1X1 _17_ (.Y(_08_),
+    .VSS(VSS),
+    .VDD(VDD),
+    .C(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ));
+ NOR2X1 _18_ (.A(_07_),
+    .Y(_02_),
+    .B(_08_),
+    .VDD(VDD),
+    .VSS(VSS));
+ NAND4BX1 _19_ (.AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ),
+    .C(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .D(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .VDD(VDD),
+    .VSS(VSS),
+    .Y(_09_));
+ XOR2X1 _20_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ),
+    .B(_07_),
+    .VDD(VDD),
+    .VSS(VSS),
+    .Y(_03_));
+ XNOR2X1 _21_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ),
+    .B(_09_),
+    .VDD(VDD),
+    .VSS(VSS),
+    .Y(_04_));
+ XNOR2X1 _22_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .VDD(VDD),
+    .VSS(VSS),
+    .Y(_05_));
+ DFFRQX1 _23_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(_05_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .VDD(VDD),
+    .VSS(VSS));
+ DFFRQX1 _24_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_02_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .VDD(VDD),
+    .VSS(VSS));
+ DFFRQX1 _25_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_03_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ),
+    .VDD(VDD),
+    .VSS(VSS));
+ DFFRQX1 _26_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(_04_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ),
+    .VDD(VDD),
+    .VSS(VSS));
+ DFFRQX1 _27_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_00_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s1 ),
+    .VDD(VDD),
+    .VSS(VSS));
+ DFFRQX1 _28_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_01_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .VDD(VDD),
+    .VSS(VSS));
+ DFFRQX1 _29_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(net1),
     .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
     .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s2 ),
     .VDD(VDD),
     .VSS(VSS));
- DFFRQX1 _3_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
-    .D(net1),
+ DFFRQX1 _30_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(net2),
     .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
     .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s3 ),
-    .VDD(VDD),
-    .VSS(VSS));
- DFFRQX1 _4_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
-    .D(_0_),
-    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
-    .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s1 ),
     .VDD(VDD),
     .VSS(VSS));
  sg13cmos5l_ip__clamp_vddvss clamp_vdda (.iovdd(IOVDD),
@@ -4095,10 +4223,7 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  BUFX12 clkbuf_regs_0_clk (.Y(clk_PAD2CORE_regs),
     .VDD(VDD),
     .VSS(VSS),
-    .A(delaynet_10_clk));
- INVX1 clkload0 (.VSS(VSS),
-    .A(clknet_1_1__leaf_clk_PAD2CORE_regs),
-    .VDD(VDD));
+    .A(delaynet_9_clk));
  sg13cmos5l_ip__cut_vdd cut_vdd_e (.iovdd(IOVDD),
     .iovss(IOVSS),
     .vss(VSS));
@@ -4109,10 +4234,6 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .VDD(VDD),
     .VSS(VSS),
     .A(clk_PAD2CORE));
- BUFX12 delaybuf_10_clk (.Y(delaynet_10_clk),
-    .VDD(VDD),
-    .VSS(VSS),
-    .A(delaynet_9_clk));
  BUFX12 delaybuf_1_clk (.Y(delaynet_1_clk),
     .VDD(VDD),
     .VSS(VSS),
@@ -4165,10 +4286,10 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .di_clk(dsm_clk_PAD2CORE),
     .di_clk_sel(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[11] ),
     .di_dith_en(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[7] ),
-    .di_ena(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[19] ),
+    .di_ena(dsm_ena),
     .di_osc_en(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[10] ),
-    .di_qout_en(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[24] ),
-    .di_rst_b(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[20] ),
+    .di_qout_en(dsm_qout_en),
+    .di_rst_b(dsm_rst_b),
     .di_vcm_ext(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[23] ),
     .do_clk_osc(do_clk_osc),
     .do_osc_oe(do_osc_oe),
@@ -4255,11 +4376,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .vdd(VDD),
     .vss(VSS));
  sg13cmos5l_ip__helm helm_art ();
- BUFX3 hold1 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s2 ),
+ BUFX3 hold1 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s1 ),
     .Y(net1),
     .VDD(VDD),
     .VSS(VSS));
- BUFX3 hold2 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s1 ),
+ BUFX3 hold2 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s2 ),
     .Y(net2),
     .VDD(VDD),
     .VSS(VSS));

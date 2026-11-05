@@ -15,7 +15,16 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  inout [3:0] input_PAD;
  inout [1:0] output_PAD;
 
- wire _0_;
+ wire _00_;
+ wire _01_;
+ wire _02_;
+ wire _03_;
+ wire _04_;
+ wire _05_;
+ wire _06_;
+ wire _07_;
+ wire _08_;
+ wire _09_;
  wire clk_PAD2CORE;
  wire do_clk_osc;
  wire do_osc_oe;
@@ -23,6 +32,9 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  wire dsm_do_q;
  wire dsm_do_q_b;
  wire dsm_do_q_dec;
+ wire dsm_ena;
+ wire dsm_qout_en;
+ wire dsm_rst_b;
  wire \i_sg13cmos5l_dsa1_dig_core.adc_conv ;
  wire \i_sg13cmos5l_dsa1_dig_core.data_in_pad ;
  wire \i_sg13cmos5l_dsa1_dig_core.data_in_s1 ;
@@ -177,6 +189,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  wire \i_sg13cmos5l_dsa1_dig_core.o_uwb_tx_cfg[8] ;
  wire \i_sg13cmos5l_dsa1_dig_core.o_uwb_tx_cfg[9] ;
  wire \i_sg13cmos5l_dsa1_dig_core.output_out[1] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ;
+ wire \i_sg13cmos5l_dsa1_dig_core.rst_done ;
  wire \i_sg13cmos5l_dsa1_dig_core.rst_n ;
  wire \i_sg13cmos5l_dsa1_dig_core.sclk ;
  wire \i_sg13cmos5l_dsa1_dig_core.ss ;
@@ -199,7 +216,6 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  wire delaynet_7_clk;
  wire delaynet_8_clk;
  wire delaynet_9_clk;
- wire delaynet_10_clk;
  wire net1;
  wire net2;
  wire net3;
@@ -305,34 +321,33 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV8 FILLER_0_980 ();
  FILLER2 FILLER_0_988 ();
  DECAPHV32 FILLER_0_993 ();
- DECAPHV32 FILLER_10_0 ();
- DECAPHV8 FILLER_10_1009 ();
- FILLER4 FILLER_10_1017 ();
- FILLER1 FILLER_10_1021 ();
+ DECAPHV8 FILLER_10_0 ();
+ FILLER4 FILLER_10_1009 ();
+ FILLER2 FILLER_10_1013 ();
+ FILLER1 FILLER_10_1015 ();
+ FILLER2 FILLER_10_12 ();
  DECAPHV8 FILLER_10_125 ();
  FILLER2 FILLER_10_133 ();
  DECAPHV32 FILLER_10_138 ();
+ FILLER1 FILLER_10_14 ();
  DECAPHV8 FILLER_10_170 ();
  FILLER2 FILLER_10_178 ();
  DECAPHV32 FILLER_10_183 ();
  DECAPHV8 FILLER_10_215 ();
  FILLER2 FILLER_10_223 ();
- DECAPHV32 FILLER_10_228 ();
- DECAPHV8 FILLER_10_260 ();
- FILLER2 FILLER_10_268 ();
- DECAPHV32 FILLER_10_273 ();
- FILLER4 FILLER_10_305 ();
- FILLER1 FILLER_10_314 ();
- DECAPHV32 FILLER_10_318 ();
- DECAPHV8 FILLER_10_32 ();
- DECAPHV8 FILLER_10_350 ();
- FILLER2 FILLER_10_358 ();
+ DECAPHV16 FILLER_10_228 ();
+ DECAPHV16 FILLER_10_23 ();
+ DECAPHV8 FILLER_10_244 ();
+ FILLER2 FILLER_10_252 ();
+ FILLER2 FILLER_10_293 ();
+ DECAPHV16 FILLER_10_340 ();
+ FILLER4 FILLER_10_356 ();
  DECAPHV32 FILLER_10_363 ();
+ FILLER4 FILLER_10_39 ();
  DECAPHV8 FILLER_10_395 ();
- FILLER4 FILLER_10_40 ();
  FILLER2 FILLER_10_403 ();
  DECAPHV32 FILLER_10_408 ();
- FILLER1 FILLER_10_44 ();
+ FILLER2 FILLER_10_43 ();
  DECAPHV8 FILLER_10_440 ();
  FILLER2 FILLER_10_448 ();
  DECAPHV32 FILLER_10_453 ();
@@ -357,11 +372,10 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_10_723 ();
  DECAPHV8 FILLER_10_755 ();
  FILLER2 FILLER_10_763 ();
- FILLER1 FILLER_10_768 ();
- DECAPHV16 FILLER_10_780 ();
- DECAPHV8 FILLER_10_796 ();
+ DECAPHV32 FILLER_10_768 ();
+ FILLER4 FILLER_10_8 ();
  DECAPHV8 FILLER_10_80 ();
- FILLER4 FILLER_10_804 ();
+ DECAPHV8 FILLER_10_800 ();
  FILLER2 FILLER_10_808 ();
  DECAPHV32 FILLER_10_813 ();
  DECAPHV8 FILLER_10_845 ();
@@ -370,15 +384,15 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_10_88 ();
  DECAPHV8 FILLER_10_890 ();
  FILLER2 FILLER_10_898 ();
- DECAPHV32 FILLER_10_908 ();
+ DECAPHV32 FILLER_10_903 ();
  DECAPHV32 FILLER_10_93 ();
- FILLER4 FILLER_10_940 ();
- FILLER1 FILLER_10_944 ();
+ DECAPHV8 FILLER_10_935 ();
+ FILLER2 FILLER_10_943 ();
  DECAPHV32 FILLER_10_948 ();
- DECAPHV8 FILLER_10_980 ();
- FILLER2 FILLER_10_988 ();
+ FILLER4 FILLER_10_980 ();
+ FILLER1 FILLER_10_984 ();
  DECAPHV16 FILLER_10_993 ();
- DECAPHV32 FILLER_12_0 ();
+ FILLER4 FILLER_12_0 ();
  DECAPHV8 FILLER_12_1009 ();
  FILLER4 FILLER_12_1017 ();
  FILLER1 FILLER_12_1021 ();
@@ -387,30 +401,30 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_12_138 ();
  DECAPHV8 FILLER_12_170 ();
  FILLER2 FILLER_12_178 ();
- DECAPHV8 FILLER_12_183 ();
- FILLER2 FILLER_12_191 ();
- FILLER1 FILLER_12_193 ();
- DECAPHV8 FILLER_12_214 ();
- FILLER2 FILLER_12_222 ();
- FILLER1 FILLER_12_224 ();
- DECAPHV8 FILLER_12_236 ();
- FILLER4 FILLER_12_244 ();
- FILLER1 FILLER_12_248 ();
- FILLER4 FILLER_12_257 ();
- FILLER1 FILLER_12_261 ();
- DECAPHV16 FILLER_12_296 ();
- FILLER2 FILLER_12_312 ();
- FILLER1 FILLER_12_314 ();
- DECAPHV32 FILLER_12_318 ();
- DECAPHV8 FILLER_12_32 ();
- DECAPHV8 FILLER_12_350 ();
- FILLER2 FILLER_12_358 ();
+ DECAPHV32 FILLER_12_183 ();
+ DECAPHV8 FILLER_12_215 ();
+ FILLER2 FILLER_12_223 ();
+ DECAPHV16 FILLER_12_23 ();
+ DECAPHV16 FILLER_12_236 ();
+ DECAPHV8 FILLER_12_252 ();
+ FILLER2 FILLER_12_260 ();
+ DECAPHV32 FILLER_12_273 ();
+ DECAPHV8 FILLER_12_305 ();
+ FILLER2 FILLER_12_313 ();
+ DECAPHV8 FILLER_12_318 ();
+ FILLER2 FILLER_12_326 ();
+ FILLER1 FILLER_12_336 ();
+ DECAPHV8 FILLER_12_345 ();
+ FILLER4 FILLER_12_353 ();
+ FILLER2 FILLER_12_357 ();
+ FILLER1 FILLER_12_359 ();
  DECAPHV32 FILLER_12_363 ();
+ FILLER4 FILLER_12_39 ();
  DECAPHV8 FILLER_12_395 ();
- FILLER4 FILLER_12_40 ();
+ FILLER2 FILLER_12_4 ();
  FILLER2 FILLER_12_403 ();
  DECAPHV32 FILLER_12_408 ();
- FILLER1 FILLER_12_44 ();
+ FILLER2 FILLER_12_43 ();
  DECAPHV8 FILLER_12_440 ();
  FILLER2 FILLER_12_448 ();
  DECAPHV32 FILLER_12_453 ();
@@ -424,6 +438,7 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV8 FILLER_12_575 ();
  FILLER2 FILLER_12_583 ();
  DECAPHV16 FILLER_12_588 ();
+ FILLER1 FILLER_12_6 ();
  DECAPHV8 FILLER_12_604 ();
  FILLER2 FILLER_12_612 ();
  DECAPHV8 FILLER_12_616 ();
@@ -457,28 +472,26 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV8 FILLER_12_980 ();
  FILLER2 FILLER_12_988 ();
  DECAPHV16 FILLER_12_993 ();
- DECAPHV32 FILLER_13_0 ();
+ DECAPHV8 FILLER_13_0 ();
  DECAPHV8 FILLER_13_1013 ();
  FILLER1 FILLER_13_1021 ();
+ FILLER2 FILLER_13_12 ();
  DECAPHV32 FILLER_13_128 ();
+ FILLER1 FILLER_13_14 ();
  DECAPHV16 FILLER_13_160 ();
  DECAPHV8 FILLER_13_176 ();
  FILLER2 FILLER_13_184 ();
- DECAPHV16 FILLER_13_217 ();
- DECAPHV8 FILLER_13_233 ();
- FILLER4 FILLER_13_245 ();
- DECAPHV16 FILLER_13_257 ();
- FILLER4 FILLER_13_273 ();
+ DECAPHV32 FILLER_13_189 ();
+ DECAPHV32 FILLER_13_221 ();
+ DECAPHV32 FILLER_13_23 ();
+ DECAPHV16 FILLER_13_253 ();
+ DECAPHV8 FILLER_13_269 ();
  FILLER2 FILLER_13_277 ();
- FILLER2 FILLER_13_282 ();
- FILLER1 FILLER_13_284 ();
- DECAPHV32 FILLER_13_293 ();
- DECAPHV32 FILLER_13_32 ();
- DECAPHV32 FILLER_13_325 ();
- DECAPHV8 FILLER_13_357 ();
- FILLER4 FILLER_13_365 ();
- FILLER2 FILLER_13_369 ();
- FILLER1 FILLER_13_371 ();
+ DECAPHV32 FILLER_13_282 ();
+ DECAPHV32 FILLER_13_314 ();
+ DECAPHV16 FILLER_13_346 ();
+ DECAPHV8 FILLER_13_362 ();
+ FILLER2 FILLER_13_370 ();
  DECAPHV32 FILLER_13_375 ();
  DECAPHV32 FILLER_13_407 ();
  DECAPHV16 FILLER_13_439 ();
@@ -488,11 +501,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_13_500 ();
  DECAPHV16 FILLER_13_532 ();
  DECAPHV8 FILLER_13_548 ();
+ DECAPHV32 FILLER_13_55 ();
  FILLER2 FILLER_13_556 ();
  DECAPHV32 FILLER_13_561 ();
  DECAPHV32 FILLER_13_593 ();
  DECAPHV16 FILLER_13_625 ();
- DECAPHV16 FILLER_13_64 ();
  DECAPHV8 FILLER_13_641 ();
  FILLER2 FILLER_13_649 ();
  DECAPHV32 FILLER_13_654 ();
@@ -502,15 +515,15 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_13_742 ();
  DECAPHV32 FILLER_13_747 ();
  DECAPHV32 FILLER_13_779 ();
- DECAPHV8 FILLER_13_80 ();
+ FILLER4 FILLER_13_8 ();
  DECAPHV16 FILLER_13_811 ();
  DECAPHV8 FILLER_13_827 ();
  FILLER2 FILLER_13_835 ();
  DECAPHV32 FILLER_13_840 ();
+ FILLER4 FILLER_13_87 ();
  DECAPHV32 FILLER_13_872 ();
- FILLER4 FILLER_13_88 ();
  DECAPHV16 FILLER_13_904 ();
- FILLER1 FILLER_13_92 ();
+ FILLER2 FILLER_13_91 ();
  DECAPHV8 FILLER_13_920 ();
  FILLER2 FILLER_13_928 ();
  DECAPHV32 FILLER_13_933 ();
@@ -525,13 +538,10 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV8 FILLER_14_129 ();
  FILLER2 FILLER_14_137 ();
  DECAPHV32 FILLER_14_142 ();
- DECAPHV16 FILLER_14_174 ();
- DECAPHV8 FILLER_14_190 ();
- FILLER1 FILLER_14_198 ();
- DECAPHV16 FILLER_14_203 ();
- DECAPHV8 FILLER_14_219 ();
- FILLER4 FILLER_14_227 ();
- FILLER1 FILLER_14_231 ();
+ DECAPHV32 FILLER_14_174 ();
+ DECAPHV16 FILLER_14_206 ();
+ DECAPHV8 FILLER_14_222 ();
+ FILLER2 FILLER_14_230 ();
  DECAPHV32 FILLER_14_235 ();
  DECAPHV32 FILLER_14_267 ();
  DECAPHV16 FILLER_14_299 ();
@@ -587,10 +597,9 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_15_184 ();
  DECAPHV32 FILLER_15_189 ();
  DECAPHV32 FILLER_15_221 ();
- FILLER4 FILLER_15_253 ();
- FILLER2 FILLER_15_257 ();
- DECAPHV8 FILLER_15_267 ();
- FILLER4 FILLER_15_275 ();
+ DECAPHV16 FILLER_15_253 ();
+ DECAPHV8 FILLER_15_269 ();
+ FILLER2 FILLER_15_277 ();
  DECAPHV32 FILLER_15_282 ();
  DECAPHV32 FILLER_15_314 ();
  DECAPHV32 FILLER_15_32 ();
@@ -653,12 +662,12 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV8 FILLER_16_315 ();
  DECAPHV8 FILLER_16_32 ();
  FILLER2 FILLER_16_323 ();
- DECAPHV32 FILLER_16_328 ();
- DECAPHV32 FILLER_16_360 ();
- DECAPHV16 FILLER_16_392 ();
+ DECAPHV16 FILLER_16_328 ();
+ FILLER1 FILLER_16_344 ();
+ DECAPHV32 FILLER_16_353 ();
+ DECAPHV32 FILLER_16_385 ();
  FILLER4 FILLER_16_40 ();
- DECAPHV8 FILLER_16_408 ();
- FILLER2 FILLER_16_416 ();
+ FILLER1 FILLER_16_417 ();
  DECAPHV32 FILLER_16_421 ();
  FILLER2 FILLER_16_44 ();
  DECAPHV32 FILLER_16_453 ();
@@ -702,12 +711,9 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_17_184 ();
  DECAPHV32 FILLER_17_189 ();
  DECAPHV32 FILLER_17_221 ();
- DECAPHV8 FILLER_17_253 ();
- FILLER4 FILLER_17_261 ();
- FILLER2 FILLER_17_265 ();
- FILLER1 FILLER_17_267 ();
- FILLER2 FILLER_17_276 ();
- FILLER1 FILLER_17_278 ();
+ DECAPHV16 FILLER_17_253 ();
+ DECAPHV8 FILLER_17_269 ();
+ FILLER2 FILLER_17_277 ();
  DECAPHV32 FILLER_17_282 ();
  DECAPHV32 FILLER_17_314 ();
  DECAPHV32 FILLER_17_32 ();
@@ -765,12 +771,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV8 FILLER_18_222 ();
  FILLER2 FILLER_18_230 ();
  DECAPHV32 FILLER_18_235 ();
- DECAPHV8 FILLER_18_267 ();
- FILLER1 FILLER_18_275 ();
- DECAPHV32 FILLER_18_284 ();
- DECAPHV8 FILLER_18_316 ();
+ DECAPHV32 FILLER_18_267 ();
+ DECAPHV16 FILLER_18_299 ();
+ DECAPHV8 FILLER_18_315 ();
  DECAPHV8 FILLER_18_32 ();
- FILLER1 FILLER_18_324 ();
+ FILLER2 FILLER_18_323 ();
  DECAPHV32 FILLER_18_328 ();
  DECAPHV32 FILLER_18_360 ();
  DECAPHV16 FILLER_18_392 ();
@@ -960,10 +965,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV8 FILLER_20_222 ();
  FILLER2 FILLER_20_230 ();
  DECAPHV32 FILLER_20_235 ();
- DECAPHV16 FILLER_20_267 ();
- FILLER2 FILLER_20_283 ();
- DECAPHV32 FILLER_20_293 ();
+ DECAPHV32 FILLER_20_267 ();
+ DECAPHV16 FILLER_20_299 ();
+ DECAPHV8 FILLER_20_315 ();
  DECAPHV8 FILLER_20_32 ();
+ FILLER2 FILLER_20_323 ();
  DECAPHV32 FILLER_20_328 ();
  DECAPHV32 FILLER_20_360 ();
  DECAPHV16 FILLER_20_392 ();
@@ -1016,12 +1022,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV16 FILLER_21_253 ();
  DECAPHV8 FILLER_21_269 ();
  FILLER2 FILLER_21_277 ();
- DECAPHV8 FILLER_21_282 ();
- FILLER4 FILLER_21_290 ();
- DECAPHV32 FILLER_21_302 ();
+ DECAPHV32 FILLER_21_282 ();
+ DECAPHV32 FILLER_21_314 ();
  DECAPHV32 FILLER_21_32 ();
- DECAPHV32 FILLER_21_334 ();
- FILLER4 FILLER_21_366 ();
+ DECAPHV16 FILLER_21_346 ();
+ DECAPHV8 FILLER_21_362 ();
  FILLER2 FILLER_21_370 ();
  DECAPHV32 FILLER_21_375 ();
  DECAPHV32 FILLER_21_407 ();
@@ -1076,15 +1081,13 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_22_228 ();
  DECAPHV8 FILLER_22_260 ();
  FILLER2 FILLER_22_268 ();
- DECAPHV16 FILLER_22_273 ();
- DECAPHV8 FILLER_22_289 ();
- FILLER2 FILLER_22_297 ();
- FILLER2 FILLER_22_318 ();
+ DECAPHV32 FILLER_22_273 ();
+ DECAPHV8 FILLER_22_305 ();
+ FILLER2 FILLER_22_313 ();
+ DECAPHV32 FILLER_22_318 ();
  DECAPHV8 FILLER_22_32 ();
- FILLER1 FILLER_22_336 ();
- FILLER4 FILLER_22_353 ();
- FILLER2 FILLER_22_357 ();
- FILLER1 FILLER_22_359 ();
+ DECAPHV8 FILLER_22_350 ();
+ FILLER2 FILLER_22_358 ();
  DECAPHV32 FILLER_22_363 ();
  DECAPHV8 FILLER_22_395 ();
  FILLER4 FILLER_22_40 ();
@@ -1379,10 +1382,12 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_4_813 ();
  DECAPHV8 FILLER_4_845 ();
  FILLER2 FILLER_4_853 ();
- DECAPHV32 FILLER_4_858 ();
+ DECAPHV16 FILLER_4_858 ();
+ FILLER4 FILLER_4_874 ();
+ FILLER2 FILLER_4_878 ();
  FILLER2 FILLER_4_88 ();
- DECAPHV8 FILLER_4_890 ();
- FILLER2 FILLER_4_898 ();
+ FILLER1 FILLER_4_880 ();
+ DECAPHV8 FILLER_4_892 ();
  DECAPHV32 FILLER_4_903 ();
  DECAPHV32 FILLER_4_93 ();
  DECAPHV8 FILLER_4_935 ();
@@ -1403,11 +1408,12 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV16 FILLER_5_253 ();
  DECAPHV8 FILLER_5_269 ();
  FILLER2 FILLER_5_277 ();
- DECAPHV32 FILLER_5_282 ();
- DECAPHV32 FILLER_5_314 ();
+ DECAPHV16 FILLER_5_282 ();
+ DECAPHV8 FILLER_5_298 ();
  DECAPHV32 FILLER_5_32 ();
- DECAPHV16 FILLER_5_346 ();
- DECAPHV8 FILLER_5_362 ();
+ DECAPHV32 FILLER_5_326 ();
+ DECAPHV8 FILLER_5_358 ();
+ FILLER4 FILLER_5_366 ();
  FILLER2 FILLER_5_370 ();
  DECAPHV32 FILLER_5_375 ();
  DECAPHV32 FILLER_5_407 ();
@@ -1459,12 +1465,15 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV16 FILLER_6_206 ();
  DECAPHV8 FILLER_6_222 ();
  FILLER2 FILLER_6_230 ();
- DECAPHV32 FILLER_6_235 ();
- DECAPHV32 FILLER_6_267 ();
- DECAPHV16 FILLER_6_299 ();
- DECAPHV8 FILLER_6_315 ();
+ DECAPHV8 FILLER_6_255 ();
+ FILLER4 FILLER_6_263 ();
+ FILLER2 FILLER_6_267 ();
+ FILLER1 FILLER_6_269 ();
+ DECAPHV8 FILLER_6_290 ();
+ FILLER4 FILLER_6_298 ();
+ FILLER2 FILLER_6_302 ();
+ FILLER1 FILLER_6_304 ();
  DECAPHV8 FILLER_6_32 ();
- FILLER2 FILLER_6_323 ();
  DECAPHV32 FILLER_6_328 ();
  DECAPHV32 FILLER_6_360 ();
  DECAPHV16 FILLER_6_392 ();
@@ -1514,14 +1523,19 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_7_184 ();
  DECAPHV32 FILLER_7_189 ();
  DECAPHV32 FILLER_7_221 ();
- DECAPHV16 FILLER_7_253 ();
- DECAPHV8 FILLER_7_269 ();
- FILLER2 FILLER_7_277 ();
- DECAPHV32 FILLER_7_282 ();
- DECAPHV32 FILLER_7_314 ();
+ FILLER1 FILLER_7_253 ();
+ DECAPHV8 FILLER_7_266 ();
+ FILLER4 FILLER_7_274 ();
+ FILLER1 FILLER_7_278 ();
+ DECAPHV8 FILLER_7_282 ();
+ FILLER2 FILLER_7_290 ();
+ DECAPHV16 FILLER_7_300 ();
+ FILLER2 FILLER_7_316 ();
+ FILLER1 FILLER_7_318 ();
  DECAPHV32 FILLER_7_32 ();
- DECAPHV16 FILLER_7_346 ();
- DECAPHV8 FILLER_7_362 ();
+ DECAPHV32 FILLER_7_326 ();
+ DECAPHV8 FILLER_7_358 ();
+ FILLER4 FILLER_7_366 ();
  FILLER2 FILLER_7_370 ();
  DECAPHV32 FILLER_7_375 ();
  DECAPHV32 FILLER_7_407 ();
@@ -1570,15 +1584,21 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_8_137 ();
  DECAPHV32 FILLER_8_142 ();
  DECAPHV32 FILLER_8_174 ();
- DECAPHV16 FILLER_8_206 ();
- DECAPHV8 FILLER_8_222 ();
- FILLER2 FILLER_8_230 ();
- DECAPHV32 FILLER_8_235 ();
- DECAPHV32 FILLER_8_267 ();
- DECAPHV16 FILLER_8_299 ();
- DECAPHV8 FILLER_8_315 ();
+ DECAPHV8 FILLER_8_206 ();
+ FILLER4 FILLER_8_214 ();
+ FILLER2 FILLER_8_218 ();
+ DECAPHV8 FILLER_8_224 ();
+ DECAPHV16 FILLER_8_235 ();
+ FILLER4 FILLER_8_251 ();
+ FILLER2 FILLER_8_255 ();
+ FILLER1 FILLER_8_257 ();
+ DECAPHV32 FILLER_8_266 ();
+ DECAPHV8 FILLER_8_298 ();
+ FILLER4 FILLER_8_306 ();
+ FILLER2 FILLER_8_310 ();
+ FILLER1 FILLER_8_312 ();
  DECAPHV8 FILLER_8_32 ();
- FILLER2 FILLER_8_323 ();
+ FILLER1 FILLER_8_320 ();
  DECAPHV32 FILLER_8_328 ();
  DECAPHV32 FILLER_8_360 ();
  DECAPHV16 FILLER_8_392 ();
@@ -1615,28 +1635,33 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_8_881 ();
  DECAPHV32 FILLER_8_886 ();
  DECAPHV32 FILLER_8_918 ();
- DECAPHV16 FILLER_8_950 ();
- DECAPHV8 FILLER_8_966 ();
- FILLER2 FILLER_8_974 ();
+ FILLER2 FILLER_8_950 ();
+ DECAPHV16 FILLER_8_957 ();
+ FILLER2 FILLER_8_973 ();
+ FILLER1 FILLER_8_975 ();
  DECAPHV32 FILLER_8_979 ();
- DECAPHV32 FILLER_9_0 ();
+ DECAPHV8 FILLER_9_0 ();
  DECAPHV8 FILLER_9_1013 ();
  FILLER1 FILLER_9_1021 ();
+ FILLER2 FILLER_9_12 ();
  DECAPHV32 FILLER_9_128 ();
+ FILLER1 FILLER_9_14 ();
  DECAPHV16 FILLER_9_160 ();
  DECAPHV8 FILLER_9_176 ();
  FILLER2 FILLER_9_184 ();
- DECAPHV32 FILLER_9_189 ();
- DECAPHV32 FILLER_9_221 ();
- DECAPHV16 FILLER_9_253 ();
- DECAPHV8 FILLER_9_269 ();
- FILLER2 FILLER_9_277 ();
- DECAPHV32 FILLER_9_282 ();
- DECAPHV32 FILLER_9_314 ();
- DECAPHV32 FILLER_9_32 ();
- DECAPHV16 FILLER_9_346 ();
- DECAPHV8 FILLER_9_362 ();
- FILLER2 FILLER_9_370 ();
+ FILLER1 FILLER_9_189 ();
+ DECAPHV32 FILLER_9_210 ();
+ DECAPHV32 FILLER_9_23 ();
+ DECAPHV16 FILLER_9_242 ();
+ DECAPHV8 FILLER_9_258 ();
+ FILLER4 FILLER_9_266 ();
+ FILLER1 FILLER_9_270 ();
+ DECAPHV8 FILLER_9_282 ();
+ FILLER1 FILLER_9_290 ();
+ FILLER4 FILLER_9_298 ();
+ FILLER1 FILLER_9_302 ();
+ FILLER2 FILLER_9_327 ();
+ DECAPHV32 FILLER_9_340 ();
  DECAPHV32 FILLER_9_375 ();
  DECAPHV32 FILLER_9_407 ();
  DECAPHV16 FILLER_9_439 ();
@@ -1646,11 +1671,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  DECAPHV32 FILLER_9_500 ();
  DECAPHV16 FILLER_9_532 ();
  DECAPHV8 FILLER_9_548 ();
+ DECAPHV32 FILLER_9_55 ();
  FILLER2 FILLER_9_556 ();
  DECAPHV32 FILLER_9_561 ();
  DECAPHV32 FILLER_9_593 ();
  DECAPHV16 FILLER_9_625 ();
- DECAPHV16 FILLER_9_64 ();
  DECAPHV8 FILLER_9_641 ();
  FILLER2 FILLER_9_649 ();
  DECAPHV32 FILLER_9_654 ();
@@ -1660,15 +1685,15 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  FILLER2 FILLER_9_742 ();
  DECAPHV32 FILLER_9_747 ();
  DECAPHV32 FILLER_9_779 ();
- DECAPHV8 FILLER_9_80 ();
+ FILLER4 FILLER_9_8 ();
  DECAPHV16 FILLER_9_811 ();
  DECAPHV8 FILLER_9_827 ();
  FILLER2 FILLER_9_835 ();
  DECAPHV32 FILLER_9_840 ();
+ FILLER4 FILLER_9_87 ();
  DECAPHV32 FILLER_9_872 ();
- FILLER4 FILLER_9_88 ();
  DECAPHV16 FILLER_9_904 ();
- FILLER1 FILLER_9_92 ();
+ FILLER2 FILLER_9_91 ();
  DECAPHV8 FILLER_9_920 ();
  FILLER2 FILLER_9_928 ();
  DECAPHV32 FILLER_9_933 ();
@@ -2069,22 +2094,82 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  WELLTAP TAP_TAPCELL_ROW_9_1_146 ();
  WELLTAP TAP_TAPCELL_ROW_9_1_147 ();
  WELLTAP TAP_TAPCELL_ROW_9_1_148 ();
- MUX2X1 _1_ (.A0(\i_sg13cmos5l_dsa1_dig_core.data_in_pad ),
+ INVX1 _10_ (.Y(dsm_qout_en),
+    .A(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[24] ));
+ INVX1 _11_ (.Y(dsm_ena),
+    .A(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[19] ));
+ NOR2X1 _12_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .Y(_06_),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ));
+ AO31X1 _13_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ),
+    .C(_06_),
+    .D(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .Y(_01_));
+ NOR2BX1 _14_ (.AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .Y(dsm_rst_b),
+    .B(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[20] ));
+ MUX2X1 _15_ (.A0(\i_sg13cmos5l_dsa1_dig_core.data_in_pad ),
     .A1(\i_sg13cmos5l_dsa1_dig_core.dsm_bit ),
     .S0(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[21] ),
-    .Y(_0_));
- DFFRQX1 _2_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
-    .D(net2),
+    .Y(_00_));
+ AND3BX1 _16_ (.AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .C(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .Y(_07_));
+ AOI2B1X1 _17_ (.Y(_08_),
+    .C(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ));
+ NOR2X1 _18_ (.A(_07_),
+    .Y(_02_),
+    .B(_08_));
+ NAND4BX1 _19_ (.AB(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ),
+    .C(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ),
+    .D(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .Y(_09_));
+ XOR2X1 _20_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ),
+    .B(_07_),
+    .Y(_03_));
+ XNOR2X1 _21_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ),
+    .B(_09_),
+    .Y(_04_));
+ XNOR2X1 _22_ (.A(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ),
+    .B(\i_sg13cmos5l_dsa1_dig_core.rst_done ),
+    .Y(_05_));
+ DFFRQX1 _23_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(_05_),
     .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
-    .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s2 ));
- DFFRQX1 _3_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
-    .D(net1),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[0] ));
+ DFFRQX1 _24_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_02_),
     .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
-    .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s3 ));
- DFFRQX1 _4_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
-    .D(_0_),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[1] ));
+ DFFRQX1 _25_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_03_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[2] ));
+ DFFRQX1 _26_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(_04_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_cnt[3] ));
+ DFFRQX1 _27_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_00_),
     .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
     .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s1 ));
+ DFFRQX1 _28_ (.CK(clknet_1_1__leaf_clk_PAD2CORE_regs),
+    .D(_01_),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.rst_done ));
+ DFFRQX1 _29_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(net1),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s2 ));
+ DFFRQX1 _30_ (.CK(clknet_1_0__leaf_clk_PAD2CORE_regs),
+    .D(net2),
+    .RB(\i_sg13cmos5l_dsa1_dig_core.rst_n ),
+    .Q(\i_sg13cmos5l_dsa1_dig_core.data_in_s3 ));
  sg13cmos5l_ip__clamp_vddvss clamp_vdda ();
  sg13cmos5l_ip__clamp_vddvss clamp_vddvss ();
  sg13cmos5l_IOPadIn clk_pad (.p2c(clk_PAD2CORE),
@@ -2100,14 +2185,11 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  BUFX12 clkbuf_1_1__f_clk_PAD2CORE_regs (.Y(clknet_1_1__leaf_clk_PAD2CORE_regs),
     .A(clknet_0_clk_PAD2CORE_regs));
  BUFX12 clkbuf_regs_0_clk (.Y(clk_PAD2CORE_regs),
-    .A(delaynet_10_clk));
- INVX1 clkload0 (.A(clknet_1_1__leaf_clk_PAD2CORE_regs));
+    .A(delaynet_9_clk));
  sg13cmos5l_ip__cut_vdd cut_vdd_e ();
  sg13cmos5l_ip__cut_vdd cut_vdd_s ();
  BUFX12 delaybuf_0_clk (.Y(delaynet_0_clk),
     .A(clk_PAD2CORE));
- BUFX12 delaybuf_10_clk (.Y(delaynet_10_clk),
-    .A(delaynet_9_clk));
  BUFX12 delaybuf_1_clk (.Y(delaynet_1_clk),
     .A(delaynet_0_clk));
  BUFX12 delaybuf_2_clk (.Y(delaynet_2_clk),
@@ -2134,10 +2216,10 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
     .di_clk(dsm_clk_PAD2CORE),
     .di_clk_sel(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[11] ),
     .di_dith_en(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[7] ),
-    .di_ena(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[19] ),
+    .di_ena(dsm_ena),
     .di_osc_en(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[10] ),
-    .di_qout_en(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[24] ),
-    .di_rst_b(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[20] ),
+    .di_qout_en(dsm_qout_en),
+    .di_rst_b(dsm_rst_b),
     .di_vcm_ext(\i_sg13cmos5l_dsa1_dig_core.o_bias_cfg[23] ),
     .do_clk_osc(do_clk_osc),
     .do_osc_oe(do_osc_oe),
@@ -2176,9 +2258,9 @@ module sg13cmos5l_dsa1_dig_top (clk_PAD,
  sg13cmos5l_IOPadVss \g_vss_pads[0].vss_pad  ();
  sg13cmos5l_IOPadVss \g_vss_pads[1].vss_pad  ();
  sg13cmos5l_ip__helm helm_art ();
- BUFX3 hold1 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s2 ),
+ BUFX3 hold1 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s1 ),
     .Y(net1));
- BUFX3 hold2 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s1 ),
+ BUFX3 hold2 (.A(\i_sg13cmos5l_dsa1_dig_core.data_in_s2 ),
     .Y(net2));
  BUFX3 hold3 (.A(\i_sg13cmos5l_dsa1_dig_core.ss ),
     .Y(net3));

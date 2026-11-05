@@ -4173,42 +4173,82 @@ vss                                        |vss
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes dsm2_core and dsm2_core are equivalent.
+
+Subcircuit summary:
+Circuit 1: AO31X1                          |Circuit 2: AO31X1                          
+-------------------------------------------|-------------------------------------------
+sg13_lv_nmos (5)                           |sg13_lv_nmos (5)                           
+sg13_lv_pmos (5)                           |sg13_lv_pmos (5)                           
+Number of devices: 10                      |Number of devices: 10                      
+Number of nets: 13                         |Number of nets: 13                         
+---------------------------------------------------------------------------------------
+Netlists match uniquely.
+
+Subcircuit pins:
+Circuit 1: AO31X1                          |Circuit 2: AO31X1                          
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+VSS                                        |VSS                                        
+Y                                          |Y                                          
+D                                          |D                                          
+C                                          |C                                          
+B                                          |B                                          
+A                                          |A                                          
+w_n41_292#                                 |VNW **Mismatch**                           
+sub                                        |VPW **Mismatch**                           
+---------------------------------------------------------------------------------------
+Cell pin lists for AO31X1 and AO31X1 altered to match.
+Device classes AO31X1 and AO31X1 are equivalent.
 Flattening unmatched subcell DECAPHV8 in circuit sg13cmos5l_dsa1_dig_top (0)(339 instances)
-Flattening unmatched subcell DECAPHV32 in circuit sg13cmos5l_dsa1_dig_top (0)(517 instances)
+Flattening unmatched subcell DECAPHV32 in circuit sg13cmos5l_dsa1_dig_top (0)(511 instances)
 Flattening unmatched subcell DECAPHV16 in circuit sg13cmos5l_dsa1_dig_top (0)(200 instances)
-Flattening unmatched subcell BUFX12 in circuit sg13cmos5l_dsa1_dig_top (0)(17 instances)
+Flattening unmatched subcell AOI2B1X1 in circuit sg13cmos5l_dsa1_dig_top (0)(1 instance)
 Flattening unmatched subcell MUX2X1 in circuit sg13cmos5l_dsa1_dig_top (0)(1 instance)
-Flattening unmatched subcell DFFRQX1 in circuit sg13cmos5l_dsa1_dig_top (0)(3 instances)
+Flattening unmatched subcell NAND4BX1 in circuit sg13cmos5l_dsa1_dig_top (0)(1 instance)
+Flattening unmatched subcell XOR2X1 in circuit sg13cmos5l_dsa1_dig_top (0)(1 instance)
+Flattening unmatched subcell BUFX12 in circuit sg13cmos5l_dsa1_dig_top (0)(16 instances)
+Flattening unmatched subcell DFFRQX1 in circuit sg13cmos5l_dsa1_dig_top (0)(8 instances)
+Flattening unmatched subcell NOR2X1 in circuit sg13cmos5l_dsa1_dig_top (0)(2 instances)
 Flattening unmatched subcell AND2X1 in circuit sg13cmos5l_dsa1_dig_top (0)(2 instances)
+Flattening unmatched subcell NOR2BX1 in circuit sg13cmos5l_dsa1_dig_top (0)(1 instance)
 Flattening unmatched subcell ANTENNA2 in circuit sg13cmos5l_dsa1_dig_top (0)(3 instances)
 Flattening unmatched subcell BUFX3 in circuit sg13cmos5l_dsa1_dig_top (0)(3 instances)
-Flattening unmatched subcell INVX1 in circuit sg13cmos5l_dsa1_dig_top (0)(1 instance)
+Flattening unmatched subcell AND3BX1 in circuit sg13cmos5l_dsa1_dig_top (0)(1 instance)
+Flattening unmatched subcell XNOR2X1 in circuit sg13cmos5l_dsa1_dig_top (0)(2 instances)
+Flattening unmatched subcell INVX1 in circuit sg13cmos5l_dsa1_dig_top (0)(2 instances)
 Flattening unmatched subcell WELLTAP in circuit sg13cmos5l_dsa1_dig_top (1)(319 instances)
 
+Flattening instances of XOR2X1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
+Flattening instances of AND3BX1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of INVX1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of DFFRQX1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
+Flattening instances of AOI2B1X1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
+Flattening instances of XNOR2X1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of ANTENNA2 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of DECAPHV8 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of DECAPHV16 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
+Flattening instances of NOR2X1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
+Flattening instances of NOR2BX1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of MUX2X1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of BUFX3 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
+Flattening instances of NAND4BX1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of BUFX12 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of AND2X1 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Flattening instances of DECAPHV32 in cell sg13cmos5l_dsa1_dig_top (1) makes a better match
 Making another compare attempt.
 
-Class sg13cmos5l_dsa1_dig_top (0):  Merged 1157 parallel devices.
-Class sg13cmos5l_dsa1_dig_top (1):  Merged 1055 parallel devices.
+Class sg13cmos5l_dsa1_dig_top (0):  Merged 1145 parallel devices.
+Class sg13cmos5l_dsa1_dig_top (1):  Merged 1049 parallel devices.
 Subcircuit summary:
 Circuit 1: sg13cmos5l_dsa1_dig_top         |Circuit 2: sg13cmos5l_dsa1_dig_top         
 -------------------------------------------|-------------------------------------------
-sg13_hv_pmos (1056->1)                     |sg13_hv_pmos (1056->1)                     
+sg13_hv_pmos (1050->1)                     |sg13_hv_pmos (1050->1)                     
 sg13cmos5l_ip__cut_vdd (2)                 |sg13cmos5l_ip__cut_vdd (2)                 
 sg13cmos5l_IOPadAnalog (3)                 |sg13cmos5l_IOPadAnalog (3)                 
 sg13cmos5l_Filler4000 (29)                 |sg13cmos5l_Filler4000 (29)                 
-sg13_lv_nmos (149->98)                     |sg13_lv_nmos (98)                          
-sg13_lv_pmos (146->95)                     |sg13_lv_pmos (95)                          
 sg13cmos5l_IOPadIn (6)                     |sg13cmos5l_IOPadIn (6)                     
+sg13_lv_pmos (247->199)                    |sg13_lv_pmos (199)                         
+sg13_lv_nmos (255->207)                    |sg13_lv_nmos (207)                         
 sg13cmos5l_IOPadOut30mA (2)                |sg13cmos5l_IOPadOut30mA (2)                
 sg13cmos5l_IOPadVss (2)                    |sg13cmos5l_IOPadVss (2)                    
 sg13cmos5l_IOPadVdd (2)                    |sg13cmos5l_IOPadVdd (2)                    
@@ -4225,8 +4265,9 @@ sg13cmos5l_IOPadIOVdd (2)                  |sg13cmos5l_IOPadIOVdd (2)
 sg13cmos5l_IOPadInOut4mA (1)               |sg13cmos5l_IOPadInOut4mA (1)               
 sg13cmos5l_Filler1000 (2)                  |sg13cmos5l_Filler1000 (2)                  
 dsm2_core (1)                              |dsm2_core (1)                              
-Number of devices: 279                     |Number of devices: 279                     
-Number of nets: 282                        |Number of nets: 282                        
+AO31X1 (1)                                 |AO31X1 (1)                                 
+Number of devices: 493                     |Number of devices: 493                     
+Number of nets: 397                        |Number of nets: 397                        
 ---------------------------------------------------------------------------------------
 Resolving symmetries by property value.
 Resolving symmetries by pin name.

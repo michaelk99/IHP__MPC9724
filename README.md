@@ -34,8 +34,8 @@ The flow, the directory layout and the two example macros come from the [ihp-sg1
 | Die | 1.3 mm square, 21 bondpads, 20 of them bonded |
 | Package | QFN24, 4 x 4 mm, 0.5 mm pitch, packaged by IHP, bond plan in [packaging/result.md](packaging/result.md) |
 | Macros | `dsa1_dig_top`, 409.08 x 514.08 um at 68.9 % utilization, `dsm2_core`, 150.5 x 178 um, dsm2's oscillator variant of 2026-11-02, and `decap_vdda`, 150.36 x 349.44 um of decap on VDDA |
-| Decoupling | VDD 82.69 pF, VDDA 67.61 pF, thick-oxide DECAPHV only |
-| Release | [release/v.1.2.0](release/v.1.2.0), delivery GDS `MPC9724.gds.gz` |
+| Decoupling | VDD 82.21 pF, VDDA 67.61 pF, thick-oxide DECAPHV only |
+| Release | [release/v.1.2.1](release/v.1.2.1), delivery GDS `MPC9724.gds.gz`, dsm2 on by default |
 | Supplies | VDD 1.2 V, VDDA 1.5 V for dsm2, IOVDD 3.3 V |
 | Clock | 65536 Hz sample clock, 200 kHz SPI in a second domain |
 | Output rate | 512 Hz, read over SPI as a 22-bit word |
@@ -98,7 +98,7 @@ The generic "AMS CHIP" top-metal logo the template places is switched off. `scri
 The project name is MPC9724, a Mixed-Signal Multi Project Carrier in the IHP Open Source MPW run, repository `michaelk99/IHP__MPC9724`. Package: QFN24, 4 x 4 mm, 0.5 mm pitch, packaged by IHP. The metadata is in [doc/info.json](doc/info.json) and the maturity assessment in [doc/TRL-Mixed-Signal-IP.md](doc/TRL-Mixed-Signal-IP.md).
 
 ```sh
-make release-ihp VERSION=1.2.0    # release/v.1.2.0 with gds/, netlist/, doc/ and ReleaseNote.md
+make release-ihp VERSION=1.2.1    # release/v.1.2.1 with gds/, netlist/, doc/ and ReleaseNote.md
 scripts/release_ihp.sh --self-test    # the zero-area check fails on a flat polygon
 ```
 

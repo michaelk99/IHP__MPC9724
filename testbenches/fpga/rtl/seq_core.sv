@@ -41,7 +41,7 @@ module seq_core #(
     output logic        capturing
 );
     localparam logic [3:0] OP_SPI = 4'd1, OP_WAITC = 4'd2, OP_STREAM = 4'd3,
-                           OP_CAPT = 4'd4, OP_LOOP = 4'd5, OP_RESET = 4'd6;
+                           OP_CAPT = 4'd4, OP_LOOP = 4'd5, OP_RESET = 4'd6, OP_REQ = 4'd7;
     localparam logic [2:0] K_SPI = 3'd0, K_ADC = 3'd1, K_START = 3'd2, K_RESET = 3'd3,
                            K_LOOP = 3'd4, K_STREAM = 3'd5, K_END = 3'd7;
     localparam logic [12:0] RST_N = RST_CYC;
@@ -64,7 +64,7 @@ module seq_core #(
     logic        conv_d, conv_pend;
     logic [10:0] conv_cnt, tag_cnt, cap_cnt;
     logic [16:0] tag_idx, cap_idx;
-    logic [15:0] wait_n, hi_q;
+    logic [15:0] wait_n, hi_q, last_rx;
     logic        forever_q;
     logic [12:0] dly;
     logic [3:0]  prog_q;
@@ -77,7 +77,7 @@ module seq_core #(
             dut_rst_b <= 1'b1;  loopback <= 1'b0;  stream_start <= 1'b0;
             rec <= '0;  rec_valid <= 1'b0;  halted <= 1'b0;  capturing <= 1'b0;
             conv_d <= 1'b0;  conv_pend <= 1'b0;  conv_cnt <= '0;  tag_cnt <= '0;  tag_idx <= '0;
-            cap_cnt <= '0;  cap_idx <= '0;  wait_n <= '0;  hi_q <= '0;  forever_q <= 1'b0;
+            cap_cnt <= '0;  cap_idx <= '0;  wait_n <= '0;  hi_q <= '0;  last_rx <= '0;  forever_q <= 1'b0;
             dly <= '0;  prog_q <= '0;
         end else begin
             spi_start    <= 1'b0;
@@ -139,6 +139,15 @@ module seq_core #(
                             dly       <= RST_N;
                             state     <= S_RST_LO;
                         end
+                        // Go on only if the last SPI word was arg, else END, as for HALT
+                        OP_REQ: if (last_rx == arg) begin
+                            pc <= pc + 8'd1;
+                        end else begin
+                            rec       <= mk(K_END, pc, 1'b0);
+                            rec_valid <= 1'b1;
+                            ret       <= S_HALT;
+                            state     <= S_REC;
+                        end
                         default: begin       // HALT, and anything seqasm never emits
                             rec       <= mk(K_END, pc, 1'b0);
                             rec_valid <= 1'b1;
@@ -152,6 +161,7 @@ module seq_core #(
                     state     <= S_SPI_WAIT;
                 end
                 S_SPI_WAIT: if (spi_strobe) begin
+                    last_rx   <= spi_rx;
                     rec       <= {K_SPI, spi_addr, spi_data, spi_rx, pc, 15'd0};
                     rec_valid <= 1'b1;
                     pc        <= pc + 8'd1;

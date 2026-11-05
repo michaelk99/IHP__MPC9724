@@ -6,7 +6,7 @@ Description: design spec for integrating the dsm2_core delta-sigma modulator on 
 
 # Integrating dsm2_core on the DSA1 back end (spec)
 
-Status: design agreed on 2026-10-19, not implemented. Branch `dsm2/integration`, from `tapeout/v1.1.1`, which stays the signed-off fallback. Target release v1.2.0.
+Status: design agreed on 2026-10-19, implemented in v1.2.0, oscillator variant 2026-11-02, dsm2 on by default since v1.2.1 (2026-11-04). Branch `dsm2/integration`, from `tapeout/v1.1.1`. The sections below keep the original plan where later sections or [specifications.md](specifications.md) do not say otherwise.
 
 ## Goal and priorities
 
@@ -63,7 +63,7 @@ Leads: 14 signals (8 for DSA1, 6 for dsm2) and VDD, IOVDD, VDDA on 17 of 24 lead
 | 8 | `adc_conv` | `IOPadOut30mA` | S |
 | 9 | ground lead, to the paddle (second VSS pad downbonded) | `IOPadVss` | S |
 | | vdd band cut | `sg13cmos5l_ip__cut_vdd`, 10 um, no bondpad | S |
-| 10 | `dsm_clk` | `IOPadIn` | S |
+| 10 | `dsm_clk` | `IOPadInOut4mA` since the oscillator variant | S |
 | 11 | `do_q` | `IOPadOut4mA` | S |
 | 12 | `do_q_b` | `IOPadOut4mA` | S |
 | 13 | NC | | E |
@@ -96,7 +96,7 @@ Die pads per side, in the flow's ring order (west and east bottom to top, north 
 - The draft bond plan ran through `packaging/scripts/run_bondplan.py` on a synthetic die with these pads (2026-10-21): 23 wires, length 1394 to 1788 um, minimum wire gap 64.9 um (`do_q` to `do_q_b`), maximum lead skew 5.5 deg, no crossing, no guard warning on leads 14 to 17. The paddle was taken as 3200 um, which still has to be checked against the EUROPRACTICE QFN24 drawing.
 - `do_q` and `do_q_b` sit side by side so their currents largely cancel. The 4 mA drivers keep their bounce low.
 - The second VSS pad gives dsm2's ground a short path to the paddle and the ESD network a second path.
-- Every lead number changes from v1.1.1. The board has to follow this table. `dsm_clk` is tied low when dsm2 is not used.
+- Every lead number changes from v1.1.1. The board has to follow this table. `dsm_clk` is pulled low through a resistor when dsm2 is not used, never tied, since dsm2 can drive it.
 
 IOVDD stays a pin. Its voltage is free within what the IO cells allow (characterized at 3.0 to 3.6 V, `IOPadIn` switches down to 1.5 V at TT and 1.6 V at SS in simulation), but the hosts' IO level has to match it. That is a board decision and changes nothing on the die.
 
@@ -131,20 +131,20 @@ IOVDD stays a pin. Its voltage is free within what the IO cells allow (character
 | `BIAS_CFG_0` | 3:0 | `DSM_TRIM` | `0100` | `di_trim` |
 | | 4 | `DSM_DITH_EN` | 0 | `di_dith_en` |
 | | 6:5 | `DSM_DITH_AMP` | `01` | `di_dith_amp` |
-| | 9:7 | `DSM_SPARE` | 0 | register only, no dsm2 pins |
+| | 9:7 | `DSM_SPARE` | 0 | bit 7 `di_osc_en`, bit 8 `di_clk_sel`, bit 9 spare |
 | | 15:10 | TBD | 0 | |
-| `BIAS_CFG_1` | 0 | `DSM_EN` | 0 | `di_ena` |
-| | 1 | `DSM_RST_B` | 0 | `di_rst_b` |
-| | 2 | `DEC_SRC` | 0 | decimator input, 0 the `data_in` pad, 1 `do_q` |
+| `BIAS_CFG_1` | 0 | `DSM_EN` | 0 | `di_ena`, inverted since v1.2.1 |
+| | 1 | `DSM_RST_B` | 0 | `di_rst_b`, inverted and gated by a 9 `clk` period counter since v1.2.1 |
+| | 2 | `DEC_SRC` | 0 | decimator input, 0 the `data_in` pad, 1 `do_q_dec` |
 | | 3 | `DSM_BTEST_EN` | 0 | `di_btest_en` |
 | | 4 | `DSM_VCM_EXT` | 0 | `di_vcm_ext` |
-| | 5 | `DSM_QOUT_EN` | 0 | `di_qout_en`, the `do_q` and `do_q_b` pads |
+| | 5 | `DSM_QOUT_EN` | 0 | `di_qout_en`, the `do_q` and `do_q_b` pads, inverted since v1.2.1 |
 | | 6 | `ADC_CONV_EN` | 1 | the `adc_conv` pad, 0 holds it low |
 | | 15:7 | TBD | 0 | |
 
 - Both registers already leave the macro on `o_bias_cfg[34:3]`. The macro gets no new port, only this die's resets.
 - `macros/scripts/regmap_gen.py` today rejects two fields on one bit (`regmap_gen.py:124`). It is changed to allow an overlap between fields that are `only` on different dies, and to keep rejecting every other overlap.
-- After reset dsm2 is off and in reset, its pads are static, and the decimator reads the `data_in` pad, as in v1.1.1.
+- After reset the decimator reads the `data_in` pad, as in v1.1.1. Since v1.2.1 dsm2 is on after reset, its reset is released 9 to 10 `clk` periods after `rst_n`, and its pads drive, see Default on below.
 - Every host that writes a DSA1 bias profile has to check `CHIP_ID` first, or it writes dsm2's trim and enables on this die. `doc/regmap.md` says so.
 - The svn side (EasyConfig, the ESP32 host) changes only when the user says so.
 
@@ -163,7 +163,7 @@ In `rtl/sg13cmos5l_dsa1_dig_core.sv`, beside the existing `data_in` synchronizer
 - `clk` still drives the decimator only. With `DEC_SRC` it runs at 1.024 MHz (976.6 ns), faster than the 1000 ns the SDCs constrain today, so the chip and the macro SDC constrain `clk` at 950 ns.
 - `dsm_clk` goes from its pad's `p2c` to `di_clk` and nowhere else. No SDC clock, `RSZ_DONT_TOUCH_RX` keeps the resizer off it.
 - The oscillator variant (2026-11-02) makes the pad an `IOPadInOut4mA`. dsm2's `do_clk_osc` drives its `c2p` and `do_osc_oe` its `c2p_en`, both 1.5 V in the VDDA segment and both in `RSZ_DONT_TOUCH_RX`. `di_osc_en` and `di_clk_sel` come from `BIAS_CFG_0` bits 7 and 8 (`DSM_SPARE`), reset 0, so after reset the pad is an input. With `di_clk_sel` set, dsm2 runs from its oscillator and drives the pad. The host must stop driving `dsm_clk` first. The decimator stays on `clk`.
-- After `di_rst_b` rises the integrator needs about 17 clocks to leave saturation, so the first decimator word after the release is discarded.
+- After `di_rst_b` rises the integrator needs about 17 clocks to leave saturation, and the decimator holds about 32 words of history, so about 40 decimator words after the release, a `DEC_SRC` change or a clock switch are discarded.
 
 ## VDDA, the segment and the analog nets
 
@@ -181,11 +181,11 @@ In `rtl/sg13cmos5l_dsa1_dig_core.sv`, beside the existing `data_in` synchronizer
 
 | State | VDD | IOVDD | VDDA | `dsm_clk` | Expected |
 |---|---|---|---|---|---|
-| DSA1 | on | on | 1.5 V | low or running | dsm2 off (`DSM_EN` 0), its pads static (`DSM_QOUT_EN` 0), VDD carries the filter alone |
+| DSA1 | on | on | 1.5 V | low or running | dsm2 off (`DSM_EN` 1), its pads static (`DSM_QOUT_EN` 1), VDD carries the filter alone |
 | DSA1 measured | on | on | 1.5 V | any | as DSA1, and `ADC_CONV_EN` 0 holds the `adc_conv` pad still. VDD and IOVDD carry only the filter's switching |
-| dsm2 | on | on | 1.5 V | 1.024 MHz | after `DSM_EN`, 130 us, `DSM_RST_B`, then `DSM_QOUT_EN` for the pads or `DEC_SRC` for the decimator, or both |
+| dsm2 | on | on | 1.5 V | 1.024 MHz | the reset state since v1.2.1, pads driving. `DEC_SRC` for the decimator |
 
-- VDDA is always on, and comes up no later than IOVDD, like VDD. v1.1.1's start-up bench showed that IO cells whose core supply is down while IOVDD is up drive their outputs high and flip together in a 21 ns, 381 mA spike on IOVDD when the core supply arrives. The segment's IO cells run on VDDA, so VDDA at 0 V with IOVDD up is that state. dsm2 is switched off with `DSM_EN`, not by removing VDDA.
+- VDDA is always on, and comes up no later than IOVDD, like VDD. v1.1.1's start-up bench showed that IO cells whose core supply is down while IOVDD is up drive their outputs high and flip together in a 21 ns, 381 mA spike on IOVDD when the core supply arrives. The segment's IO cells run on VDDA, so VDDA at 0 V with IOVDD up is that state. dsm2 is switched off by writing `DSM_EN` 1, not by removing VDDA. Since v1.2.1 VDDA also comes up no later than VDD: `di_ena` is high from reset, and dsm2 simulated its start-up with full VDDA at the `di_ena` edge, not VDDA ramping under a high `di_ena`.
 - `vi` and `vcm` stay within 0 V to VDDA. With VDDA down during sequencing they must be at 0 V or high-Z, at most 0.1 V: at 0.75 V `vi` draws 55 uA and back-powers dsm2 to 0.46 V (dsm2 sim). The `padres` diodes go to IOVDD, so nothing on the die limits this. It goes into the board notes.
 - dsm2's inputs have one thick-oxide inverter each, so 1.2 V highs from the registers give full 1.5 V levels inside (a plain LV gate leaked and mistrimmed, dsm2 sim on `:next`). The receivers are sized for VDD 1.08 V against VDDA 1.55 V. Each draws from VDDA while its input is high: 7 nA at tt, 1.13 uA with a 1.08 V high at ff 125 C, 29 nA with a 1.32 V high. After reset only `di_trim[2]` is high, so the DSA1 state costs VDDA up to about 1.1 uA at that corner, 7 nA at tt, and VDD nothing but leakage.
 - VDD off with VDDA on: all inputs are 0, `di_ena` is low, dsm2 stays off and draws 134 nA at tt 27 C, 2.65 uA at ff 125 C (sim, not fully settled).
@@ -254,3 +254,12 @@ Compute: the heavy jobs (macro re-harden, chip builds, the ESD matrix, the start
 
 - From dsm2: the pin positions and the exact outline (after the `sc_int2` rework, this week), the GDS and LEF (end of the week of 2026-10-19 at the earliest).
 - Disk: the laptop is at 97 %. Runs on `gigaarm` keep their run directories there. Old run directories on the laptop are cleared, after review, before any heavy job runs locally.
+
+## Default on (v1.2.1, 2026-11-04)
+
+User decision 2026-11-04: after power-up and the `rst_n` release, with no SPI write, dsm2 is enabled, out of reset and drives `do_q` and `do_q_b`, so it can be probed even if the SPI fails. Writing SPI turns it off for current measurements.
+
+- In `rtl/sg13cmos5l_dsa1_dig_core.sv` `di_ena` is `~DSM_EN`, `di_qout_en` is `~DSM_QOUT_EN` and `di_rst_b` is `~DSM_RST_B & rst_done`. `dsa1_dig` is not rebuilt, its fields keep their names and reset 0, only their descriptions in `regmap.yaml` changed.
+- `rst_done` is a 4-bit counter on `clk`, reset by `rst_n`, that rises on the 10th rising `clk` edge and stays high. dsm2 is enabled while `rst_n` is low and leaves reset 9 to 10 periods later, 137 to 153 us at 65536 Hz, after every `rst_n` release. dsm2 asks for at least 130 us.
+- The oscillator stays off, `dsm_clk` an input, `DEC_SRC` 0 and `DSM_DITH_EN` 0 after reset. dsm2's dither LFSR can stick when it starts enabled.
+- The cost if dsm2 does not start this way is one SPI toggle of `DSM_EN`.

@@ -121,6 +121,19 @@ module sg13cmos5l_dsa1_dig_core #(
         .o_aux_ctrl  (o_aux_ctrl)
     );
 
+    // rst_done rises on the 10th rising clk edge after rst_n, so at least 9 full periods after it
+    logic [3:0] rst_cnt;
+    logic       rst_done;
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            rst_cnt  <= '0;
+            rst_done <= 1'b0;
+        end else if (!rst_done) begin
+            rst_cnt  <= rst_cnt + 4'd1;
+            rst_done <= rst_cnt == 4'd9;
+        end
+    end
+
     // o_bias_cfg = {BIAS_CFG_1, BIAS_CFG_0, BIAS_CFG_2[2:0]}, dsm2 fields in doc/regmap.md
     localparam int unsigned CFG0 = 3;
     localparam int unsigned CFG1 = 19;
@@ -130,12 +143,14 @@ module sg13cmos5l_dsa1_dig_core #(
     // DSM_SPARE bits 7 and 8 of BIAS_CFG_0, bit 9 stays spare
     assign dsm_osc_en   = o_bias_cfg[CFG0+7];
     assign dsm_clk_sel  = o_bias_cfg[CFG0+8];
-    assign dsm_ena      = o_bias_cfg[CFG1+0];
-    assign dsm_rst_b    = o_bias_cfg[CFG1+1];
+    // dsm2 runs from power-up with no SPI write: DSM_EN, DSM_RST_B and DSM_QOUT_EN reset to 0 and are
+    // inverted here, so 1 turns each off. dsm2 leaves reset at least 9 clk periods (137 us) after rst_n.
+    assign dsm_ena      = ~o_bias_cfg[CFG1+0];
+    assign dsm_rst_b    = ~o_bias_cfg[CFG1+1] & rst_done;
     assign dec_src      = o_bias_cfg[CFG1+2];
     assign dsm_btest_en = o_bias_cfg[CFG1+3];
     assign dsm_vcm_ext  = o_bias_cfg[CFG1+4];
-    assign dsm_qout_en  = o_bias_cfg[CFG1+5];
+    assign dsm_qout_en  = ~o_bias_cfg[CFG1+5];
     assign adc_conv_en  = o_bias_cfg[CFG1+6];
 
     // The only VDD cell with a dsm2 input. With DEC_SRC low its NMOS stack is cut, so a running or

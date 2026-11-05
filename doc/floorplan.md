@@ -94,9 +94,9 @@ The die decouples with `DECAPHV8/16/32` only, on both rails. EZ130's thin-oxide 
 
 | rail | where | `DECAPHV8` | `DECAPHV16` | `DECAPHV32` | C |
 |---|---|---:|---:|---:|---:|
-| VDD | chip rows (`netlist/pnl`) | 339 | 200 | 517 | 49.08 pF |
+| VDD | chip rows (`netlist/pnl`) | 339 | 200 | 511 | 48.60 pF |
 | VDD | `dsa1_dig` (`macros/dsa1_dig/final/pnl`) | 1578 | 575 | 78 | 33.61 pF |
-| **VDD** | | **1917** | **775** | **595** | **82.69 pF** |
+| **VDD** | | **1917** | **775** | **589** | **82.21 pF** |
 | **VDDA** | `decap_vdda` (`macros/decap_vdda/final/pnl`) | 339 | 323 | 704 | **67.61 pF** |
 
 Per cell 6.272, 30.52 and 79.01 fF, from the characterisation in `ez130_8t_decap_hv/doc/decap_hv.md`, tt corner, which agree with the ngspice AC run in [esd_hbm.md](esd_hbm.md). Before the 2026-10-31 rework the die had 145.2 pF, all on VDD. dsm2's own decoupling is inside its macro and not counted here.

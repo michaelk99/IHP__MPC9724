@@ -4,18 +4,18 @@
 # The delivery GDS under its IHP project name, and the submission checks on that exact file.
 # Run inside IIC-OSIC-TOOLS at the repo root, with the AGENTS.md environment set:
 #   scripts/submission.sh <IHP project name>
-# The GDS and its md5 go to OUT (release/v.1.2.0/gds), the precheck and the scan to REC
+# The GDS and its md5 go to OUT (release/v.1.2.1/gds), the precheck and the scan to REC
 # (verification/submission), the LVS to LVS_OUT (top_lvs.sh's own). A dry run points all three elsewhere.
 # The file is renamed, the top cell keeps its design name. A copy keeps every byte, so the md5 must be
 # the signed-off one, and the checks then name the top cell, which no longer matches the file name.
 set -euo pipefail
 : "${PDK:?}" "${PDKPATH:?}" "${EZ130_DIR:?}" "${DECAPHV_DIR:?}"
 name=${1:?usage: scripts/submission.sh <IHP project name>}
-out=${OUT:-release/v.1.2.0/gds}
+out=${OUT:-release/v.1.2.1/gds}
 rec=${REC:-verification/submission}
 src=layout/sg13cmos5l_dsa1_dig_top_logo_fill.gds.gz
 top=sg13cmos5l_dsa1_dig_top_logo_fill      # the chip with logo and fill
-signed=872f29b28253c9d28f666a7a5c80b096    # doc/signoff.md, v1.2.0
+signed=fb4d07f6471df30a646b7ba8c4a1c9b0    # doc/signoff.md, v1.2.1
 gds=$out/$name.gds.gz
 
 mkdir -p "$out" "$rec"

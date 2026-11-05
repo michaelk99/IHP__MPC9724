@@ -16,7 +16,7 @@ Pad map, from rtl/sg13cmos5l_dsa1_dig_core.sv:
   output_PAD[1]    adc_conv, one clk cycle wide at the 512 Hz output rate, gated by ADC_CONV_EN
   analog_PAD[2:0]  vi, vcm, ibias_test
   dsm_clk_PAD      dsm2 clock, the inverted clk when DEC_SRC is used. Inout: dsm2 drives it from its oscillator when DSM_SPARE bit 8 (di_clk_sel) is set
-  do_q_PAD         dsm2 bit, high only with DSM_QOUT_EN
+  do_q_PAD         dsm2 bit from reset on, held low by writing DSM_QOUT_EN 1
   do_q_b_PAD       its complement
   no test pads, VDDA is a supply
 
@@ -41,6 +41,7 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import Timer, RisingEdge, FallingEdge, ClockCycles
 from cocotb.types import LogicArray
+from cocotb.utils import get_sim_time
 from cocotb_tools.runner import get_results, get_runner
 
 sim      = os.getenv("SIM", "icarus")
@@ -453,6 +454,8 @@ DSM_RST_B   = 1 << B1["DSM_RST_B"]["lsb"]
 DEC_SRC     = 1 << B1["DEC_SRC"]["lsb"]
 DSM_QOUT_EN = 1 << B1["DSM_QOUT_EN"]["lsb"]
 ADC_CONV_EN = 1 << B1["ADC_CONV_EN"]["lsb"]
+# Inverted at chip level, so dsm2 runs from reset: writing 1 turns each off
+INVERTED    = ("DSM_EN", "DSM_RST_B", "DSM_QOUT_EN")
 
 
 def pad_bit(dut, name):
@@ -495,45 +498,74 @@ def core_cell(dut, name):
 
 
 @cocotb.test()
-async def test_dsm_quiet_with_dec_src_low(dut):
-    """After reset the do_q pads are low. With dsm2 running and DEC_SRC low the gate output stays 0."""
-    pads = await bringup(dut)
+async def test_dsm2_on_after_reset(dut):
+    """No SPI write: dsm2 is enabled and its pads driven from reset, di_rst_b rises 9 to 10 clk periods after rst_n.
+    With DEC_SRC low the gate output stays 0 while dsm2 runs."""
+    await enable_power(dut)
+    pads = Pads(dut)
+    dut.rst_n_PAD.value = 0
+    cocotb.start_soon(Clock(dut.clk_PAD, CLK_PERIOD_NS, units="ns").start())
+    cocotb.start_soon(sclk_run(dut, pads))
     cocotb.start_soon(dsm_clock(dut))
+    await ClockCycles(dut.clk_PAD, 10)
+    d = dut.dsm2
+    assert (int(d.di_ena.value), int(d.di_qout_en.value), int(d.di_rst_b.value)) == (1, 1, 0)
+    await FallingEdge(dut.clk_PAD)
+    await Timer(CLK_PERIOD_NS / 4, units="ns")
+    dut.rst_n_PAD.value = 1
+    t0 = get_sim_time(units="ns")
+    while int(d.di_rst_b.value) == 0:
+        await Timer(1, units="ns")
+        assert get_sim_time(units="ns") - t0 <= 10 * CLK_PERIOD_NS, "di_rst_b never rose"
+    dt = get_sim_time(units="ns") - t0
+    assert 9 * CLK_PERIOD_NS <= dt <= 10 * CLK_PERIOD_NS, f"di_rst_b rose {dt} ns after rst_n"
     gate = core_cell(dut, "u_dec_src_gate")
-    for _ in range(20):
-        await RisingEdge(dut.clk_PAD)
-        assert pad_bit(dut, "do_q_PAD") == 0 and pad_bit(dut, "do_q_b_PAD") == 0
-        assert int(gate.Y.value) == 0
-    await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN | DSM_EN | DSM_RST_B)
-    seen = set()
-    for _ in range(64):
-        await RisingEdge(dut.clk_PAD)
-        seen.add(pad_bit(dut, "do_q_PAD"))
-        assert int(gate.Y.value) == 0
-        v = dut.dsm2.do_q_dec.value
-        if v.is_resolvable:
-            seen.add(("dec", int(v)))
-    assert ("dec", 0) in seen and ("dec", 1) in seen, "dsm2's do_q_dec must toggle while the gate holds 0"
-    assert seen - {("dec", 0), ("dec", 1)} == {0}, "the pads must stay quiet with DSM_QOUT_EN low"
-
-
-@cocotb.test()
-async def test_qout_en_switches_the_pads(dut):
-    """DSM_QOUT_EN: the pads follow the stream, and stop again when it is cleared."""
-    pads = await bringup(dut)
-    cocotb.start_soon(dsm_clock(dut))
-    await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN | DSM_EN | DSM_RST_B | DSM_QOUT_EN)
     seen = set()
     for _ in range(64):
         await RisingEdge(dut.clk_PAD)
         q, qb = pad_bit(dut, "do_q_PAD"), pad_bit(dut, "do_q_b_PAD")
-        assert q is not None and qb == 1 - q
+        assert q is not None and qb == 1 - q, "do_q and do_q_b must be complementary"
+        assert int(gate.Y.value) == 0
+        assert (int(d.di_ena.value), int(d.di_qout_en.value), int(d.di_rst_b.value)) == (1, 1, 1)
         seen.add(q)
-    assert seen == {0, 1}
-    await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN | DSM_EN | DSM_RST_B)
-    for _ in range(20):
+    assert seen == {0, 1}, "the do_q pad must follow the bit stream"
+
+
+@cocotb.test()
+async def test_writing_one_turns_dsm2_off(dut):
+    """DSM_EN, DSM_RST_B and DSM_QOUT_EN: writing 1 turns each function off, 0 brings it back."""
+    pads = await bringup(dut)
+    cocotb.start_soon(dsm_clock(dut))
+    await ClockCycles(dut.clk_PAD, 10)
+    d = dut.dsm2
+
+    async def stream(n=64):
+        q, dec = set(), set()
+        await ClockCycles(dut.clk_PAD, 2)
+        for _ in range(n):
+            await RisingEdge(dut.clk_PAD)
+            q.add(pad_bit(dut, "do_q_PAD"))
+            dec.add(int(d.do_q_dec.value))
+        return q, dec
+
+    await reg_write(dut, pads, BIAS_CFG_1, ADC_CONV_EN | DSM_QOUT_EN)
+    assert int(d.di_qout_en.value) == 0 and int(d.di_ena.value) == 1 and int(d.di_rst_b.value) == 1
+    q, dec = await stream()
+    assert q == {0} and dec == {0, 1}, "DSM_QOUT_EN 1 holds the pads low, dsm2 keeps running"
+    for _ in range(4):
         await RisingEdge(dut.clk_PAD)
-        assert pad_bit(dut, "do_q_PAD") == 0 and pad_bit(dut, "do_q_b_PAD") == 0
+        assert pad_bit(dut, "do_q_b_PAD") == 0
+    await reg_write(dut, pads, BIAS_CFG_1, ADC_CONV_EN | DSM_RST_B)
+    assert int(d.di_rst_b.value) == 0 and int(d.di_ena.value) == 1
+    q, dec = await stream()
+    assert q == {0} and dec == {0}, "DSM_RST_B 1 holds dsm2 in reset"
+    await reg_write(dut, pads, BIAS_CFG_1, ADC_CONV_EN | DSM_EN)
+    assert int(d.di_ena.value) == 0
+    q, dec = await stream()
+    assert q == {0} and dec == {0}, "DSM_EN 1 switches dsm2 off"
+    await reg_write(dut, pads, BIAS_CFG_1, ADC_CONV_EN)
+    q, dec = await stream()
+    assert q == {0, 1} and dec == {0, 1}, "writing 0 brings dsm2 and the pads back"
 
 
 @cocotb.test()
@@ -565,20 +597,21 @@ async def test_bias_cfg_reaches_dsm2(dut):
         await ClockCycles(dut.clk_PAD, 2)
         want = 0 if k - lsb0 == 9 else 1 << (k - lsb0)
         assert cfg0_pins() == want, f"BIAS_CFG_0 bit {k} gives dsm2 pins {cfg0_pins():09b}"
-        assert cfg1_pins() == {n: int(n == "ADC_CONV_EN") for n in cfg1_names}
+        assert cfg1_pins() == {n: int(n == "ADC_CONV_EN") ^ (n in INVERTED) for n in cfg1_names}
 
     await reg_write(dut, pads, A["BIAS_CFG_0"], 0)
     for name in cfg1_names:
         await reg_write(dut, pads, A["BIAS_CFG_1"], 1 << B1[name]["lsb"])
         await ClockCycles(dut.clk_PAD, 2)
-        assert cfg1_pins() == {n: int(n == name) for n in cfg1_names}, f"{name} moved {cfg1_pins()}"
+        assert cfg1_pins() == {n: int(n == name) ^ (n in INVERTED) for n in cfg1_names}, f"{name} moved {cfg1_pins()}"
         assert cfg0_pins() == 0
     await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN)
 
 
 @cocotb.test()
 async def test_oscillator_drives_dsm_clk(dut):
-    """After reset dsm_clk is an input. With di_osc_en and di_clk_sel set dsm2 drives it, once the board has let go."""
+    """After reset dsm_clk is an input. With di_osc_en and di_clk_sel set dsm2 drives it, once the board has let go.
+    The ring runs only with di_ena, so the bits are set with dsm2 off and in reset, then dsm2 is switched on."""
     pads = await bringup(dut)
     board = cocotb.start_soon(dsm_clock(dut))
     await ClockCycles(dut.clk_PAD, 4)
@@ -591,9 +624,15 @@ async def test_oscillator_drives_dsm_clk(dut):
     cfg0 = regmap.RESET[BIAS_CFG_0]
     board.kill()
     dut.dsm_clk_PAD.value = LogicArray("Z")
+    await reg_write(dut, pads, BIAS_CFG_1, ADC_CONV_EN | DSM_EN | DSM_RST_B)
     await reg_write(dut, pads, BIAS_CFG_0, cfg0 | osc_en | clk_sel)
     await Timer(2, units="us")
     assert int(dut.dsm2.do_osc_oe.value) == 1
+    for _ in range(400):     # 10 us
+        await Timer(25, units="ns")
+        assert pad_bit(dut, "dsm_clk_PAD") == 0, "with di_ena low the ring must not run, dsm2 drives the pad low"
+    await reg_write(dut, pads, BIAS_CFG_1, ADC_CONV_EN)
+    await Timer(2, units="us")
     rises, last = 0, 0
     for _ in range(800):     # 20 us
         await Timer(25, units="ns")
@@ -613,12 +652,12 @@ async def test_dec_src_decimates_dsm2_bit_exact(dut):
     """DEC_SRC high, pads quiet: the decimator reads do_q_dec, word for word what the model gives."""
     pads = await bringup(dut)
     cocotb.start_soon(dsm_clock(dut))
-    await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN | DSM_EN | DSM_RST_B | DEC_SRC)
+    await reg_write(dut, pads, A["BIAS_CFG_1"], ADC_CONV_EN | DSM_QOUT_EN | DEC_SRC)
     words = []
     for _ in range(70):
         await wait_conversion(dut)
         words.append(await read_adc_word(dut, pads))
-        assert pad_bit(dut, "do_q_PAD") == 0, "the pads must stay quiet with DSM_QOUT_EN low"
+        assert pad_bit(dut, "do_q_PAD") == 0, "the pads must stay quiet with DSM_QOUT_EN 1"
     # The stream starts at an unknown decimation phase p, and the filter forgets its history after about
     # 32 words, so words 40 to 69 must appear in the model for one p and one lag.
     bits = prbs15(128 * 100)
@@ -643,15 +682,15 @@ async def test_adc_conv_en_holds_the_pad(dut):
 
 @cocotb.test()
 async def test_dsa1_profile_then_reset_value_restores_data_in(dut):
-    """The DSA1 bias resets here set DEC_SRC with dsm2 off and clear ADC_CONV_EN: the decimator reads
-    dsm2's do_q_dec, which is low while dsm2 is off. Writing the reset value back brings data_in and the strobe back."""
+    """The DSA1 bias resets here set DEC_SRC and clear ADC_CONV_EN, with dsm2 on. dsm_clk is not driven, so dsm2's
+    do_q_dec stays low and the decimator reads -full scale. Writing the reset value back brings data_in and the strobe back."""
     pads = await bringup(dut)
     pads.data_in(1)
     await reg_write(dut, pads, A["BIAS_CFG_0"], 0x90EA)
     await reg_write(dut, pads, A["BIAS_CFG_1"], 0xD02C)
     await ClockCycles(dut.clk_PAD, 40 * 128)      # no strobe on the pad now
     low = await read_adc_word(dut, pads)
-    assert abs(low + FULL_SCALE) < FULL_SCALE // 50, f"DEC_SRC with dsm2 off (do_q_dec low) should read -full scale, got {low}"
+    assert abs(low + FULL_SCALE) < FULL_SCALE // 50, f"DEC_SRC with dsm2 unclocked (do_q_dec low) should read -full scale, got {low}"
     await reg_write(dut, pads, A["BIAS_CFG_1"], regmap.RESET[A["BIAS_CFG_1"]])
     for _ in range(40):
         await wait_conversion(dut)

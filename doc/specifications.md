@@ -43,7 +43,7 @@ than a hardcoded list, because three of the template's six do not exist here.
 | `dsa1_dig_top` | hard macro, 409.08 x 514.08 um | the DSA1 back end, 33.61 pF of DECAPHV on VDD inside |
 | `dsm2_core` | hard macro, 150.5 x 178 um | first-order DT delta-sigma modulator, dsm2's oscillator variant of 2026-11-02 |
 | `decap_vdda` | hard macro, 150.36 x 349.44 um | 67.61 pF of DECAPHV on VDDA, north of dsm2 |
-| VDD decap strips | DECAPHV in the chip rows, 11 rows below and 11 above `dsa1_dig` | 49.08 pF, so VDD has 82.69 pF in all |
+| VDD decap strips | DECAPHV in the chip rows, 11 rows below and 11 above `dsa1_dig` | 48.60 pF, so VDD has 82.21 pF in all |
 | bitstream synchronizer | 3 flops and a mux at chip level | `DEC_SRC` picks the `data_in` pad or dsm2's `do_q_dec` |
 | glue gates | two EZ130 `AND2X1` | `do_q_dec` with `DEC_SRC`, `adc_conv` with `ADC_CONV_EN` |
 | `sg13cmos5l_ip__clamp_vddvss` | two ESD clamp cells | one on VDD, one on VDDA |
@@ -54,26 +54,26 @@ The template's counters, inverters and SRAM are not on this die. The standard ce
 
 ## dsm2_core
 
-`dsm2_core` is a test and side project on the die. DSA1 stays the main project: the back end runs exactly as in v1.1.1 with dsm2 off, VDD carries the DSA1 filter alone, and nothing that switches with dsm2 sits on VDD. The design is in [dsm2_integration.md](dsm2_integration.md).
+`dsm2_core` is a test and side project on the die. DSA1 stays the main project: the back end runs exactly as in v1.1.1 whether dsm2 runs or not, VDD carries the DSA1 filter alone, and nothing that switches with dsm2 sits on VDD. The design is in [dsm2_integration.md](dsm2_integration.md).
 
 | | |
 |---|---|
 | Supply | VDDA 1.5 V (1.45 to 1.55 V), always on. VSS is shared. VDDA is also the DAC reference |
 | Clock | `di_clk` from the `dsm_clk` pad, fs 1.024 MHz, OSR 512, 1 kHz band. Or its own oscillator (`di_osc_en`, about 0.65 MHz extracted and 0.8 MHz schematic at trim 4), selected by `di_clk_sel`, which also makes dsm2 drive the `dsm_clk` pad |
 | Inputs | `vi` single ended, full scale +-0.75 V around VDDA/2. `vcm` is VDDA/2 from dsm2's `vcm_gen`, an input with `DSM_VCM_EXT`. Control inputs static, from `BIAS_CFG_0` and `BIAS_CFG_1` |
-| Outputs | `do_q`, `do_q_b` at 1.5 V to their pads in the VDDA segment, gated by `DSM_QOUT_EN`. `do_clk_osc` and `do_osc_oe` at 1.5 V to the inout `dsm_clk` pad. `do_q_dec`, the same bit ungated, into one gate in the core. `ibias_test`, a current copy of the bias, to its pad |
-| Bias | `DSM_TRIM` code c gives 8.33 nA x (16 + 2 c), reset code 4 is 200 nA. Change it only with `DSM_EN` low |
-| Start-up | `DSM_EN` high, wait 130 us, then `DSM_RST_B` high. Discard the first decimator word after that: the integrator needs about 17 clocks to leave saturation |
+| Outputs | `do_q`, `do_q_b` at 1.5 V to their pads in the VDDA segment, which drive at IOVDD, on from reset, held low by `DSM_QOUT_EN` 1. `do_clk_osc` and `do_osc_oe` at 1.5 V to the inout `dsm_clk` pad. `do_q_dec`, the same bit ungated, into one gate in the core. `ibias_test`, a current copy of the bias, to its pad |
+| Bias | `DSM_TRIM` code c gives 8.33 nA x (16 + 2 c), reset code 4 is 200 nA. Change it only with dsm2 off, `DSM_EN` 1 |
+| Start-up | From reset, with no SPI write: dsm2 is on while `rst_n` is low and leaves reset 9 to 10 `clk` periods (137 to 153 us) after `rst_n` rises, dsm2 needs 130 us. After an SPI restart, `DSM_EN` 0, wait 130 us, then `DSM_RST_B` 0. Discard about 40 decimator words after the reset release: the integrator needs about 17 clocks to leave saturation, and the filter holds about 32 words |
 | Size | 150.5 x 178 um on the die |
 | VDDA current | dsm2's design values for the oscillator variant at ff 1.55 V 125 C: 32 uA average, 220 uA over 100 ns, 600 uA over 10 ns. Its simulation of the variant at that corner: 29.0 uA running, 215.3 uA over 100 ns and 546.4 uA over 10 ns at the first clock after `di_ena` |
 
 | State | VDD | IOVDD | VDDA | `dsm_clk` |
 |---|---|---|---|---|
-| DSA1 | on | on | 1.5 V | low or running, dsm2 off (`DSM_EN` 0), its pads static (`DSM_QOUT_EN` 0) |
-| dsm2 | on | on | 1.5 V | 1.024 MHz, after `DSM_EN`, 130 us, `DSM_RST_B`, then `DSM_QOUT_EN` for the pads or `DEC_SRC` for the decimator |
-| dsm2 on its oscillator | on | on | 1.5 V | driven by dsm2: the board lets go, then `di_osc_en` and `di_clk_sel` (`BIAS_CFG_0` bits 7 and 8) |
+| DSA1 | on | on | 1.5 V | low or running, dsm2 off (`DSM_EN` 1), its pads static (`DSM_QOUT_EN` 1) |
+| dsm2, the reset state | on | on | 1.5 V | 1.024 MHz, dsm2 on and its pads driving from reset. `DEC_SRC` for the decimator |
+| dsm2 on its oscillator | on | on | 1.5 V | driven by dsm2: the board lets go, `DSM_EN` and `DSM_RST_B` written 1, then `di_osc_en` and `di_clk_sel` (`BIAS_CFG_0` bits 7 and 8), then `DSM_EN` 0, 130 us, `DSM_RST_B` 0 |
 
-The registers that reach dsm2 are `BIAS_CFG_0` (`DSM_TRIM`, `DSM_DITH_EN`, `DSM_DITH_AMP`, and bits 7 and 8 of `DSM_SPARE` as `di_osc_en` and `di_clk_sel`) and `BIAS_CFG_1` (`DSM_EN`, `DSM_RST_B`, `DEC_SRC`, `DSM_BTEST_EN`, `DSM_VCM_EXT`, `DSM_QOUT_EN`, `ADC_CONV_EN`), see [regmap.md](regmap.md). After reset dsm2 is off and in reset, its oscillator is off, `dsm_clk` is an input, its pads are static and the decimator reads the `data_in` pad.
+The registers that reach dsm2 are `BIAS_CFG_0` (`DSM_TRIM`, `DSM_DITH_EN`, `DSM_DITH_AMP`, and bits 7 and 8 of `DSM_SPARE` as `di_osc_en` and `di_clk_sel`) and `BIAS_CFG_1` (`DSM_EN`, `DSM_RST_B`, `DEC_SRC`, `DSM_BTEST_EN`, `DSM_VCM_EXT`, `DSM_QOUT_EN`, `ADC_CONV_EN`), see [regmap.md](regmap.md). `DSM_EN`, `DSM_RST_B` and `DSM_QOUT_EN` are inverted at chip level: 0, their reset value, means on, released and driving. After reset dsm2 is on, its reset is released by a 9 `clk` period counter, its pads follow the bit stream, its oscillator is off, `dsm_clk` is an input and the decimator reads the `data_in` pad. `DSM_DITH_EN` stays off, dsm2's dither LFSR can stick otherwise.
 
 With `DEC_SRC` set the decimator reads `do_q_dec` through the gate. The decimator samples on `clk`, dsm2 changes `do_q_dec` on the rising `dsm_clk`, so this path needs `clk` to be the inverted `dsm_clk` from one source. Each bit is then read about 488 ns from either edge. It gives 8 kHz words and suits DC and spot reads over SPI. The full-rate stream is the `do_q` pad.
 

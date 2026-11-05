@@ -37,8 +37,8 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_startup import (CORE_INPUTS, FRAMES, HOST_PINS, ORDERS, P_WINDOW, POWER_ORDERS, RAMP,  # noqa: E402
-                         T_DSM, T_DSM_ON, T_FIRST, T_SCLK, T_SECOND, T_STORE, dsm2_times, frames, t_dsm_clk)
+from gen_startup import (CORE_INPUTS, DEFON, FRAMES, HOST_PINS, ORDERS, P_WINDOW, POWER_ORDERS, RAMP,  # noqa: E402
+                         T_CLK, T_DSM, T_DSM_ON, T_FIRST, T_RST, T_SCLK, T_SECOND, T_STORE, dsm2_times, frames, t_dsm_clk)
 
 I_MAX = 10e-3
 T_SUSTAINED = 1e-6
@@ -108,7 +108,8 @@ def check(w, order, dsm2=None):
     of dsm2 as transistors: the quiet check then ends when DSM_QOUT_EN is written and check_dsm2 runs."""
     t = w["time"]
     notes, ok = [], True
-    t_quiet = dsm2_times(order)[1] if dsm2 else np.inf
+    # with DEFON di_qout_en is high from VDD up, so the pads may follow dsm2 from then on
+    t_quiet = dsm2_times(order)[0 if DEFON else 1] if dsm2 else np.inf
     for t0, addr, name, want, _ in FRAMES:
         word = read_word(w, t0, pad(0), "v(iovdd)")
         good = word == want
@@ -132,7 +133,7 @@ def check(w, order, dsm2=None):
                          f"VDDA {at(w, 'v(vdda)', t[k]):.2f} V, VDD {at(w, 'v(vdd)', t[k]):.2f} V")
         else:
             notes.append(f"{p[2:-5]} pad stays below {SPIKE_V} V, highest {x[k]:.3f} V"
-                         + (f", until DSM_QOUT_EN at {t_quiet * 1e6:.1f} us" if dsm2 else ""))
+                         + (f", until {'di_qout_en' if DEFON else 'DSM_QOUT_EN'} at {t_quiet * 1e6:.1f} us" if dsm2 else ""))
 
     for sup, src in SUPPLIES:
         if f"i({src})" not in w:
@@ -207,10 +208,21 @@ def check_dsm2(w, order, pm):
     t_on = first_cross(w, pm["di_ena"].lower(), half)
     t_run = first_cross(w, pm["di_rst_b"].lower(), half)
     t_qoe = first_cross(w, pm["di_qout_en"].lower(), half)
-    good = all(x is not None for x in (t_on, t_run, t_qoe)) and abs(t_on - on) < 1e-6 and abs(t_run - run) < 1e-6 and abs(t_qoe - run) < 1e-6
-    ok &= good
     fmt = lambda x: "never" if x is None else f"{x * 1e6:.2f} us"
-    notes.append(f"dsm2 start-up: di_ena rises at {fmt(t_on)}, di_rst_b at {fmt(t_run)}, di_qout_en at {fmt(t_qoe)}, the writes take effect at "
+    if DEFON:
+        # no SPI write: di_ena and di_qout_en high before rst_n and staying high, di_rst_b 9 to 10 clk periods after rst_n
+        stay = lambda n, t0: t0 is not None and float(np.min(w[pm[n].lower()][t > t0 + 5e-6])) > half
+        good = (stay("di_ena", t_on) and stay("di_qout_en", t_qoe) and t_on < T_RST and t_qoe < T_RST and t_run is not None
+                and T_RST + 9 * T_CLK <= t_run <= T_RST + 10 * T_CLK + 1e-6 and stay("di_rst_b", t_run))
+        ok &= good
+        notes.append(f"dsm2 on by default, no SPI write: di_ena rises at {fmt(t_on)}, di_qout_en at {fmt(t_qoe)}, both before rst_n at "
+                     f"{T_RST * 1e6:.0f} us and staying high, di_rst_b at {fmt(t_run)}"
+                     + (f", {(t_run - T_RST) * 1e6:.2f} us after rst_n" if t_run is not None else "")
+                     + f" (want {9 * T_CLK * 1e6:.1f} to {10 * T_CLK * 1e6:.1f}), {'pass' if good else 'FAIL'}")
+    good = DEFON or (all(x is not None for x in (t_on, t_run, t_qoe)) and abs(t_on - on) < 1e-6 and abs(t_run - run) < 1e-6 and abs(t_qoe - run) < 1e-6)
+    ok &= good
+    if not DEFON:
+        notes.append(f"dsm2 start-up: di_ena rises at {fmt(t_on)}, di_rst_b at {fmt(t_run)}, di_qout_en at {fmt(t_qoe)}, the writes take effect at "
                  f"{on * 1e6:.2f} and {run * 1e6:.2f} us" + (f", {(t_run - t_on) * 1e6:.2f} us apart" if good else "") + f", {'pass' if good else 'FAIL'}")
     # its own current: off, enabled in reset, running, and the peaks from DSM_EN on
     i_off = tmean(w, I_DSM2, on - 20e-6, on - 2e-6)
@@ -256,7 +268,10 @@ def check_dsm2(w, order, pm):
                  f"{DENSITY[1] * 100:.0f} %), do_q_b its complement in {comp * 100:.1f} %, do_q_dec equal to do_q in {dec * 100:.1f} % "
                  f"(want {AGREE * 100:.0f} %), {'pass' if good else 'FAIL'}")
     # the VDD current does not move when dsm2 starts: before DSM_EN against dsm2 running, both windows free of frames
-    if order != "bounce":
+    if DEFON:
+        notes.append("VDD current against dsm2 not checked: with dsm2 on from VDD up there is no window before it. power_dsm and the "
+                     "v1.2.0 start-up orders check it, the core change is VDD logic only")
+    elif order != "bounce":
         last = max(f[0] for f in frames(order, True) if f[0] < on - T_STORE) + 24 * T_SCLK
         a0, a1 = last + 2e-6, on - T_STORE - 2e-6
         v_off, v_run = -tmean(w, "i(vvdd)", a0, a1), -tmean(w, "i(vvdd)", run + T_SETTLE, t1)
@@ -291,6 +306,8 @@ def check_dsm2(w, order, pm):
             k = int(np.argmin(x))
             notes.append(f"{sup} off ({a * 1e6:.0f} to {b * 1e6:.0f} us): {-tmean(w, f'i({src})', a, b) * 1e6:+.3f} uA mean out of its source, "
                          f"{x[k] * 1e6:+.3f} uA at {t[sel][k] * 1e6:.1f} us at the most negative, negative is the chip back-powering it")
+    if DEFON:
+        notes = [n.replace("DSM_EN", "di_ena").replace("DSM_RST_B", "di_rst_b") for n in notes]
     return ok, notes
 
 
@@ -808,6 +825,19 @@ def self_test():
         open(os.path.join(d, "p.rpt"), "w").write("Total 1.1e-06 7.3e-07 1.1e-06 3.2e-06 100.0%\n")
         ok, note = core_power(os.path.join(d, "p.rpt"))
         assert not ok and "OVER" in note, note
+    # STARTUP_DEFON: dsm2 on from VDD up with no write passes, di_rst_b one clk period early fails
+    import gen_startup
+    global DEFON
+    DEFON = gen_startup.DEFON = True
+    try:
+        w = synth_dsm2()
+        w["v(xchip.qoe)"] = w["v(xchip.ena)"]
+        ok, notes = check_dsm2(w, "core_first", SYN_PM)
+        assert ok and any(n.startswith("dsm2 on by default") and n.endswith("pass") for n in notes), notes
+        w["v(xchip.rstb)"] = 1.2 * (w["time"] > dsm2_times("core_first")[1] - T_CLK)
+        assert not check_dsm2(w, "core_first", SYN_PM)[0], "di_rst_b one clk period early passed"
+    finally:
+        DEFON = gen_startup.DEFON = False
     print("OK: startup_check self-test")
     return 0
 

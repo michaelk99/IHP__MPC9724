@@ -78,7 +78,7 @@ registers:
       - {name: DSM_DITH_AMP, bits: "6:5", reset: 0x1, used: [cmos5l], only: cmos5l, desc: "dsm2 di_dith_amp, quantizer dither amplitude"}
       - {name: DSM_DITH_EN, bits: "4", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_dith_en, quantizer dither on"}
       - {name: DSM_TRIM, bits: "3:0", reset: 0x4, used: [cmos5l], only: cmos5l,
-         desc: "dsm2 di_trim, bias 8.33 nA x (16 + 2 x code), 4 is 200 nA. Change only with DSM_EN low"}
+         desc: "dsm2 di_trim, bias 8.33 nA x (16 + 2 x code), 4 is 200 nA. Change only with dsm2 off, DSM_EN 1"}
 
   - name: BIAS_CFG_1
     offset: 3
@@ -91,13 +91,13 @@ registers:
       - {name: OTA4_CFG, bits: "3:0", reset: 0xC, used: [dsa1], only: dsa1}
       - {name: NA, bits: "15:7", reset: 0x0, reserved: true, only: cmos5l}
       - {name: ADC_CONV_EN, bits: "6", reset: 1, used: [cmos5l], only: cmos5l, desc: "The adc_conv pad, 0 holds it low for a quiet power measurement"}
-      - {name: DSM_QOUT_EN, bits: "5", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_qout_en, the do_q and do_q_b pads follow the bit stream"}
+      - {name: DSM_QOUT_EN, bits: "5", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_qout_en, inverted on this chip: 0 (reset) the do_q and do_q_b pads follow the bit stream, 1 holds them low"}
       - {name: DSM_VCM_EXT, bits: "4", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_vcm_ext, vcm_gen off, the vcm pad sets vcm"}
       - {name: DSM_BTEST_EN, bits: "3", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_btest_en, ibias_test onto its pad"}
       - {name: DEC_SRC, bits: "2", reset: 0, used: [cmos5l], only: cmos5l,
-         desc: "Decimator input, 0 the data_in pad, 1 dsm2 do_q. With 1 clk must be the inverted dsm_clk from one source"}
-      - {name: DSM_RST_B, bits: "1", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_rst_b, release 130 us after DSM_EN"}
-      - {name: DSM_EN, bits: "0", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_ena"}
+         desc: "Decimator input, 0 the data_in pad, 1 dsm2 do_q_dec, which DSM_QOUT_EN does not gate. With 1 clk must be the inverted dsm_clk from one source"}
+      - {name: DSM_RST_B, bits: "1", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_rst_b, inverted on this chip: 0 (reset) releases dsm2 9 to 10 clk periods (137 to 153 us) after rst_n, 1 holds it in reset. Write 0 at least 130 us after dsm2 is switched on"}
+      - {name: DSM_EN, bits: "0", reset: 0, used: [cmos5l], only: cmos5l, desc: "dsm2 di_ena, inverted on this chip: 0 (reset) dsm2 on, 1 off"}
 
   - name: BIAS_CFG_2
     offset: 4
@@ -160,7 +160,7 @@ registers:
 
   - name: TEST_CTRL_0
     offset: 9
-    drives: o_tst_ctrl, on the pads of this chip, and the stimulus and flag synchronizer inside
+    drives: o_tst_ctrl, which no pad of this chip carries, and the stimulus and flag synchronizer inside
     desc: >-
       Test control. 15:11 are this chip's decimator stimulus. Enable and trigger are separate on
       purpose: the decimator holds about 32 output samples of history, so enable first, let the

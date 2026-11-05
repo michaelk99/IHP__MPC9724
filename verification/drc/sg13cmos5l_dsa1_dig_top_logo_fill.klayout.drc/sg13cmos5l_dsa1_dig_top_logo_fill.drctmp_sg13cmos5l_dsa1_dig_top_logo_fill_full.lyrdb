@@ -8,12 +8,6 @@
  </tags>
  <categories>
   <category>
-   <name>LU.b</name>
-   <description>7.2. LU.b : Max. space from any portion of N+Activ inside PWell to an pSD-PWell tie is 20.0 um</description>
-   <categories>
-   </categories>
-  </category>
- <category>
    <name>AFil.c1</name>
    <description>5.6. AFil.c1 Min. Activ:filler space to Activ is 0.42 um</description>
    <categories>
@@ -34,6 +28,12 @@
   <category>
    <name>AFil.j</name>
    <description>5.6. AFil.j Min. nSD:block and SalBlock enclosure of Activ:filler inside PWell:block is 0.25 um</description>
+   <categories>
+   </categories>
+  </category>
+ <category>
+   <name>LU.b</name>
+   <description>7.2. LU.b : Max. space from any portion of N+Activ inside PWell to an pSD-PWell tie is 20.0 um</description>
    <categories>
    </categories>
   </category>
@@ -62,12 +62,6 @@
    </categories>
   </category>
  <category>
-   <name>pSD.c1</name>
-   <description>5.10. pSD.c1 Min. pSD enclosure of P+Activ in PWell is 0.03 um</description>
-   <categories>
-   </categories>
-  </category>
- <category>
    <name>GFil.d</name>
    <description>5.9. GFil.d : Min. GatPoly:filler space to Activ, GatPoly, Cont, pSD, nSD:block, SalBlock is 1.1 um</description>
    <categories>
@@ -82,6 +76,12 @@
   <category>
    <name>GFil.i</name>
    <description>5.9. GFil.i Max. GatPoly:nofill area (um^2) is 400.0 um x 400.0 um</description>
+   <categories>
+   </categories>
+  </category>
+ <category>
+   <name>pSD.c1</name>
+   <description>5.10. pSD.c1 Min. pSD enclosure of P+Activ in PWell is 0.03 um</description>
    <categories>
    </categories>
   </category>
@@ -130,12 +130,6 @@
   <category>
    <name>Gat.g</name>
    <description>5.8. Gat.g Min. GatPoly width for 45-degree bent shapes if the bend GatPoly,length is &gt; 0.39 µm is 0.16 um</description>
-   <categories>
-   </categories>
-  </category>
- <category>
-   <name>TGO.f</name>
-   <description>5.7. TGO.f : Min. ThickGateOx width: 0.86 µm</description>
    <categories>
    </categories>
   </category>
@@ -194,14 +188,8 @@
    </categories>
   </category>
  <category>
-   <name>CntB.b1</name>
-   <description>5.15. CntB.b1 Min. ContBar space with common run &gt; 5.0 um is 0.36 um</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>CntB.h1</name>
-   <description>5.15. CntB.h1 Min. Metal1 enclosure of ContBar is 0.05 um</description>
+   <name>TGO.f</name>
+   <description>5.7. TGO.f : Min. ThickGateOx width: 0.86 µm</description>
    <categories>
    </categories>
   </category>
@@ -220,6 +208,18 @@
   <category>
    <name>Pas.c</name>
    <description>5.27. Pas.c : Min. TopMetal1 enclosure of Passiv [Not checked outside of sealring (edge-seal-passive)] is 2.1 um </description>
+   <categories>
+   </categories>
+  </category>
+ <category>
+   <name>CntB.b1</name>
+   <description>5.15. CntB.b1 Min. ContBar space with common run &gt; 5.0 um is 0.36 um</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>CntB.h1</name>
+   <description>5.15. CntB.h1 Min. Metal1 enclosure of ContBar is 0.05 um</description>
    <categories>
    </categories>
   </category>
@@ -788,6 +788,42 @@
    </categories>
   </category>
  <category>
+   <name>M1.a</name>
+   <description>5.16. M1.a: Min. Metal1 width: 0.16 μm.</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>M1.b</name>
+   <description>5.16. M1.b: Min. Metal1 (drawing + filler) space or notch: 0.18 μm.</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>M1.e</name>
+   <description>5.16. M1.e Min. space of Metal1 lines if, at least one line is wider than 0.3 µm and the parallel run is more than 1.0 µm is 0.22 um</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>M1.f</name>
+   <description>5.16. M1.f Min. space of Metal1 lines if, at least one line is wider than 10.0 µm and the parallel run is more than 10.0 µm is 0.6 um</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>M1.g</name>
+   <description>5.16. M1.g Min. 45-degree bent Metal1 width if the bent metal length is &gt; 0.5 µm is 0.2 um</description>
+   <categories>
+   </categories>
+  </category>
+  <category>
+   <name>M1.i</name>
+   <description>5.16. M1.i Min. space of Metal1 lines of which at least one is bent by 45-degree is 0.22 um</description>
+   <categories>
+   </categories>
+  </category>
+ <category>
    <name>M2.a</name>
    <description>5.17. M2.a: Min. Metal2 width: 0.2 um.</description>
    <categories>
@@ -934,42 +970,6 @@
   <category>
    <name>Pin.g</name>
    <description>Pin.g : 7.4. Pin.g: Min. topmetal1 enclosure of topmetal1:pin = 0um</description>
-   <categories>
-   </categories>
-  </category>
- <category>
-   <name>M1.a</name>
-   <description>5.16. M1.a: Min. Metal1 width: 0.16 μm.</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>M1.b</name>
-   <description>5.16. M1.b: Min. Metal1 (drawing + filler) space or notch: 0.18 μm.</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>M1.e</name>
-   <description>5.16. M1.e Min. space of Metal1 lines if, at least one line is wider than 0.3 µm and the parallel run is more than 1.0 µm is 0.22 um</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>M1.f</name>
-   <description>5.16. M1.f Min. space of Metal1 lines if, at least one line is wider than 10.0 µm and the parallel run is more than 10.0 µm is 0.6 um</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>M1.g</name>
-   <description>5.16. M1.g Min. 45-degree bent Metal1 width if the bent metal length is &gt; 0.5 µm is 0.2 um</description>
-   <categories>
-   </categories>
-  </category>
-  <category>
-   <name>M1.i</name>
-   <description>5.16. M1.i Min. space of Metal1 lines of which at least one is bent by 45-degree is 0.22 um</description>
    <categories>
    </categories>
   </category>

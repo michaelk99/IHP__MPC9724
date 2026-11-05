@@ -113,8 +113,8 @@ sim-slip: ## Negative check: a DUT not on the master's clk_fs must fail the chec
 	@echo "OK: a DUT on its own clock is caught"
 .PHONY: sim-slip
 
-sim-all: sim-unit ## Unit tests, all eight programs, and the slip check
-	@for p in 0 1 2 3 4 5 6 7; do $(MAKE) --no-print-directory sim PROGRAM=$$p || exit 1; done
+sim-all: sim-unit ## Unit tests, all nine programs, and the slip check
+	@for p in 0 1 2 3 4 5 6 7 8; do $(MAKE) --no-print-directory sim PROGRAM=$$p || exit 1; done
 	@$(MAKE) --no-print-directory sim-slip
 .PHONY: sim-all
 

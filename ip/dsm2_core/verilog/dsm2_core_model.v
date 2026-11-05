@@ -28,11 +28,12 @@ module dsm2_core (vdd, vss, vi, vcm, ibias_test, di_clk, di_ena, di_rst_b, di_tr
 	output do_clk_osc;
 	output do_osc_oe;
 
-	// di_clk_sel picks the oscillator as the modulator clock and enables the dsm_clk pad driver
+	// di_clk_sel picks the oscillator as the modulator clock and enables the dsm_clk pad driver.
+	// The ring runs only with di_ena: its current comes from a bias bank that is off without it.
 	reg osc = 1'b0;
 	always begin
 		#625;
-		osc = di_osc_en ? ~osc : 1'b0;
+		osc = (di_osc_en && di_ena) ? ~osc : 1'b0;
 	end
 	assign do_clk_osc = osc;
 	assign do_osc_oe  = di_clk_sel;

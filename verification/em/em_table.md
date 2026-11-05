@@ -18,10 +18,10 @@
 | VDDA | Metal3 | stripe 10.00 um | 4 | 1 | whole net | 20 | 0.05 |
 | IOVDD | none | no routing at chip level | 0 | 1 |  | - | - |
 | IOVSS | none | no routing at chip level | 0 | 1 |  | - | - |
-| *clk_PAD* | Metal2 | wire 0.20 um | 20 | 0.0004 | whole net | 0.4 | 0.001 |
-| *clk_PAD* | Metal3 | wire 0.20 um | 13 | 0.0004 | whole net | 0.4 | 0.001 |
-| *clk_PAD* | Via1 | 1-cut array | 16 | 0.0004 | whole net | 0.4 | 0.001 |
-| *clk_PAD* | Via2 | 1-cut array | 18 | 0.0004 | whole net | 0.4 | 0.001 |
+| *clk_PAD* | Metal2 | wire 0.20 um | 26 | 0.0004 | whole net | 0.4 | 0.001 |
+| *clk_PAD* | Metal3 | wire 0.20 um | 19 | 0.0004 | whole net | 0.4 | 0.001 |
+| *clk_PAD* | Via1 | 1-cut array | 20 | 0.0004 | whole net | 0.4 | 0.001 |
+| *clk_PAD* | Via2 | 1-cut array | 21 | 0.0004 | whole net | 0.4 | 0.001 |
 | i_sg13cmos5l_dsa1_dig_core.miso | Metal2 | wire 0.20 um | 2 | 0.00012 | whole net | 0.4 | 0.0003 |
 | i_sg13cmos5l_dsa1_dig_core.miso | Metal3 | wire 0.20 um | 4 | 0.00012 | whole net | 0.4 | 0.0003 |
 | i_sg13cmos5l_dsa1_dig_core.miso | Via2 | 1-cut array | 5 | 0.00012 | whole net | 0.4 | 0.0003 |

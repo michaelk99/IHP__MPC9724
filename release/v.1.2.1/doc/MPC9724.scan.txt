@@ -1,0 +1,7 @@
+file: release/v.1.2.1/gds/MPC9724.gds.gz
+cells: 295, top: MPC9724, dbu: 0.001 um
+shapes: 80312 paths, 815950 boundaries, 0 boxes
+prBoundary 189/0 in MPC9724: (0, 0) to (1300, 1300) um
+cell names over 32 characters: 14, sg13cmos5l_ip__clamp_vddvss_topvia1, VIA_via3_4_2000_10000_21_4_480_480, VIA_via3_4_1000_320_1_2_410_410$1, VIA_via2_3_1000_320_1_2_410_410$1, VIA_via1_2_1000_320_1_2_410_410$1
+degenerate: 0
+PASS

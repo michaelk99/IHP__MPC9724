@@ -51,7 +51,7 @@ DRIVER = {"adcconv": "AND2X1"}                # the core cell behind an output p
 DECAP = {                  # cell: (count top + macro, C per cell F, corner Hz)
     "DECAPHV8": (339 + 1578, 6.272e-15, 10e9),
     "DECAPHV16": (200 + 575, 30.52e-15, 0.4e9),
-    "DECAPHV32": (517 + 78, 79.01e-15, 60e6),
+    "DECAPHV32": (511 + 78, 79.01e-15, 60e6),
 }
 # decap_vdda on VDDA (macros/decap_vdda/final/pnl), 67.61 pF
 DECAP_VDDA = {"DECAPHV8": (339, 6.272e-15, 10e9), "DECAPHV16": (323, 30.52e-15, 0.4e9),

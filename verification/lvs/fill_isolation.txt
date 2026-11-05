@@ -5,9 +5,9 @@ Fill isolation of layout/sg13cmos5l_dsa1_dig_top_logo_fill.gds.gz (top cell sg13
 | Activ 1/22 | 26115 | 0 | 0 | 0 |
 | GatPoly 5/22 | 26115 | 0 | 0 | 0 |
 | Metal1 8/22 | 67656 | 0 | 0 | 0 |
-| Metal2 10/22 | 98758 | 0 | 0 | 0 |
-| Metal3 30/22 | 42875 | 0 | 0 | 0 |
-| Metal4 50/22 | 53255 | 0 | 0 | 0 |
+| Metal2 10/22 | 98552 | 0 | 0 | 0 |
+| Metal3 30/22 | 43062 | 0 | 0 | 0 |
+| Metal4 50/22 | 53212 | 0 | 0 | 0 |
 | TopMetal1 126/22 | 5087 | 0 | 0 | 0 |
 
 Fill poly or fill active crossing drawn active or poly: 0

@@ -11,6 +11,7 @@
 #   waitc N         wait for N adc_conv edges
 #   stream          start the bitstream window at bit 0
 #   capture N       on each of the next N adc_conv edges read HIGH then LOW, 0 is forever
+#   require N       go on only if the last SPI transaction returned N, else end as halt
 #   include FILE    paste FILE here
 #   halt
 
@@ -31,7 +32,10 @@ program 0 loopback
 program 1 registers
     # Reset values, every writable register inverted, read back and restored,
     # then the startup sequence. o_tst_ctrl[6:0] is on the DUT's LEDs.
+    # The DSA1 die only (CHIP_ID 0x0000). Its bias values switch dsm2 and its pad driver on the CMOS5L die, so there it ends here.
     reset
+    read CHIP_ID
+    require 0x0000
     read BIAS_CFG_0
     read BIAS_CFG_1
     read BIAS_CFG_2
@@ -140,3 +144,57 @@ program 7 bitstream
     include startup.seq
     waitc 60                    # the filter holds only the window from here on
     capture 0
+
+program 8 registers_cmos5l
+    # Program 1 for this die (CHIP_ID 0x0001): BIAS_CFG_0 and BIAS_CFG_1 drive dsm2 here, so they are only read.
+    reset
+    read CHIP_ID
+    require 0x0001
+    read BIAS_CFG_0
+    read BIAS_CFG_1
+    read BIAS_CFG_2
+    read BLOCK_CTRL_0
+    read BLOCK_CTRL_1
+    read TRIM_CFG_0
+    read CLK_CFG_0
+    read TEST_CTRL_0
+    read UWB_TX_CFG_0
+    read UWB_TX_CFG_1
+    read AUX_CTRL_0
+    write BIAS_CFG_2 0xFFFC
+    read BIAS_CFG_2
+    write BIAS_CFG_2 0x0003
+    write BLOCK_CTRL_0 0x3000
+    read BLOCK_CTRL_0
+    write BLOCK_CTRL_0 0xCFFF
+    write BLOCK_CTRL_1 0xFF00
+    read BLOCK_CTRL_1
+    write BLOCK_CTRL_1 0x00FF
+    write TRIM_CFG_0 0x7F1F
+    read TRIM_CFG_0
+    write TRIM_CFG_0 0x80E0
+    write CLK_CFG_0 0x8778
+    read CLK_CFG_0
+    write CLK_CFG_0 0x7887
+    write UWB_TX_CFG_0 0xCF5B
+    read UWB_TX_CFG_0
+    write UWB_TX_CFG_0 0x30A4
+    write UWB_TX_CFG_1 0xCA00
+    read UWB_TX_CFG_1
+    write UWB_TX_CFG_1 0x35FF
+    write AUX_CTRL_0 0x00FF
+    read AUX_CTRL_0
+    write AUX_CTRL_0 0xFF00
+    # 14 only: 13 is TEST_CTRL_1, which the FPGA harness acts on, and 15 is CHIP_ID, read only
+    write 14 0xBEEF
+    read 14
+    write 14 0x0000
+    # TEST_CTRL_0 gets targeted values, never the inverse of its reset. 0x0545 is the
+    # core mux off page, 0x052A the buffer page, together all of o_tst_ctrl[6:0] on the LEDs.
+    write TEST_CTRL_0 0x0545
+    read TEST_CTRL_0
+    write TEST_CTRL_0 0x052A
+    read TEST_CTRL_0
+    write TEST_CTRL_0 0x0500
+    include startup.seq
+    halt

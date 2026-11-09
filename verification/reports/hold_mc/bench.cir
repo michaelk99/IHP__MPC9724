@@ -1,0 +1,23 @@
+* hold MC bench of MPC9724 worst hold path _20056_ to _20057_
+* SPDX-FileCopyrightText: 2026 Michael Koefinger
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+* run_mc.sh fills @CORNER@, @TEMP@, @VDD@ and @PATH@.
+
+.lib /foss/pdks/ihp-sg13cmos5l/libs.tech/ngspice/models/cornerMOSlv.lib @CORNER@
+.temp @TEMP@
+.include @PATH@
+
+.param supply=@VDD@
+* 20-80 slew of the common buffer input in the STA report is 32 ps, so 53 ps full ramp.
+.param trck=53.3p
+vdd vdd 0 {supply}
+vck ck 0 pulse(0 {supply} 1n {trck} {trck} 0.95n 2n)
+* Launch D: 1 at edge 1, 0 at edge 2, so launch Q falls at edge 2 as in the report.
+vdl dl 0 pulse({supply} 0 1.6n 50p 50p 100n 200n)
+vrbl rbl 0 pulse(0 {supply} 0.3n 50p 50p 100n 200n)
+* Capture reset released at 0.3 ns, before the single edge of the hold search.
+vrbc rbc 0 pulse(0 {supply} 0.3n 50p 50p 100n 200n)
+vdsrc dsrc 0 pulse({supply} 0 10n 30p 30p 100n 200n)
+
+.option reltol=1e-4 method=gear noinit
+.end

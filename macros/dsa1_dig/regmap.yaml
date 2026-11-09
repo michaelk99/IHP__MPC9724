@@ -28,7 +28,7 @@
 #
 # The SPI frame is not described here. It is the DSA1 die's, in dsa1_ic_bus_slave.vhd, and both
 # dies and every host depend on it: 1 read flag, 4 address bits, a dummy bit, 16 data bits.
-# Bit names and resets come from jku-phd circuit-level/DSA1_regs.ods, the DSA1 register sheet.
+# Bit names and resets come from the private RTL repository, circuit-level/DSA1_regs.ods, the DSA1 register sheet.
 
 meta:
   macro: dsa1_dig

@@ -1,0 +1,205 @@
+Startpoint: input_PAD[3] (input port clocked by sclk)
+Endpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_20046_
+          (recovery check against rising-edge clock sclk')
+Path Group: asynchronous
+Path Type: max
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                              0.0000    0.0000   clock sclk (rise edge)
+                              0.0000    0.0000   clock network delay (propagated)
+                              0.5000    0.5000 v input external delay
+     2    0.2372    0.0000    0.0000    0.5000 v input_PAD[3] (inout)
+     2    0.0028    0.0688    0.2288    0.7288 v g_inputs[3].input_pad/p2c (sg13cmos5l_IOPadIn)
+     1    0.0017    0.0156    0.0622    0.7909 v hold3/Y (BUFX3)
+     1    0.0024    0.0161    0.0500    0.8410 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold261/Y (BUFX3)
+     1    0.0024    0.0162    0.0505    0.8915 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold258/Y (BUFX3)
+     1    0.0023    0.0159    0.0502    0.9417 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold262/Y (BUFX3)
+     3    0.0510    0.0995    0.1140    1.0557 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/input4/Y (BUFX3)
+    16    0.0805    0.1522    0.1870    1.2427 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout198/Y (BUFX3)
+    10    0.0324    0.0675    0.1474    1.3901 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout197/Y (BUFX3)
+    16    0.0455    0.0895    0.1282    1.5183 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout196/Y (BUFX3)
+     1    0.0047    0.0744    0.0928    1.6111 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09285_/Y (NOR2BX1)
+                    0.0744    0.0003    1.6114 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_20046_/RB (DFFRQX1)
+                                        1.6114   data arrival time
+
+                             50.0000   50.0000   clock sclk' (rise edge)
+                              0.0000   50.0000   clock source latency
+     2    0.0065    0.0716    0.0000   50.0000 v g_inputs[1].input_pad/p2c (sg13cmos5l_IOPadIn)
+     1    0.0105    0.0204    0.0746   50.0746 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_1_sclk/Y (BUFX12)
+     1    0.0097    0.0196    0.0627   50.1373 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_2_sclk/Y (BUFX12)
+     1    0.0090    0.0193    0.0619   50.1993 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_3_sclk/Y (BUFX12)
+     1    0.0089    0.0193    0.0617   50.2610 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_4_sclk/Y (BUFX12)
+     1    0.0036    0.0171    0.0586   50.3196 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_regs_1_sclk/Y (BUFX12)
+     4    0.0296    0.0278    0.0701   50.3897 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk_regs/Y (BUFX12)
+    16    0.0696    0.0450    0.0935   50.4833 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f_sclk_regs/Y (BUFX12)
+     1    0.0020    0.0231    0.0397   50.5229 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18204__250/Y (INVX1)
+                    0.0231    0.0001   50.5231 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_20046_/CK (DFFRQX1)
+                             -0.3000   50.2231   clock uncertainty
+                              0.0000   50.2231   clock reconvergence pessimism
+                             -0.0889   50.1341   library recovery time
+                                       50.1341   data required time
+-------------------------------------------------------------------------------------
+                                       50.1341   data required time
+                                       -1.6114   data arrival time
+-------------------------------------------------------------------------------------
+                                       48.5228   slack (MET)
+
+
+Startpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19989_
+            (rising edge-triggered flip-flop clocked by clk)
+Endpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19963_
+          (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                              0.0000    0.0000   clock clk (rise edge)
+                              0.0000    0.0000   clock source latency
+     2    0.0094    0.0258    0.0000    0.0000 ^ clk_pad/p2c (sg13cmos5l_IOPadIn)
+     1    0.0047    0.0164    0.0517    0.0517 ^ clkbuf_0_clk_PAD2CORE/Y (BUFX12)
+     2    0.0094    0.0188    0.0533    0.1050 ^ clkbuf_1_0__f_clk_PAD2CORE/Y (BUFX12)
+     2    0.0292    0.0282    0.0647    0.1696 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_clk/Y (BUFX12)
+     4    0.0550    0.0412    0.0795    0.2492 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f_clk/Y (BUFX12)
+     1    0.0054    0.0300    0.1509    0.4001 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_231_/ECK (CGX3)
+     4    0.0410    0.0339    0.0736    0.4737 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__001_/Y (BUFX12)
+    11    0.0966    0.0633    0.0996    0.5732 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_2__f__001_/Y (BUFX12)
+    11    0.0327    0.0306    0.0862    0.6594 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_10__001_/Y (BUFX12)
+                    0.0307    0.0012    0.6607 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19989_/CK (DFFQX1)
+     4    0.0133    0.0742    0.1868    0.8475 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19989_/Q (DFFQX1)
+     2    0.0066    0.0870    0.1165    0.9640 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11705_/Y (XNOR2X1)
+     3    0.0072    0.1588    0.1667    1.1307 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11706_/Y (OAOI211X1)
+     4    0.0151    0.1690    0.1819    1.3126 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11724_/Y (OAOI211X1)
+     5    0.0130    0.2600    0.2563    1.5690 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11778_/Y (OAOI211X1)
+     1    0.0021    0.0800    0.0996    1.6685 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11804_/Y (OAOI211X1)
+     6    0.0206    0.0391    0.1044    1.7730 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/wire165/Y (BUFX4)
+     8    0.0204    0.0745    0.1658    1.9387 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11880_/Y (AO211X2)
+     1    0.0024    0.0251    0.1134    2.0521 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11933_/Y (AO31X2)
+     7    0.0233    0.0507    0.0847    2.1368 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11934_/Y (BUFX3)
+     4    0.0240    0.4479    0.3495    2.4863 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12055_/Y (OAOI211X1)
+     7    0.0248    0.1882    0.2468    2.7331 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12108_/Y (OAOI211X2)
+     3    0.0121    0.0844    0.2381    2.9712 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12110_/Y (XNOR3X1)
+     5    0.0164    0.3178    0.2816    3.2528 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12157_/Y (OAOI211X1)
+     1    0.0088    0.1426    0.1834    3.4362 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12401_/Y (OAOI211X1)
+     5    0.0163    0.3148    0.2802    3.7164 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12405_/Y (OAOI211X1)
+     4    0.0184    0.2141    0.2599    3.9763 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12497_/Y (OAOI211X1)
+     3    0.0112    0.0825    0.2399    4.2162 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12502_/Y (XNOR3X1)
+     4    0.0128    0.2642    0.2361    4.4523 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12565_/Y (OAOI211X1)
+     1    0.0070    0.0860    0.1122    4.5646 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12567_/Y (AND3BX1)
+     7    0.0263    0.2652    0.2396    4.8042 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12568_/Y (OAOI211X2)
+     7    0.0182    0.2990    0.3190    5.1232 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12771_/Y (OAI221X1)
+     4    0.0188    0.2532    0.2872    5.4104 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12829_/Y (AOI31X1)
+     1    0.0026    0.0417    0.2028    5.6132 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12931_/Y (XNOR3X1)
+     7    0.0162    0.3149    0.2691    5.8823 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12932_/Y (OAOI211X1)
+     5    0.0172    0.2060    0.2508    6.1331 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13041_/Y (OAOI211X1)
+     5    0.0138    0.2740    0.2770    6.4101 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13227_/Y (OAOI211X1)
+     4    0.0147    0.1779    0.2183    6.6284 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13334_/Y (OAOI211X1)
+     4    0.0134    0.0912    0.2393    6.8678 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13353_/Y (XNOR3X1)
+     3    0.0079    0.1844    0.1764    7.0442 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13435_/Y (AOI211X1)
+     1    0.0044    0.0912    0.0806    7.1248 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13436_/Y (NOR3X1)
+     4    0.0150    0.2927    0.2652    7.3900 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13437_/Y (OAOI211X1)
+     2    0.0068    0.0623    0.2193    7.6093 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13472_/Y (XNOR3X1)
+     5    0.0136    0.2218    0.1969    7.8062 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13601_/Y (AOAI211X1)
+     4    0.0150    0.2040    0.2292    8.0354 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13699_/Y (AOAI211X1)
+     2    0.0047    0.0494    0.2023    8.2377 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13702_/Y (XNOR3X1)
+     7    0.0183    0.3501    0.2975    8.5352 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13703_/Y (OAOI211X1)
+     2    0.0095    0.1160    0.1591    8.6943 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13704_/Y (NOR2X1)
+     3    0.0105    0.0753    0.2156    8.9099 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13766_/Y (XNOR3X1)
+     1    0.0025    0.0393    0.1728    9.0827 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13767_/Y (XNOR3X1)
+     6    0.0164    0.3176    0.2707    9.3534 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13768_/Y (OAOI211X1)
+     1    0.0029    0.0791    0.0995    9.4529 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13770_/Y (NOR3X1)
+     5    0.0176    0.3366    0.2944    9.7474 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13771_/Y (OAOI211X1)
+     6    0.0155    0.2007    0.2532   10.0006 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13893_/Y (OAOI211X1)
+     3    0.0116    0.2377    0.2406   10.2411 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13957_/Y (OAOI211X1)
+     2    0.0048    0.0494    0.2108   10.4520 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13991_/Y (XNOR3X1)
+     7    0.0179    0.3430    0.2924   10.7444 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13992_/Y (OAOI211X1)
+     1    0.0028    0.0827    0.1024   10.8468 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14019_/Y (NOR3X1)
+     4    0.0152    0.2974    0.2660   11.1128 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14020_/Y (OAOI211X1)
+     2    0.0049    0.0515    0.2253   11.3381 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14021_/Y (XNOR3X1)
+     4    0.0084    0.1864    0.1719   11.5100 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14023_/Y (AOI211X1)
+     1    0.0028    0.0537    0.0701   11.5800 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17957_/Y (NOR3X1)
+     4    0.0090    0.1921    0.1820   11.7620 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17958_/Y (OAOI211X1)
+     4    0.0114    0.1419    0.1763   11.9383 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17965_/Y (OAOI211X1)
+     5    0.0120    0.2420    0.2274   12.1657 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17976_/Y (OAOI211X1)
+     1    0.0026    0.0714    0.1096   12.2753 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17987_/Y (AOI21X1)
+     1    0.0029    0.0932    0.0893   12.3646 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17989_/Y (OAOI211X1)
+                    0.0932    0.0001   12.3647 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19963_/D (DFFQX1)
+                                       12.3647   data arrival time
+
+                            950.0000  950.0000   clock clk (rise edge)
+                              0.0000  950.0000   clock source latency
+     2    0.0066    0.0230    0.0000  950.0000 ^ clk_pad/p2c (sg13cmos5l_IOPadIn)
+     1    0.0033    0.0157    0.0500  950.0499 ^ clkbuf_0_clk_PAD2CORE/Y (BUFX12)
+     2    0.0066    0.0174    0.0513  950.1012 ^ clkbuf_1_0__f_clk_PAD2CORE/Y (BUFX12)
+     2    0.0264    0.0268    0.0630  950.1642 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_clk/Y (BUFX12)
+     2    0.0213    0.0242    0.0653  950.2294 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f_clk/Y (BUFX12)
+     1    0.0045    0.0278    0.1397  950.3692 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_232_/ECK (CGX3)
+     2    0.0177    0.0224    0.0626  950.4318 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__002_/Y (BUFX12)
+    11    0.1075    0.0703    0.0948  950.5266 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__002_/Y (BUFX12)
+    14    0.0300    0.0297    0.0929  950.6195 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_21__002_/Y (BUFX12)
+                    0.0297    0.0009  950.6204 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19963_/CK (DFFQX1)
+                             -0.3000  950.3204   clock uncertainty
+                              0.0054  950.3258   clock reconvergence pessimism
+                             -0.0490  950.2769   library setup time
+                                      950.2769   data required time
+-------------------------------------------------------------------------------------
+                                      950.2769   data required time
+                                      -12.3647   data arrival time
+-------------------------------------------------------------------------------------
+                                      937.9122   slack (MET)
+
+
+Startpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18506_
+            (rising edge-triggered flip-flop clocked by sclk')
+Endpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18280_
+          (rising edge-triggered flip-flop clocked by sclk)
+Path Group: sclk
+Path Type: max
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                             50.0000   50.0000   clock sclk' (rise edge)
+                              0.0000   50.0000   clock source latency
+     2    0.0094    0.0739    0.0000   50.0000 v g_inputs[1].input_pad/p2c (sg13cmos5l_IOPadIn)
+     1    0.0119    0.0210    0.0760   50.0760 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_1_sclk/Y (BUFX12)
+     1    0.0112    0.0202    0.0639   50.1400 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_2_sclk/Y (BUFX12)
+     1    0.0105    0.0199    0.0631   50.2031 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_3_sclk/Y (BUFX12)
+     1    0.0103    0.0199    0.0630   50.2661 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_4_sclk/Y (BUFX12)
+     1    0.0051    0.0177    0.0599   50.3261 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_regs_1_sclk/Y (BUFX12)
+     4    0.0355    0.0298    0.0719   50.3980 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk_regs/Y (BUFX12)
+    16    0.0778    0.0489    0.0984   50.4964 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f_sclk_regs/Y (BUFX12)
+     1    0.0023    0.0250    0.0417   50.5381 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09959__229/Y (INVX1)
+                    0.0250    0.0001   50.5382 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18506_/CK (DFFRQX1)
+    15    0.0633    0.3762    0.4131   50.9513 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18506_/Q (DFFRQX1)
+     3    0.0159    0.1519    0.2153   51.1666 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09564_/Y (NOR3BX1)
+     1    0.0227    0.1487    0.1664   51.3330 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09572_/Y (NAND2X1)
+     1    0.0028    0.0927    0.1202   51.4532 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09573_/Y (OAI211X1)
+     1    0.0168    0.3439    0.3115   51.7647 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09574_/Y (AOI221X1)
+     1    0.0033    0.1002    0.1338   51.8985 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09575_/Y (OAI21X1)
+     1    0.0232    0.4555    0.4007   52.2992 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09581_/Y (AOI221X1)
+     1    0.0044    0.1267    0.1679   52.4671 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09582_/Y (OAI21X1)
+                    0.1267    0.0002   52.4673 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18280_/D (DFFQX1)
+                                       52.4673   data arrival time
+
+                            100.0000  100.0000   clock sclk (rise edge)
+                              0.0000  100.0000   clock source latency
+     2    0.0066    0.0230    0.0000  100.0000 ^ g_inputs[1].input_pad/p2c (sg13cmos5l_IOPadIn)
+     2    0.0099    0.0188    0.0539  100.0538 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk/Y (BUFX12)
+     3    0.0258    0.0265    0.0637  100.1176 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f_sclk/Y (BUFX12)
+     4    0.0164    0.0217    0.0630  100.1806 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_0_sclk/Y (BUFX12)
+     1    0.0045    0.0279    0.1378  100.3184 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18223_/ECK (CGX3)
+     2    0.0097    0.0187    0.0584  100.3768 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__09174_/Y (BUFX12)
+     8    0.0298    0.0284    0.0652  100.4420 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__09174_/Y (BUFX12)
+                    0.0285    0.0013  100.4434 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18280_/CK (DFFQX1)
+                             -0.3000  100.1434   clock uncertainty
+                              0.0000  100.1434   clock reconvergence pessimism
+                             -0.0484  100.0950   library setup time
+                                      100.0950   data required time
+-------------------------------------------------------------------------------------
+                                      100.0950   data required time
+                                      -52.4673   data arrival time
+-------------------------------------------------------------------------------------
+                                       47.6277   slack (MET)
+
+

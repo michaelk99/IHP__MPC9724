@@ -70,7 +70,7 @@ Simulation and hardware, on the same macro: `sim-gl` 1343 identical, `model-gate
 
 ## dsm2 6dd2926 integrated, 2026-10-29
 
-dsm2's views from sg13cmos5l_batmon commit `6dd2926` (GDS md5 `6c7b7e559773e05e0ecf48338f57368d`, CDL `0f4d17b13e38c7a06f55973658880158`, LEF unchanged), which dsm2 confirmed as the GDS of its 2026-11-01 delivery. The rows above stay the v1.1.1 record until the v1.2.0 release. The numbers below are on chip run `RUN_2026-10-29_15-12-41`, delivery GDS md5 `b61196cdbfad4560e4fb28025be1e0d1`.
+dsm2's views from the dsm2 design repository, commit `6dd2926` (GDS md5 `6c7b7e559773e05e0ecf48338f57368d`, CDL `0f4d17b13e38c7a06f55973658880158`, LEF unchanged), which dsm2 confirmed as the GDS of its 2026-11-01 delivery. The rows above stay the v1.1.1 record until the v1.2.0 release. The numbers below are on chip run `RUN_2026-10-29_15-12-41`, delivery GDS md5 `b61196cdbfad4560e4fb28025be1e0d1`.
 
 | check | result |
 |---|---|

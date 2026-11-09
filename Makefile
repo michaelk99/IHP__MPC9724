@@ -71,7 +71,7 @@ WAVEFORM_VIEWER ?= gtkwave
 
 # Version for release target
 # Override with: make <target> VERSION=<version>
-VERSION ?= 1.2.0
+VERSION ?= 1.2.1
 
 # Extra options for the sak-open.py file browser (e.g. --all to include build outputs)
 # Override with: make open OPEN_ARGS=<options>

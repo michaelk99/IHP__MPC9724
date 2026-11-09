@@ -4,19 +4,19 @@ authors:
 - family-names: Koefinger
   given-names: Michael
   affiliation: "Johannes Kepler University, Institute for Integrated Circuits and Quantum Computing"
-title: "GitHub Repository for the DSADC1 digital back-end chip on the ihp-sg13cmos5l Open-PDK."
-abstract: "Tapeout repository of the DSADC1 digital back end on IHP SG13CMOS5L: a 1.6 mm die in QFN32 carrying one macro with the 128x decimation filter, an SPI slave and the configuration register file, hardened with LibreLane on the EZ130 8T standard cells."
+title: "IHP__MPC9724: a mixed-signal test chip on the ihp-sg13cmos5l Open-PDK with the DSADC1 digital back end and a first-order delta-sigma modulator."
+abstract: "Tapeout repository of the MPC9724 chip on IHP SG13CMOS5L: a 1.3 x 1.3 mm die in a QFN24 package. It carries dsa1_dig, the 128x decimation filter with an SPI slave and the configuration register file, hardened with LibreLane on the EZ130 8T standard cells, and dsm2_core, a first-order discrete-time delta-sigma modulator on its own VDDA segment of the pad ring."
 keywords:
   - IHP SG13CMOS5L
   - delta-sigma ADC
   - decimation filter
   - open-source silicon
   - LibreLane
-version: 1.0.0
-date-released: "2026-09-24"
-url: https://github.com/michaelk99/sg13cmos5l_dsa1_dig
-repository-code: https://github.com/michaelk99/sg13cmos5l_dsa1_dig
-license-url: https://github.com/michaelk99/sg13cmos5l_dsa1_dig/blob/main/LICENSE
+version: 1.2.1
+date-released: "2026-11-04"
+url: https://github.com/michaelk99/IHP__MPC9724
+repository-code: https://github.com/michaelk99/IHP__MPC9724
+license-url: https://github.com/michaelk99/IHP__MPC9724/blob/main/LICENSE
 references:
   - type: software
     title: "An Open-Source Analog-Mixed Signal Chip Design Template for the ihp-sg13cmos5l Open-PDK."

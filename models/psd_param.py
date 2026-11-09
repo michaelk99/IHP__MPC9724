@@ -4,11 +4,11 @@
 """SNR, SNDR and in-band noise of a sine record: calcPSDParam.m ported, and a corrected version.
 
     from psd_param import calc_psd_param, psd_param
-    r = calc_psd_param(y, N, fs, fb, fsig, fres, FS)       # as jku-phd's SKY130_CT-DSM calcPSDParam.m
+    r = calc_psd_param(y, N, fs, fb, fsig, fres, FS)       # as SKY130_CT-DSM calcPSDParam.m
     m = psd_param(y, fs, fb, FS=2.0)                        # the corrected one, see below
     python3 models/psd_param.py --self-test
 
-calc_psd_param reproduces calcPSDParam.m (jku-phd, SKY130_CT-DSM/system-level/
+calc_psd_param reproduces calcPSDParam.m (SKY130_CT-DSM/system-level/
 matlab/utility) to the last digit, checked against MATLAB R2024b. psd_param
 keeps its conventions, 0 dBFS for a sine of amplitude FS/2 and SNR as a ratio
 of sums over one window, and changes what the review found wrong:

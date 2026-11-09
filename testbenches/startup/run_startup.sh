@@ -2,9 +2,11 @@
 # SPDX-FileCopyrightText: 2026 Michael Koefinger
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # The supply start-up bench in both supply orders, the ground bounce case and the two power cases, then the checks.
-# Run inside IIC-OSIC-TOOLS at the repo root with the AGENTS.md environment set: testbenches/startup/run_startup.sh
+# Run inside IIC-OSIC-TOOLS at the repo root with the environment of doc/running.md set: testbenches/startup/run_startup.sh
 # STARTUP_ORDERS, STARTUP_BUILD, STARTUP_TREE and STARTUP_NO_CHECK are for run_power_v111.sh, which writes the power_v111.json the report compares when present.
 # STARTUP_DSM2 picks dsm2's view, sch (default), pex or box, STARTUP_OUT the report's directory.
+# STARTUP_RELTOL_SWITCH=3e-3:120u runs every recipe at reltol 3e-3 up to 120 us, then at the recipe's own (1e-3 by default).
+# dsm2's extracted view needs it on the default-on chip: 1e-3 stalls at the do_q_b pad near 55 us, 3e-3 at the clk pad at 187 us.
 set -euo pipefail
 : "${PDK:?}" "${PDK_ROOT:?}" "${EZ130_DIR:?}"
 B=${STARTUP_BUILD:-testbenches/startup/build}
@@ -32,10 +34,19 @@ RECIPES=("method=gear cshunt=1e-15" "method=gear cshunt=1e-15 reltol=3e-3"
 # ngspice's simulated time, from the progress it prints
 sim_time() { tail -c 200 "$1" 2>/dev/null | grep -o -E '[0-9.]+e-[0-9]+' | tail -1 || true; }
 run_order() {
-    local k=0 t0=$SECONDS
-    for r in "${RECIPES[@]}"; do
+    local k=0 t0=$SECONDS rs=("${RECIPES[@]}")
+    # ngspice-47 segfaults at t = 0 with cshunt and maxord=1 and dsm2's schematic of the oscillator variant, so the recipes without cshunt follow
+    if grep -q "^.options maxord=1" $B/stim_$1.spice; then rs+=("${RECIPES[@]/ cshunt=1e-15/}"); fi
+    for r in "${rs[@]}"; do
         k=$((k + 1))
-        sed -e "s/method=gear cshunt=@CSHUNT@/$r/" $B/tb_$1.in > $B/tb_$1.spice
+        local sw=()
+        if [ -n "${STARTUP_RELTOL_SWITCH:-}" ]; then
+            local base; base=$(grep -o -E 'reltol=[^ ]+' <<< "$r" | cut -d= -f2 || true)
+            r="$(sed -E 's/ reltol=[^ ]+//' <<< "$r") reltol=${STARTUP_RELTOL_SWITCH%%:*}"
+            # the breakpoint stays armed after resume unless deleted
+            sw=(-e "s/^run$/stop when time > ${STARTUP_RELTOL_SWITCH#*:}\nrun\ndelete all\noption reltol=${base:-1e-3}\nresume/")
+        fi
+        sed -e "s/method=gear cshunt=@CSHUNT@/$r/" "${sw[@]}" $B/tb_$1.in > $B/tb_$1.spice
         (cd $B && exec ngspice -b tb_$1.spice > ngspice_$1_$k.log 2>&1) & local pid=$!
         # a solver can also creep without aborting: no progress for 15 minutes ends the attempt
         local last="" still=0

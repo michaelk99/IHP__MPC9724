@@ -10,6 +10,7 @@ Reference material for this chip and for the IHP SG13CMOS5L Open-PDK it is built
 | [pinout.md](pinout.md) | The full 32-pad table per side, with the `sg13cmos5l_dsa1_dig_top` port and the role each pad carries inside `sg13cmos5l_dsa1_dig_core`. |
 | [floorplan.md](floorplan.md) | Die and core geometry, hard-macro placement coordinates, the PDN strategy and the floorplan diagram. |
 | [../testbenches/README.md](../testbenches/README.md) | What the chip-level testbenches cover: the cocotb tests, the opt-in PSD run, two register-file properties bring-up software needs, and what is still unverified. |
+| [running.md](running.md) | How to run the targets in the IIC-OSIC-TOOLS container, the five exports they need, and what each gate proves. |
 | [rtl2gds.md](rtl2gds.md) | How RTL becomes GDS here: the cell library that lives outside the repo, the clock-gate pre-pass, why a hard macro carries its own metal fill, which verdicts mean what, and the traps already hit. |
 | [../macros/decimator/rtl/README.md](../macros/decimator/rtl/README.md) | The SystemVerilog sources of the decimation filter: file list, word widths, why the CIC is order 6, and the house rules for editing them. |
 

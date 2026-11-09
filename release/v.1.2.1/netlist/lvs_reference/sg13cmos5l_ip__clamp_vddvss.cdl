@@ -1,0 +1,38 @@
+* SPDX-FileCopyrightText: 2026 Michael Koefinger
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+* sg13cmos5l_ip__clamp_vddvss: RC-triggered vdd-to-vss ESD supply clamp, the LVS reference
+* IHP's IOPadVdd clamp with its source on vss, the clamp NMOS 3 x 756 um. All thick oxide.
+
+.SUBCKT sg13cmos5l_ip__clamp_vddvss vdd vss iovdd iovss
+*.PININFO vdd:B vss:B iovdd:B iovss:B
+XMclamp vdd clamp_g vss vss sg13_hv_nmos w=2268u l=0.6u ng=252
+XMcap vss clamp_rc vss vss sg13_hv_nmos w=126u l=9.5u ng=14
+XMinvn clamp_g clamp_rc vss vss sg13_hv_nmos w=108u l=0.5u ng=16
+XMinvp clamp_g clamp_rc vdd vdd sg13_hv_pmos w=350u l=0.5u ng=50
+* trigger, 25 rppd 1 x 20 um in series, vdd to clamp_rc
+XRtrig1 vdd rt1 vss rppd w=1u l=20u
+XRtrig2 rt1 rt2 vss rppd w=1u l=20u
+XRtrig3 rt2 rt3 vss rppd w=1u l=20u
+XRtrig4 rt3 rt4 vss rppd w=1u l=20u
+XRtrig5 rt4 rt5 vss rppd w=1u l=20u
+XRtrig6 rt5 rt6 vss rppd w=1u l=20u
+XRtrig7 rt6 rt7 vss rppd w=1u l=20u
+XRtrig8 rt7 rt8 vss rppd w=1u l=20u
+XRtrig9 rt8 rt9 vss rppd w=1u l=20u
+XRtrig10 rt9 rt10 vss rppd w=1u l=20u
+XRtrig11 rt10 rt11 vss rppd w=1u l=20u
+XRtrig12 rt11 rt12 vss rppd w=1u l=20u
+XRtrig13 rt12 rt13 vss rppd w=1u l=20u
+XRtrig14 rt13 rt14 vss rppd w=1u l=20u
+XRtrig15 rt14 rt15 vss rppd w=1u l=20u
+XRtrig16 rt15 rt16 vss rppd w=1u l=20u
+XRtrig17 rt16 rt17 vss rppd w=1u l=20u
+XRtrig18 rt17 rt18 vss rppd w=1u l=20u
+XRtrig19 rt18 rt19 vss rppd w=1u l=20u
+XRtrig20 rt19 rt20 vss rppd w=1u l=20u
+XRtrig21 rt20 rt21 vss rppd w=1u l=20u
+XRtrig22 rt21 rt22 vss rppd w=1u l=20u
+XRtrig23 rt22 rt23 vss rppd w=1u l=20u
+XRtrig24 rt23 rt24 vss rppd w=1u l=20u
+XRtrig25 rt24 clamp_rc vss rppd w=1u l=20u
+.ENDS

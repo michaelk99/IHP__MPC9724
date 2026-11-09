@@ -5,13 +5,13 @@
 # memory images. Included by ./Makefile and ulx3s/Makefile, which set FPGA_DIR
 # to this folder, as an absolute path, first.
 #
-# The master VHDL is read in place from the jku-phd checkout and never copied.
+# The master VHDL is read in place from the checkout of the private RTL repository and never copied.
 # Its ghdl output stays in build/, which git ignores.
 
 ROOT_DIR    := $(abspath $(FPGA_DIR)/../..)
-JKU_PHD_DIR ?= $(abspath $(ROOT_DIR)/../jku-phd)
-MASTER_VHD  := $(JKU_PHD_DIR)/circuit-level/hdl/DSADC1/SPI/src/dsa1_ic_bus_master.vhd
-STIM_FILE   ?= $(JKU_PHD_DIR)/circuit-level/hdl/DSADC1/DEC/decimator_v5/sim/stim_dac_sine_dec.txt
+RTL_REPO_DIR ?= $(abspath $(ROOT_DIR)/../rtl-repo)
+MASTER_VHD  := $(RTL_REPO_DIR)/circuit-level/hdl/DSADC1/SPI/src/dsa1_ic_bus_master.vhd
+STIM_FILE   ?= $(RTL_REPO_DIR)/circuit-level/hdl/DSADC1/DEC/decimator_v5/sim/stim_dac_sine_dec.txt
 REGS_VHD    := $(ROOT_DIR)/macros/dsa1_dig/rtl/dsa1_regs.vhd
 
 # 25 MHz / (2 * 62) = 201.6 kHz sclk, well above the 65536 Hz sample clock
@@ -36,8 +36,8 @@ MASTER_SRCS := \
 $(GEN):
 	mkdir -p $@
 
-check-jku: ## Fail early when the jku-phd checkout is missing
-	@test -f $(MASTER_VHD) || { echo "No $(MASTER_VHD). Point JKU_PHD_DIR at the jku-phd checkout."; exit 1; }
+check-jku: ## Fail early when the RTL repository checkout is missing
+	@test -f $(MASTER_VHD) || { echo "No $(MASTER_VHD). Point RTL_REPO_DIR at the private RTL repository checkout."; exit 1; }
 .PHONY: check-jku
 
 $(MASTER_V): $(wildcard $(MASTER_VHD)) $(REGS_VHD) | check-jku $(GEN)
@@ -50,5 +50,5 @@ $(SEQ_MEM): $(FPGA_DIR)/seq/seqasm.py $(FPGA_DIR)/seq/programs.seq $(FPGA_DIR)/s
 	python3 $(FPGA_DIR)/seq/seqasm.py $(FPGA_DIR)/seq/programs.seq -o $@
 
 $(STREAM_MEM): $(wildcard $(STIM_FILE)) | $(GEN)
-	@test -f $(STIM_FILE) || { echo "No $(STIM_FILE). Set STIM_FILE or JKU_PHD_DIR."; exit 1; }
+	@test -f $(STIM_FILE) || { echo "No $(STIM_FILE). Set STIM_FILE or RTL_REPO_DIR."; exit 1; }
 	python3 $(ROOT_DIR)/models/stream_window.py $(STIM_FILE) $@ --start $(STREAM_START)

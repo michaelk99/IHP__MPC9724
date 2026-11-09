@@ -49,11 +49,11 @@ Measured against the 4194304-sample DSM stimulus: 0 of 32768 output samples diff
 
 ## stream_psd.py
 
-Spectra and bit-true checks of a long F stream, which `bench_record.py` in the svn EasyConfig folder records from an EasyConfig host. Needs numpy and matplotlib.
+Spectra and bit-true checks of a long F stream, which `bench_record.py` records from an EasyConfig host. Both are kept with the chip's evaluation setup, outside this repo. Needs numpy and matplotlib.
 
 ```
 python3 models/stream_psd.py prbs.npz --out plots/
-python3 models/stream_psd.py dsm.npz --seq $JKU_PHD_DIR/circuit-level/hdl/DSADC1/DIG_TOP/sim/stim_dac_sine_dec.txt --out plots/
+python3 models/stream_psd.py dsm.npz --seq $RTL_REPO_DIR/circuit-level/hdl/DSADC1/DIG_TOP/sim/stim_dac_sine_dec.txt --out plots/
 python3 models/stream_psd.py --self-test
 ```
 
@@ -62,7 +62,7 @@ python3 models/stream_psd.py --self-test
 | `prbs`, the on-chip PRBS23 | `stimulus.predict()` from the fire | Welch PSD against what the chain makes of white +-1 input, the sum of `abs(chain_response)**2` over the images the decimation folds |
 | `dsm`, a modulator sequence the host played into `data_in` | `decimator_model` on the same sequence, the few clk_fs edges the reset release adds or eats found by a short probe | Hann periodogram, tone, SNR, SINAD, THD and ENOB in the 128 Hz band |
 
-A record of the DSA1 die's back end (`bench_record.py --die legacy` on a duo harness, `arty_duo` or `versa_duo`) is checked against decimator v4 instead, at 256x, with the bit-true model jku-phd keeps next to the v4 RTL, `system-level/python/dec_v4_bit_true.py`, found through `JKU_PHD_DIR`. It is not in this repo, like the legacy RTL itself.
+A record of the DSA1 die's back end (`bench_record.py --die legacy` on a duo harness, `arty_duo` or `versa_duo`) is checked against decimator v4 instead, at 256x, with the bit-true model the private RTL repository keeps next to the v4 RTL, `system-level/python/dec_v4_bit_true.py`, found through `RTL_REPO_DIR`. It is not in this repo, like the legacy RTL itself.
 
 Both checks place each word by its conversion count, so a conversion lost in transport is skipped and reported as lost, not read as a shift of every word after it. The `dsm` periodogram takes the longest run without a count gap, from 1 s in, and an empty or too short record stops with a message.
 
@@ -70,7 +70,7 @@ Levels are dBFS against `FULL`, so a full-scale sine is 0 dBFS. The tone metrics
 
 ## psd_param.py
 
-`calc_psd_param()` is jku-phd's `SKY130_CT-DSM/system-level/matlab/utility/calcPSDParam.m` ported, same inputs and outputs, equal to MATLAB R2024b to 1e-9 on a reference record in the self-test. `psd_param()` keeps its conventions and corrects what a review of it found:
+`calc_psd_param()` is `SKY130_CT-DSM/system-level/matlab/utility/calcPSDParam.m` ported, same inputs and outputs, equal to MATLAB R2024b to 1e-9 on a reference record in the self-test. `psd_param()` keeps its conventions and corrects what a review of it found:
 
 | | calcPSDParam.m | psd_param() |
 |---|---|---|
@@ -88,7 +88,7 @@ The leakage search in the original sets `nb_leak`, which nothing reads after its
 Measured on the Arty through the ESP32 host, 2026-09-29:
 
 - 32509 PRBS23 words, 0 differ from the model, the in-band PSD 0.08 dB below the chain's prediction, the variance 0.04 dB below.
-- The 4194304-bit jku-phd modulator sine played into `data_in` at 64 kHz: 32768 words, 0 differ from the model at lead-in 0, tone 41.02 Hz at -4.02 dBFS, SNR 126.8 dB, SNDR 126.3 dB, THD -136.0 dB, ENOB 20.7 bit in 125 Hz. That SNR is the 22-bit output word: its rounding alone gives 127.2 dB for this tone, 131.2 dB for a full-scale one. The same chain with 3 more output bits reads 136.4 dB, its internal rounding, and the modulator's bit stream itself 144.5 dB.
+- The 4194304-bit modulator sine of the private RTL repository played into `data_in` at 64 kHz: 32768 words, 0 differ from the model at lead-in 0, tone 41.02 Hz at -4.02 dBFS, SNR 126.8 dB, SNDR 126.3 dB, THD -136.0 dB, ENOB 20.7 bit in 125 Hz. That SNR is the 22-bit output word: its rounding alone gives 127.2 dB for this tone, 131.2 dB for a full-scale one. The same chain with 3 more output bits reads 136.4 dB, its internal rounding, and the modulator's bit stream itself 144.5 dB.
 
 ## stimulus.py
 

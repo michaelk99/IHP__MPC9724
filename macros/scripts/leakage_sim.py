@@ -37,7 +37,7 @@ EZ130_DIR = os.environ.get("EZ130_DIR", os.path.join(HERE, "../../ip/ez130_8t_v1
 DECAPHV_DIR = os.environ.get("DECAPHV_DIR", os.path.join(HERE, "../../ip/ez130_8t_decap_hv"))
 
 # spicerun is vendored here rather than imported from DECAPHV_DIR: only
-# jku-phd's copy of the decap IP ships it, OpenBLAU's does not, and this check
+# the private RTL repository's copy of the decap IP ships it, OpenBLAU's does not, and this check
 # should not depend on which external checkout happens to carry a helper.
 sys.path.insert(0, HERE)
 import spicerun  # noqa: E402

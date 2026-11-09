@@ -8,8 +8,8 @@
 # That loop used to be re-implemented in each of the nine study scripts, with
 # the number regex drifting four different ways between them -- so a deck that
 # printed `1.5E-09` was read by some and silently dropped by others. It lives
-# here now (see AGENTS.md "Folder structure": tooling used by more than one
-# macro belongs to the repo-root scripts/).
+# here now (tooling used by more than one macro belongs to the repo-root
+# scripts/).
 #
 # Import it from a macro script with the repo root on sys.path, e.g. from
 # macros/<macro>/scripts/:

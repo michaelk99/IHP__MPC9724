@@ -1,3 +1,4 @@
+# v1.1.1 baseline. The v1.2.1 environment is the pinned image of scripts/image.env, see verification/submission/README.md.
 # Sign-off environment, written by scripts/signoff_env.sh
 date: 2026-10-08T23:50Z
 git: 0df5f3c43274c21c81d51179009248fb16571a27 on tapeout/v1.1.1, clean

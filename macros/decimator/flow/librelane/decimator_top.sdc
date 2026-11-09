@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: 2026 Michael Koefinger
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # Timing constraints for decimator_top on EZ130, used for both implementation and signoff.
-# Translated from the Genus constraints of dsa1_dig_top:
-#   svn r_tapeouts/2024_DSADC/TO_IHPSG13G2/cad_libs/TO_DSA1_DIGITAL/DIG_TOP/syn_genus/scripts_ihpsg13/constraints.sdc
-# Only the clk domain applies here. Deviations from that file are listed in ../../README.md.
+# Translated from the Genus constraints of dsa1_dig_top in the 2024 DSA1 tape-out, not in this repo.
+# Only the clk domain applies here. Deviations from them are listed in ../../README.md.
 
 # Clock: 1000 ns as in Genus. The real modulator clock is 65.536 kHz.
 create_clock -name clk_fs -period $::env(CLOCK_PERIOD) -waveform [list 0 [expr {$::env(CLOCK_PERIOD) / 2.0}]] [get_ports clk_fs]

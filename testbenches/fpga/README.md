@@ -14,7 +14,7 @@ The DUT board is [macros/dsa1_dig/fpga](../../macros/dsa1_dig/fpga/README.md), a
 ```
    MASTER board (this folder)             DUT board (macros/dsa1_dig/fpga)
    --------------------------             --------------------------------
-   dsa1_ic_bus_master  --- sclk  ------>  sclk
+   legacy bus master   --- sclk  ------>  sclk
                        --- mosi  ------>  mosi
                        <-- miso  -------  miso
                        --- ss    ------>  ss
@@ -50,7 +50,7 @@ DUT: SW1 on takes `clk_fs` from the master, read at reset. Off, the DUT makes it
 
 ## Programs
 
-| Program | What it does | What it proves | PLAN.md 1c step |
+| Program | What it does | What it proves | [Bring-up](#bring-up) step |
 |---|---|---|---|
 | 0 | loopback: mosi fed to miso inside the master, ss held high | the master, the sequencer and the UART, with no DUT | 2 |
 | 1 | reset, every writable register inverted, read back and restored, then the startup sequence | the SPI write and read path, reset values, write returns the old value | 3 |
@@ -86,7 +86,7 @@ Every step must end in `OK: every check passes`. Expect the first failure to be 
 3. **Register access.** Program 8, all wires. `67 of 67 SPI transactions checked`. Watch `o_tst_ctrl[6:0]` on the DUT LEDs follow the `0x0545` and `0x052A` writes. The DUT reads `CHIP_ID` 0x0001 as this die does, so program 1 stops at its `CHIP_ID` check (`END at pc` after one read). Program 1 is for the SG13G2 DSADC1 only and needs the analog owner's OK first: it writes the inverse of every bias, trim and clock register while the blocks are enabled. On this die `BIAS_CFG_0` and `BIAS_CFG_1` drive dsm2, so program 8 only reads them.
 4. **On-chip stimulus from the master's sequencer.** Programs 2 to 6, all wires, DUT SW1 on.
 5. **Real bitstream.** Program 7, all wires, DUT SW1 on. `stream: N words match the model, lag 3, index steps 128`. The lag must be 3, as in simulation. Steps other than 128 mean the DUT is not on the master's clock.
-6. **The silicon hosts against the DUT board.** They and their PC tools are kept with the evaluation setup in the IIC svn, `r_tapeouts/2024_DSADC/TO_IHPSG13G2/eval/dsa1`, see its `README.txt`. They run programs 2 to 6 of this folder, and program 8 on this die or program 1 on the DSA1 die, and have to pass the same checks. Programs 0 and 7 stay ULX3S only. The DUT for this step can also be an Arty A7-35T with the XIAO ESP32-S3 on a Pmod adapter, or, as the fallback, a Lattice ECP5 Versa wired to the adapter's probe header, see [the Arty section](../../macros/dsa1_dig/fpga/README.md#arty-a7-35t) and [the Versa section](../../macros/dsa1_dig/fpga/README.md#ecp5-versa), which have the wiring and the bench checklist.
+6. **The silicon hosts against the DUT board.** They and their PC tools are kept with the evaluation setup, outside this repo. They run programs 2 to 6 of this folder, and program 8 on this die or program 1 on the DSA1 die, and have to pass the same checks. Programs 0 and 7 stay ULX3S only. The DUT for this step can also be an Arty A7-35T with the XIAO ESP32-S3 on a Pmod adapter, or, as the fallback, a Lattice ECP5 Versa wired to the adapter's probe header, see [the Arty section](../../macros/dsa1_dig/fpga/README.md#arty-a7-35t) and [the Versa section](../../macros/dsa1_dig/fpga/README.md#ecp5-versa), which have the wiring and the bench checklist.
 
 ## Protocol
 
@@ -95,7 +95,7 @@ The program and record formats, the UART framing, and what the chip requires of 
 ## Simulation
 
 ```sh
-make -C testbenches/fpga sim-unit            # seven unit benches: the Arty, Versa and versa_duo builds, and the bus switch of both duo builds, which needs the legacy RTL from JKU_PHD_DIR
+make -C testbenches/fpga sim-unit            # seven unit benches: the Arty, Versa and versa_duo builds, and the bus switch of both duo builds, which needs the legacy RTL from RTL_REPO_DIR
 make -C testbenches/fpga sim PROGRAM=2       # both boards on one program, then the checker
 make -C testbenches/fpga sim-all             # the unit benches, all nine programs, and sim-slip
 ```
@@ -122,6 +122,6 @@ Master board, ULX3S ECP5-85F, yosys and nextpnr-ecp5, 2026-09-23: 467 flip-flops
 
 ## Where the master comes from
 
-`dsa1_ic_bus_master.vhd` is the master the chip was designed against. It is read in place from `$(JKU_PHD_DIR)/circuit-level/hdl/DSADC1/SPI/src/`, `JKU_PHD_DIR` defaulting to `../jku-phd`, and never copied: it carries no license here. `gen.mk` turns it into Verilog with `ghdl synth` into `build/`, which git ignores. `sclk_permanent_active` is tied high because the slave takes a new ADC word only on sclk edges.
+The legacy bus master VHDL is the master the chip was designed against. It is read in place from `$(RTL_REPO_DIR)/circuit-level/hdl/DSADC1/SPI/src/`, `RTL_REPO_DIR` defaulting to `../rtl-repo`, and never copied: it carries no license here. `gen.mk` turns it into Verilog with `ghdl synth` into `build/`, which git ignores. `sclk_permanent_active` is tied high because the slave takes a new ADC word only on sclk edges.
 
 The modulator record is read in place too, `STIM_FILE`, and `models/stream_window.py` cuts the 131072-bit window into `build/stream.mem`, starting one second in.

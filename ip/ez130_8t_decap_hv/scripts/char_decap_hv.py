@@ -34,7 +34,7 @@ PDK = os.path.join(os.environ.get("PDK_ROOT", "/foss/pdks"),
                    os.environ.get("PDK", "ihp-sg13cmos5l"))
 MODELS = os.path.join(PDK, "libs.tech/ngspice/models")
 
-# section, VDD, T, EZ130 corner tag: the 1.2 V sign-off family (CLAUDE.md)
+# section, VDD, T, EZ130 corner tag: the 1.2 V sign-off family
 CORNERS = {
     "tt": ("mos_tt", 1.20, 25, "tt_1p20v_25c"),
     "ss": ("mos_ss", 1.08, 125, "ss_1p08v_125c"),

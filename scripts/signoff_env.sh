@@ -27,6 +27,7 @@ echo "OpenROAD: $(openroad -version 2>/dev/null | tail -1 | sed "s/ *$//")"
 echo "LibreLane: $(python3 -c 'import librelane; print(librelane.__version__)' 2>/dev/null)"
 echo "Icarus: $(iverilog -V 2>/dev/null | head -1 | sed 's/^Icarus Verilog version //')"
 echo "GHDL: $(ghdl --version 2>/dev/null | head -1)"
+echo "ngspice: $(ngspice -v 2>/dev/null | sed -n 's/.*ngspice-\([0-9][^ ]*\).*/\1/p' | head -1)"
 echo "EZ130 8T, read from outside the repo, md5:"
 for f in gds/ez130_8t.gds lef/ez130_8t.lef lef/ez130_tech.lef cdl/ez130_8t.cdl verilog/ez130_8t.v \
          lib/ez130_8t_tt_1p20v_25c.lib lib/ez130_8t_ff_1p32v_m40c.lib lib/ez130_8t_ss_1p08v_125c.lib; do

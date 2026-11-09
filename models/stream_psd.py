@@ -17,7 +17,7 @@ dsm   A modulator sequence played into data_in. The words are compared with
       decimator_model run on the same sequence, and the tone gives SNR, SNDR,
       THD and ENOB in the signal band. A record of the DSA1 die's back end
       (die legacy, duo harness) is compared with decimator v4 instead, whose
-      bit-true model jku-phd keeps in system-level/python/dec_v4_bit_true.py.
+      bit-true model the private RTL repository keeps in system-level/python/dec_v4_bit_true.py.
 
 Words are placed by their conversion count, so a conversion lost in transport is skipped, not read as a shift of every word after it. The periodogram takes a run without a count gap.
 
@@ -207,8 +207,8 @@ def analyse_prbs(r: dict, out: str) -> dict:
 
 
 def _dec_v4():
-    """decimator v4's bit-true model, kept in jku-phd with the v4 RTL"""
-    sys.path.insert(0, os.path.join(os.environ.get("JKU_PHD_DIR", os.path.join(os.path.dirname(__file__), "../../jku-phd")),
+    """decimator v4's bit-true model, kept in the private RTL repository with the v4 RTL"""
+    sys.path.insert(0, os.path.join(os.environ.get("RTL_REPO_DIR", os.path.join(os.path.dirname(__file__), "../../rtl-repo")),
                                     "system-level/python"))
     from dec_v4_bit_true import dec_v4
     return dec_v4
@@ -480,7 +480,7 @@ def self_test() -> int:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("record", nargs="*")
-    ap.add_argument("--seq", default=os.path.join(os.environ.get("JKU_PHD_DIR", "../jku-phd"),
+    ap.add_argument("--seq", default=os.path.join(os.environ.get("RTL_REPO_DIR", "../rtl-repo"),
                                                   "circuit-level/hdl/DSADC1/DIG_TOP/sim/stim_dac_sine_dec.txt"),
                     help="the modulator sequence a dsm record played")
     ap.add_argument("--out", default=".")

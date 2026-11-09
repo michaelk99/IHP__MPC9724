@@ -1,0 +1,2 @@
+structures 295 295 texts 2951 2951 same names True
+structures with differing elements 0

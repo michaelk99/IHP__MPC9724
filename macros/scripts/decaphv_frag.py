@@ -55,7 +55,7 @@ def need(path):
 # thresholds", even one like this that carries no timing arc at all. The decap
 # liberty as generated has none, so LibreLane cannot load it as a corner
 # library. These are EZ130's own values, so the corner reads the same either
-# way. jku-phd patched its copy in place and noted it is worth pushing
+# way. the private RTL repository patched its copy in place and noted it is worth pushing
 # upstream; here the copy is patched on the way past so the source stays
 # untouched.
 THRESHOLDS = """  input_threshold_pct_rise : 50;

@@ -1,7 +1,7 @@
-# Schematic Netlists
+# Schematic
 
-Schematic netlists of `sg13cmos5l_dsa1_dig_top` for LVS, exported from Xschem.
+There is no schematic netlist of the chip in this release. The chip top is not drawn as transistors.
 
-They are written by `make klayout-lvs-netlist` (CDL, `sg13cmos5l_dsa1_dig_top_klayout.cdl`) and by `make magic-lvs-netlist` (SPICE, `sg13cmos5l_dsa1_dig_top_magic.spice`). Both targets also run as the first step of `make klayout-lvs` and `make magic-lvs`.
+`schematic/xschem/sg13cmos5l_dsa1_dig_top.sch` in the repository is a drawing of the pad ring and the blocks, generated from the pad plan. It is not an LVS input. An earlier file here, `MPC9724_klayout.cdl`, came from the template's export of that drawing, was stale and has been removed.
 
-This folder stays empty until the top-level LVS is finished. See [Layout Versus Schematic (LVS)](https://github.com/iic-jku/ihp-sg13cmos5l-ams-chip-template/blob/main/README.md#layout-versus-schematic-lvs) in the top-level README.
+The netlists that the layout was compared against are in [../lvs_reference/](../lvs_reference/README.md), with the list of what is transformed and why.

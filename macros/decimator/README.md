@@ -35,7 +35,7 @@ image at `fs`/D - `fb` folds onto `fb` at the CIC output rate, where every later
 stage has unity gain, so alias rejection belongs to the first decimation stage
 alone. There is no half-band in this chain at all.
 
-`rtl/` is a frozen copy from the jku-phd development repo
+`rtl/` is a frozen copy from the private RTL repository
 (`circuit-level/hdl/DSADC1/DEC/decimator_v5/src`), one module per file. The
 `dsa1_dig` macro reads these same files rather than keeping a second copy.
 

@@ -10,7 +10,7 @@ Status: design agreed on 2026-10-19, implemented in v1.2.0, oscillator variant 2
 
 ## Goal and priorities
 
-The die gets a second, analog block: `dsm2_core`, a first-order discrete-time delta-sigma modulator at 1.5 V (`sg13cmos5l_batmon`, `macros/dsm2`). It is a test and side project. DSA1 stays the main project, so:
+The die gets a second, analog block: `dsm2_core`, a first-order discrete-time delta-sigma modulator at 1.5 V (from the dsm2 design repository). It is a test and side project. DSA1 stays the main project, so:
 
 - the digital back end must run exactly as in v1.1.1 with dsm2 unused, unpowered and unclocked
 - dsm2 must cost DSA1 no power in that state
@@ -146,7 +146,7 @@ IOVDD stays a pin. Its voltage is free within what the IO cells allow (character
 - `macros/scripts/regmap_gen.py` today rejects two fields on one bit (`regmap_gen.py:124`). It is changed to allow an overlap between fields that are `only` on different dies, and to keep rejecting every other overlap.
 - After reset the decimator reads the `data_in` pad, as in v1.1.1. Since v1.2.1 dsm2 is on after reset, its reset is released 9 to 10 `clk` periods after `rst_n`, and its pads drive, see Default on below.
 - Every host that writes a DSA1 bias profile has to check `CHIP_ID` first, or it writes dsm2's trim and enables on this die. `doc/regmap.md` says so.
-- The svn side (EasyConfig, the ESP32 host) changes only when the user says so.
+- The host firmware and EasyConfig are not changed by this integration.
 
 ## Glue logic in the chip top
 
@@ -199,12 +199,12 @@ The DSM die is signed off in `registry.iic.jku.at:5000/iic-osic-tools:next`, the
 | | |
 |---|---|
 | amd64 (laptop) | image id `sha256:bb525d654d8d7fa4abf2ff4f16443af8a3c3acedf5fded023ce3515200b29f8e`, repo digest `sha256:65771d5c6be66df4f8a7522421355b53964ce643dc4cc612b605f645063b1af4`, built 2026-10-08 |
-| arm64 (`gigaarm`) | image id `sha256:0ad78d950901...`, repo digest `sha256:2629177ffdeb631b4536cfb4cab5671b65eb2214bcea26d181bb7a878145f88b` |
+| arm64 (the ARM64 compute host) | image id `sha256:0ad78d950901...`, repo digest `sha256:2629177ffdeb631b4536cfb4cab5671b65eb2214bcea26d181bb7a878145f88b` |
 | PDK | ihp-sg13cmos5l `5eddf3e96c4b1a42bffe90dd58daa6089a77fc23`, from the image |
 | Tools | Magic 8.3.684, KLayout 0.30.12, ngspice-47 |
 
 - `:next` moves, so jobs pin the digest, and `signoff_env.txt` records it.
-- The registry needs the JKU VPN. `gigaarm` already has the arm64 build, the laptop the amd64 one. They are two builds, so one DRC and one LVS run on both before results from the two hosts are mixed.
+- The registry needs the JKU VPN. The ARM64 compute host already has the arm64 build, the laptop the amd64 one. They are two builds, so one DRC and one LVS run on both before results from the two hosts are mixed.
 - The ESD bench ran on 2026.09 for v1.1.1, and moves to `:next` too, so every row of `doc/signoff.md` comes from one image.
 - The v1.1.1 LVS on 2026.08 is not hit by that bug: neither `clamp_vddvss`'s CDL nor the PDK stdcell CDL has a device with all terminals on one net, and the IO cells are black boxes in `top_lvs.sh`.
 
@@ -248,12 +248,12 @@ Each step is committed on its own.
 
 Effort: about 6 to 8 working days. Registers, RTL and cocotb 1 day, the cut cell 0.5, the re-harden 1 to 1.5, the chip top with VDDA and the drawn nets 1.5 to 2 (the main risk), the benches 1, the sign-off 1 day of attention. Steps 1 to 6 do not wait for dsm2.
 
-Compute: the heavy jobs (macro re-harden, chip builds, the ESD matrix, the start-up benches) run on the 128-core compute host `gigaarm` in a scratch checkout, with `-e PDK=ihp-sg13cmos5l`, where the ESD matrix takes minutes instead of the 20 h it took on the laptop. That needs the JKU VPN. Results come back to the laptop as files, the run directories stay there. Without the VPN the jobs run on the laptop, one at a time, and the sign-off needs about 1.5 days of compute.
+Compute: the heavy jobs (macro re-harden, chip builds, the ESD matrix, the start-up benches) run on the 128-core ARM64 compute host in a scratch checkout, with `-e PDK=ihp-sg13cmos5l`, where the ESD matrix takes minutes instead of the 20 h it took on the laptop. That needs the JKU VPN. Results come back to the laptop as files, the run directories stay there. Without the VPN the jobs run on the laptop, one at a time, and the sign-off needs about 1.5 days of compute.
 
 ## Open
 
 - From dsm2: the pin positions and the exact outline (after the `sc_int2` rework, this week), the GDS and LEF (end of the week of 2026-10-19 at the earliest).
-- Disk: the laptop is at 97 %. Runs on `gigaarm` keep their run directories there. Old run directories on the laptop are cleared, after review, before any heavy job runs locally.
+- Disk: the laptop is at 97 %. Runs on the ARM64 compute host keep their run directories there. Old run directories on the laptop are cleared, after review, before any heavy job runs locally.
 
 ## Default on (v1.2.1, 2026-11-04)
 

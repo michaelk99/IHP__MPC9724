@@ -1,0 +1,874 @@
+
+===========================================================================
+report_checks -unconstrained
+===========================================================================
+======================= nom_fast_1p32V_m40C Corner ===================================
+
+Startpoint: input_PAD[3] (input port clocked by sclk)
+Endpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_20046_
+          (recovery check against rising-edge clock sclk')
+Path Group: asynchronous
+Path Type: max
+
+Fanout         Cap        Slew       Delay        Time   Description
+---------------------------------------------------------------------------------------------
+                                  0.000000    0.000000   clock sclk (rise edge)
+                                  0.000000    0.000000   clock network delay (propagated)
+                                  0.500000    0.500000 v input external delay
+     2    0.237212    0.000000    0.000000    0.500000 v input_PAD[3] (inout)
+                                                         input_PAD[3] (net)
+                      0.000000    0.000000    0.500000 v g_inputs[3].input_pad/pad (sg13cmos5l_IOPadIn)
+     2    0.015371    0.077728    0.238082    0.738083 v g_inputs[3].input_pad/p2c (sg13cmos5l_IOPadIn)
+                                                         i_sg13cmos5l_dsa1_dig_core.ss (net)
+                      0.058309    0.001271    0.739353 v hold3/A (BUFX3)
+     1    0.012998    0.033571    0.082295    0.821648 v hold3/Y (BUFX3)
+                                                         net3 (net)
+                      0.033612    0.001038    0.822686 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold261/A (BUFX3)
+     1    0.002532    0.016345    0.057519    0.880206 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold261/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net261 (net)
+                      0.016345    0.000174    0.880380 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold258/A (BUFX3)
+     1    0.002608    0.016433    0.050813    0.931193 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold258/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net258 (net)
+                      0.016433    0.000174    0.931367 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold262/A (BUFX3)
+     1    0.002416    0.016144    0.050468    0.981835 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/hold262/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net262 (net)
+                      0.016144    0.000163    0.981998 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/input4/A (BUFX3)
+     3    0.062649    0.120214    0.126322    1.108320 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/input4/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net4 (net)
+                      0.122668    0.013695    1.122015 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout198/A (BUFX3)
+    16    0.093979    0.176841    0.198511    1.320526 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout198/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net198 (net)
+                      0.178562    0.014200    1.334726 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout197/A (BUFX3)
+    10    0.036281    0.074628    0.149992    1.484717 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout197/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net197 (net)
+                      0.074792    0.002436    1.487153 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout196/A (BUFX3)
+    16    0.050219    0.098456    0.133209    1.620363 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout196/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net196 (net)
+                      0.099461    0.008026    1.628389 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09285_/B (NOR2BX1)
+     1    0.005103    0.079351    0.092205    1.720594 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09285_/Y (NOR2BX1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_00354_ (net)
+                      0.079354    0.000370    1.720964 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_20046_/RB (DFFRQX1)
+                                              1.720964   data arrival time
+
+                                 50.000000   50.000000   clock sclk' (rise edge)
+                                  0.000000   50.000000   clock source latency
+     2    0.067262    0.128591    0.000000   50.000000 v g_inputs[1].input_pad/p2c (sg13cmos5l_IOPadIn)
+                                                         i_sg13cmos5l_dsa1_dig_core.sclk (net)
+                      0.100121    0.013561   50.013557 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_1_sclk/A (BUFX12)
+     1    0.012256    0.023055    0.090758   50.104317 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_1_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_1_sclk (net)
+                      0.023062    0.000949   50.105267 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_2_sclk/A (BUFX12)
+     1    0.011372    0.020277    0.063988   50.169254 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_2_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_2_sclk (net)
+                      0.020288    0.000874   50.170128 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_3_sclk/A (BUFX12)
+     1    0.010463    0.019914    0.062393   50.232521 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_3_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_3_sclk (net)
+                      0.019922    0.000895   50.233414 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_4_sclk/A (BUFX12)
+     1    0.010260    0.019839    0.062123   50.295540 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_4_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_4_sclk (net)
+                      0.019848    0.000931   50.296471 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_regs_1_sclk/A (BUFX12)
+     1    0.003705    0.017102    0.058222   50.354691 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_regs_1_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/sclk_regs (net)
+                      0.017102    0.000146   50.354836 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk_regs/A (BUFX12)
+     4    0.033768    0.029166    0.070788   50.425625 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk_regs/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0_sclk_regs (net)
+                      0.031937    0.007205   50.432831 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f_sclk_regs/A (BUFX12)
+    16    0.082240    0.051140    0.092530   50.525360 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f_sclk_regs/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_2_0__leaf_sclk_regs (net)
+                      0.053582    0.008708   50.534069 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18204__250/A (INVX1)
+     1    0.002254    0.025496    0.035850   50.569920 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18204__250/Y (INVX1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net250 (net)
+                      0.025497    0.000139   50.570057 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_20046_/CK (DFFRQX1)
+                                 -0.300000   50.270058   clock uncertainty
+                                  0.000000   50.270058   clock reconvergence pessimism
+                                 -0.090081   50.179974   library recovery time
+                                             50.179974   data required time
+---------------------------------------------------------------------------------------------
+                                             50.179974   data required time
+                                             -1.720964   data arrival time
+---------------------------------------------------------------------------------------------
+                                             48.459011   slack (MET)
+
+
+Startpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19989_
+            (rising edge-triggered flip-flop clocked by clk)
+Endpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19963_
+          (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout         Cap        Slew       Delay        Time   Description
+---------------------------------------------------------------------------------------------
+                                  0.000000    0.000000   clock clk (rise edge)
+                                  0.000000    0.000000   clock source latency
+     2    0.018180    0.034033    0.000000    0.000000 ^ clk_pad/p2c (sg13cmos5l_IOPadIn)
+                                                         clk_PAD2CORE (net)
+                      0.025636    0.001149    0.001149 ^ clkbuf_0_clk_PAD2CORE/A (BUFX12)
+     1    0.006493    0.017232    0.055243    0.056393 ^ clkbuf_0_clk_PAD2CORE/Y (BUFX12)
+                                                         clknet_0_clk_PAD2CORE (net)
+                      0.017236    0.000498    0.056891 ^ clkbuf_1_0__f_clk_PAD2CORE/A (BUFX12)
+     2    0.051566    0.037767    0.066969    0.123860 ^ clkbuf_1_0__f_clk_PAD2CORE/Y (BUFX12)
+                                                         clknet_1_0__leaf_clk_PAD2CORE (net)
+                      0.051529    0.017493    0.141353 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_clk/A (BUFX12)
+     2    0.034102    0.030826    0.079303    0.220656 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_clk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0_clk (net)
+                      0.031038    0.002119    0.222775 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f_clk/A (BUFX12)
+     4    0.066333    0.047480    0.082880    0.305654 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f_clk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_1_0__leaf_clk (net)
+                      0.048228    0.004665    0.310319 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_231_/CK (CGX3)
+     1    0.005602    0.030411    0.150422    0.460742 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_231_/ECK (CGX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_001_ (net)
+                      0.030411    0.000446    0.461187 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__001_/A (BUFX12)
+     4    0.046519    0.036888    0.075109    0.536296 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__001_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0__001_ (net)
+                      0.037666    0.004102    0.540399 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_2__f__001_/A (BUFX12)
+    11    0.107743    0.069837    0.101428    0.641826 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_2__f__001_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_2_2__leaf__001_ (net)
+                      0.070283    0.004536    0.646362 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_10__001_/A (BUFX12)
+    11    0.035754    0.032304    0.086287    0.732649 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_10__001_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_leaf_10__001_ (net)
+                      0.032477    0.001665    0.734314 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19989_/CK (DFFQX1)
+     4    0.014259    0.079132    0.191000    0.925314 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19989_/Q (DFFQX1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/u_decimator_top.u_dec.s2_in[2] (net)
+                      0.079143    0.000938    0.926252 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11705_/A (XNOR2X1)
+     2    0.007111    0.092600    0.120620    1.046872 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11705_/Y (XNOR2X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_05779_ (net)
+                      0.092609    0.000729    1.047601 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11706_/D (OAOI211X1)
+     3    0.007713    0.168022    0.174278    1.221878 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11706_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_05780_ (net)
+                      0.168023    0.000343    1.222221 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11724_/B (OAOI211X1)
+     4    0.016369    0.180648    0.193531    1.415752 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11724_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_05798_ (net)
+                      0.180655    0.000895    1.416646 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11778_/A (OAOI211X1)
+     5    0.014185    0.279949    0.273219    1.689865 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11778_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_05852_ (net)
+                      0.279952    0.000868    1.690734 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11804_/B (OAOI211X1)
+     1    0.002256    0.084008    0.102761    1.793495 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11804_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_05878_ (net)
+                      0.084008    0.000084    1.793579 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/wire165/A (BUFX4)
+     6    0.021993    0.040845    0.107090    1.900669 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/wire165/Y (BUFX4)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net165 (net)
+                      0.040873    0.000987    1.901656 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11880_/A (AO211X2)
+     8    0.022194    0.078609    0.168917    2.070572 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11880_/Y (AO211X2)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_05954_ (net)
+                      0.078635    0.001360    2.071933 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11933_/B (AO31X2)
+     1    0.002574    0.025451    0.114080    2.186013 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11933_/Y (AO31X2)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06007_ (net)
+                      0.025451    0.000095    2.186108 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11934_/A (BUFX3)
+     7    0.024990    0.054092    0.086875    2.272983 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11934_/Y (BUFX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06008_ (net)
+                      0.054250    0.002379    2.275361 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12055_/B (OAOI211X1)
+     4    0.027834    0.515202    0.396609    2.671971 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12055_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06129_ (net)
+                      0.515227    0.003066    2.675036 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12108_/B (OAOI211X2)
+     7    0.026868    0.209195    0.267253    2.942290 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12108_/Y (OAOI211X2)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06182_ (net)
+                      0.209255    0.002864    2.945153 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12110_/B (XNOR3X1)
+     3    0.013428    0.091383    0.246416    3.191569 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12110_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06184_ (net)
+                      0.091389    0.000806    3.192376 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12157_/D (OAOI211X1)
+     5    0.018393    0.353288    0.307316    3.499692 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12157_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06231_ (net)
+                      0.353300    0.001718    3.501410 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12401_/B (OAOI211X1)
+     1    0.010634    0.162082    0.208430    3.709840 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12401_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06473_ (net)
+                      0.162083    0.000809    3.710649 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12405_/B (OAOI211X1)
+     5    0.018244    0.348449    0.309915    4.020564 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12405_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06477_ (net)
+                      0.348459    0.001497    4.022061 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12497_/B (OAOI211X1)
+     4    0.020442    0.234243    0.285678    4.307739 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12497_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06568_ (net)
+                      0.234269    0.002027    4.309766 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12502_/B (XNOR3X1)
+     3    0.012363    0.088779    0.247946    4.557712 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12502_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06573_ (net)
+                      0.088789    0.000992    4.558703 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12565_/D (OAOI211X1)
+     4    0.014293    0.291401    0.255739    4.814442 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12565_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06635_ (net)
+                      0.291402    0.000401    4.814843 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12567_/AB (AND3BX1)
+     1    0.007883    0.097313    0.124464    4.939308 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12567_/Y (AND3BX1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06637_ (net)
+                      0.097316    0.000611    4.939919 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12568_/D (OAOI211X2)
+     7    0.028750    0.287745    0.256917    5.196836 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12568_/Y (OAOI211X2)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06638_ (net)
+                      0.287751    0.001056    5.197892 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12771_/A (OAI221X1)
+     7    0.019903    0.321920    0.340823    5.538714 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12771_/Y (OAI221X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06839_ (net)
+                      0.321933    0.001670    5.540385 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12829_/C (AOI31X1)
+     4    0.021000    0.279086    0.310473    5.850857 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12829_/Y (AOI31X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06896_ (net)
+                      0.279098    0.001534    5.852392 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12931_/B (XNOR3X1)
+     1    0.002863    0.043667    0.208800    6.061191 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12931_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06997_ (net)
+                      0.043667    0.000289    6.061480 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12932_/D (OAOI211X1)
+     7    0.017379    0.334429    0.283471    6.344952 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_12932_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_06998_ (net)
+                      0.334442    0.001753    6.346704 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13041_/B (OAOI211X1)
+     5    0.018646    0.218596    0.267748    6.614452 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13041_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07106_ (net)
+                      0.218628    0.002157    6.616609 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13227_/A (OAOI211X1)
+     5    0.015197    0.298240    0.295962    6.912571 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13227_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07290_ (net)
+                      0.298245    0.001073    6.913644 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13334_/B (OAOI211X1)
+     4    0.016007    0.193062    0.234835    7.148479 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13334_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07396_ (net)
+                      0.193128    0.000871    7.149351 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13353_/B (XNOR3X1)
+     4    0.014140    0.095505    0.244609    7.393960 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13353_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07415_ (net)
+                      0.095508    0.000664    7.394623 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13435_/C (AOI211X1)
+     3    0.008612    0.198322    0.186188    7.580811 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13435_/Y (AOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07496_ (net)
+                      0.198322    0.000547    7.581358 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13436_/C (NOR3X1)
+     1    0.005109    0.099340    0.088597    7.669955 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13436_/Y (NOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07497_ (net)
+                      0.099340    0.000302    7.670257 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13437_/D (OAOI211X1)
+     4    0.016307    0.315430    0.283367    7.953624 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13437_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07498_ (net)
+                      0.315435    0.001082    7.954706 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13472_/B (XNOR3X1)
+     2    0.007249    0.065441    0.223374    8.178080 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13472_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07533_ (net)
+                      0.065442    0.000386    8.178466 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13601_/D (AOAI211X1)
+     5    0.014942    0.240400    0.211294    8.389760 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13601_/Y (AOAI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07660_ (net)
+                      0.240406    0.000990    8.390751 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13699_/B (AOAI211X1)
+     4    0.016299    0.220672    0.244359    8.635110 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13699_/Y (AOAI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07757_ (net)
+                      0.220675    0.000672    8.635782 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13702_/B (XNOR3X1)
+     2    0.005099    0.051672    0.208161    8.843944 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13702_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07760_ (net)
+                      0.051673    0.000322    8.844265 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13703_/D (OAOI211X1)
+     7    0.019563    0.371164    0.313078    9.157344 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13703_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07761_ (net)
+                      0.371167    0.000925    9.158269 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13704_/B (NOR2X1)
+     2    0.010113    0.123103    0.167418    9.325687 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13704_/Y (NOR2X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07762_ (net)
+                      0.123104    0.000577    9.326264 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13766_/B (XNOR3X1)
+     3    0.011445    0.079980    0.220062    9.546327 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13766_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07823_ (net)
+                      0.079992    0.001010    9.547337 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13767_/B (XNOR3X1)
+     1    0.002720    0.041005    0.173981    9.721317 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13767_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07824_ (net)
+                      0.041005    0.000197    9.721515 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13768_/D (OAOI211X1)
+     6    0.018009    0.344913    0.291139   10.012653 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13768_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07825_ (net)
+                      0.344915    0.000600   10.013253 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13770_/B (NOR3X1)
+     1    0.003220    0.084982    0.105519   10.118773 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13770_/Y (NOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07827_ (net)
+                      0.084982    0.000203   10.118976 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13771_/D (OAOI211X1)
+     5    0.019123    0.363558    0.315056   10.434031 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13771_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07828_ (net)
+                      0.363561    0.000969   10.435000 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13893_/A (OAOI211X1)
+     6    0.016868    0.216808    0.272597   10.707598 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13893_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_07948_ (net)
+                      0.216809    0.000931   10.708529 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13957_/B (OAOI211X1)
+     3    0.012510    0.253719    0.255819   10.964348 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13957_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_08011_ (net)
+                      0.253722    0.000787   10.965135 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13991_/B (XNOR3X1)
+     2    0.005128    0.051634    0.215921   11.181055 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13991_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_08044_ (net)
+                      0.051634    0.000277   11.181333 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13992_/D (OAOI211X1)
+     7    0.019493    0.369928    0.312156   11.493488 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_13992_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_08045_ (net)
+                      0.369933    0.001194   11.494682 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14019_/B (NOR3X1)
+     1    0.003066    0.088319    0.107676   11.602358 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14019_/Y (NOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_08072_ (net)
+                      0.088319    0.000118   11.602476 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14020_/D (OAOI211X1)
+     4    0.016592    0.321513    0.284467   11.886943 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14020_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_08073_ (net)
+                      0.321520    0.001204   11.888146 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14021_/B (XNOR3X1)
+     2    0.005220    0.053978    0.231972   12.120118 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14021_/Y (XNOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_08074_ (net)
+                      0.053979    0.000344   12.120462 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14023_/C (AOI211X1)
+     4    0.008775    0.193976    0.177461   12.297923 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14023_/Y (AOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_08076_ (net)
+                      0.193976    0.000222   12.298145 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17957_/C (NOR3X1)
+     1    0.003108    0.056256    0.073605   12.371750 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17957_/Y (NOR3X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_03709_ (net)
+                      0.056256    0.000219   12.371969 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17958_/D (OAOI211X1)
+     4    0.009632    0.202026    0.190176   12.562145 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17958_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_03710_ (net)
+                      0.202028    0.000516   12.562661 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17965_/A (OAOI211X1)
+     4    0.012627    0.152324    0.187367   12.750029 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17965_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_03716_ (net)
+                      0.152349    0.001553   12.751581 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17976_/B (OAOI211X1)
+     5    0.012942    0.258665    0.241515   12.993096 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17976_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_03725_ (net)
+                      0.258669    0.000743   12.993839 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17987_/A (AOI21X1)
+     1    0.002818    0.075364    0.113790   13.107629 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17987_/Y (AOI21X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_03734_ (net)
+                      0.075364    0.000108   13.107738 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17989_/B (OAOI211X1)
+     1    0.003211    0.099864    0.094266   13.202003 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17989_/Y (OAOI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_01893_ (net)
+                      0.099864    0.000122   13.202126 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19963_/D (DFFQX1)
+                                             13.202126   data arrival time
+
+                                950.000000  950.000000   clock clk (rise edge)
+                                  0.000000  950.000000   clock source latency
+     2    0.015368    0.031048    0.000000  950.000000 ^ clk_pad/p2c (sg13cmos5l_IOPadIn)
+                                                         clk_PAD2CORE (net)
+                      0.023375    0.000909  950.000916 ^ clkbuf_0_clk_PAD2CORE/A (BUFX12)
+     1    0.005087    0.016553    0.053490  950.054382 ^ clkbuf_0_clk_PAD2CORE/Y (BUFX12)
+                                                         clknet_0_clk_PAD2CORE (net)
+                      0.016556    0.000398  950.054810 ^ clkbuf_1_0__f_clk_PAD2CORE/A (BUFX12)
+     2    0.048754    0.036324    0.066052  950.120850 ^ clkbuf_1_0__f_clk_PAD2CORE/Y (BUFX12)
+                                                         clknet_1_0__leaf_clk_PAD2CORE (net)
+                      0.048968    0.016428  950.137268 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_clk/A (BUFX12)
+     2    0.031290    0.029400    0.077364  950.214600 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_clk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0_clk (net)
+                      0.029466    0.001364  950.216003 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f_clk/A (BUFX12)
+     2    0.025437    0.026345    0.067416  950.283386 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f_clk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_1_1__leaf_clk (net)
+                      0.026431    0.002046  950.285461 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_232_/CK (CGX3)
+     1    0.004795    0.028385    0.139949  950.425415 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_232_/ECK (CGX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_002_ (net)
+                      0.028385    0.000398  950.425781 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__002_/A (BUFX12)
+     2    0.020469    0.024028    0.063892  950.489685 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__002_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0__002_ (net)
+                      0.024523    0.002672  950.492371 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__002_/A (BUFX12)
+    11    0.122387    0.076704    0.096975  950.589355 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__002_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_1_0__leaf__002_ (net)
+                      0.079502    0.011369  950.600708 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_21__002_/A (BUFX12)
+    14    0.033274    0.031559    0.088676  950.689392 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_21__002_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_leaf_21__002_ (net)
+                      0.031580    0.001251  950.690613 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_19963_/CK (DFFQX1)
+                                 -0.300000  950.390625   clock uncertainty
+                                  0.005999  950.396667   clock reconvergence pessimism
+                                 -0.049822  950.346863   library setup time
+                                            950.346863   data required time
+---------------------------------------------------------------------------------------------
+                                            950.346863   data required time
+                                            -13.202126   data arrival time
+---------------------------------------------------------------------------------------------
+                                            937.144714   slack (MET)
+
+
+Startpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18506_
+            (rising edge-triggered flip-flop clocked by sclk')
+Endpoint: i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18280_
+          (rising edge-triggered flip-flop clocked by sclk)
+Path Group: sclk
+Path Type: max
+
+Fanout         Cap        Slew       Delay        Time   Description
+---------------------------------------------------------------------------------------------
+                                 50.000000   50.000000   clock sclk' (rise edge)
+                                  0.000000   50.000000   clock source latency
+     2    0.070192    0.131982    0.000000   50.000000 v g_inputs[1].input_pad/p2c (sg13cmos5l_IOPadIn)
+                                                         i_sg13cmos5l_dsa1_dig_core.sclk (net)
+                      0.102968    0.014289   50.014286 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_1_sclk/A (BUFX12)
+     1    0.013721    0.023739    0.092545   50.106831 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_1_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_1_sclk (net)
+                      0.023748    0.001126   50.107960 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_2_sclk/A (BUFX12)
+     1    0.012837    0.020864    0.065082   50.173042 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_2_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_2_sclk (net)
+                      0.020881    0.001041   50.174080 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_3_sclk/A (BUFX12)
+     1    0.011928    0.020509    0.063448   50.237530 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_3_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_3_sclk (net)
+                      0.020528    0.001123   50.238651 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_4_sclk/A (BUFX12)
+     1    0.011725    0.020435    0.063178   50.301830 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaybuf_4_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/delaynet_4_sclk (net)
+                      0.020456    0.001162   50.302990 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_regs_1_sclk/A (BUFX12)
+     1    0.005170    0.017733    0.059341   50.362331 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_regs_1_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/sclk_regs (net)
+                      0.017733    0.000210   50.362541 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk_regs/A (BUFX12)
+     4    0.039629    0.031282    0.072358   50.434902 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk_regs/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0_sclk_regs (net)
+                      0.035555    0.008686   50.443588 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f_sclk_regs/A (BUFX12)
+    16    0.090466    0.055082    0.096179   50.539764 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f_sclk_regs/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_2_0__leaf_sclk_regs (net)
+                      0.057462    0.008932   50.548698 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09959__229/A (INVX1)
+     1    0.002439    0.027156    0.037435   50.586132 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09959__229/Y (INVX1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/net229 (net)
+                      0.027156    0.000092   50.586224 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18506_/CK (DFFRQX1)
+    15    0.072733    0.431950    0.449948   51.036171 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18506_/Q (DFFRQX1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/u_spi_regs.n515 (net)
+                      0.432215    0.008939   51.045113 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09564_/C (NOR3BX1)
+     3    0.018676    0.174295    0.243062   51.288174 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09564_/Y (NOR3BX1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_04049_ (net)
+                      0.174397    0.001947   51.290119 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09572_/B (NAND2X1)
+     1    0.027943    0.178812    0.194969   51.485088 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09572_/Y (NAND2X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_04057_ (net)
+                      0.178901    0.003251   51.488342 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09573_/C (OAI211X1)
+     1    0.003108    0.098505    0.129319   51.617661 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09573_/Y (OAI211X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_04058_ (net)
+                      0.098505    0.000206   51.617867 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09574_/E (AOI221X1)
+     1    0.020513    0.408560    0.359648   51.977512 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09574_/Y (AOI221X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_04059_ (net)
+                      0.408570    0.001670   51.979183 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09575_/C (OAI21X1)
+     1    0.003707    0.113814    0.149527   52.128712 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09575_/Y (OAI21X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_04060_ (net)
+                      0.113814    0.000249   52.128960 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09581_/B (AOI221X1)
+     1    0.028617    0.548871    0.470408   52.599365 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09581_/Y (AOI221X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_04066_ (net)
+                      0.548889    0.002622   52.601990 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09582_/C (OAI21X1)
+     1    0.005127    0.145506    0.188464   52.790451 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09582_/Y (OAI21X1)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_553_$func$/foss/designs/sg13cmos5l_dsa1_dig_decap/macros/dsa1_dig/rtl_gen/dsa1_dig_top_cg.v:1536$15.$result[0] (net)
+                      0.145506    0.000288   52.790741 v i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18280_/D (DFFQX1)
+                                             52.790741   data arrival time
+
+                                100.000000  100.000000   clock sclk (rise edge)
+                                  0.000000  100.000000   clock source latency
+     2    0.067382    0.092288    0.000000  100.000000 ^ g_inputs[1].input_pad/p2c (sg13cmos5l_IOPadIn)
+                                                         i_sg13cmos5l_dsa1_dig_core.sclk (net)
+                      0.080944    0.019710  100.019707 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk/A (BUFX12)
+     2    0.010770    0.020938    0.077485  100.097191 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0_sclk (net)
+                      0.020941    0.000604  100.097794 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f_sclk/A (BUFX12)
+     3    0.029022    0.028029    0.065235  100.163033 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_1_0__leaf_sclk (net)
+                      0.028185    0.002139  100.165169 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_0_sclk/A (BUFX12)
+     4    0.019298    0.023142    0.063814  100.228981 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_0_sclk/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_leaf_0_sclk (net)
+                      0.023159    0.000576  100.229561 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18223_/CK (CGX3)
+     1    0.004856    0.028529    0.138833  100.368393 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18223_/ECK (CGX3)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09174_ (net)
+                      0.028529    0.000341  100.368736 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__09174_/A (BUFX12)
+     2    0.010517    0.019098    0.058790  100.427521 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_0__09174_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_0__09174_ (net)
+                      0.019101    0.000611  100.428131 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__09174_/A (BUFX12)
+     8    0.034876    0.030823    0.066727  100.494858 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__09174_/Y (BUFX12)
+                                                         i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clknet_1_0__leaf__09174_ (net)
+                      0.031046    0.001918  100.496780 ^ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18280_/CK (DFFQX1)
+                                 -0.300000  100.196785   clock uncertainty
+                                  0.000000  100.196785   clock reconvergence pessimism
+                                 -0.051477  100.145302   library setup time
+                                            100.145302   data required time
+---------------------------------------------------------------------------------------------
+                                            100.145302   data required time
+                                            -52.790741   data arrival time
+---------------------------------------------------------------------------------------------
+                                             47.354561   slack (MET)
+
+
+
+
+===========================================================================
+report_checks --slack_max -0.01
+============================================================================
+======================= nom_fast_1p32V_m40C Corner ===================================
+
+No paths found.
+
+
+===========================================================================
+ report_check_types -max_slew -max_cap -max_fanout -violators
+============================================================================
+======================= nom_fast_1p32V_m40C Corner ===================================
+
+max fanout
+
+Pin                                   Limit Fanout  Slack
+---------------------------------------------------------
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14108_/Y     10     20    -10 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout178/Y     10     17     -7 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f_sclk_regs/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout174/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout176/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout177/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout179/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout190/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout193/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout194/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout195/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout196/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout198/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout199/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout201/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout203/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout204/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout205/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout207/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout208/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout211/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout214/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout215/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout216/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout218/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout219/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout220/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout222/Y     10     16     -6 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18505_/Q     10     15     -5 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18506_/Q     10     15     -5 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18515_/Q     10     15     -5 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18516_/Q     10     15     -5 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f__002_/Y     10     15     -5 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout213/Y     10     15     -5 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09385_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_17812_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18510_/Q     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18512_/Q     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18513_/Q     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18525_/Q     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18624_/Q     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__09181_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f__09181_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_0__002_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_0_clk_regs/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_10__002_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_10_clk_regs/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_11__000_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_12_clk_regs/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_14__002_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_15__000_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_16__000_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_19__000_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_1_clk_regs/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_21__002_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_2_clk_regs/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_3__000_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_7_clk_regs/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_8__000_/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_8_clk_regs/Y     10     14     -4 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14172_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__09183_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_1__f__09182_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_3__f__09182_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_12__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_14_clk_regs/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_17_clk_regs/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_21__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_22__002_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_25__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_26__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_28__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_29__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_2__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_30__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_31__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_34__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_35__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_36__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_37__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_3__002_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_3_clk_regs/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_4_clk_regs/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_5__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_5__002_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_5_clk_regs/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_6__000_/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_6_clk_regs/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_9_clk_regs/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout192/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/max_cap188/Y     10     13     -3 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_14418_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__09178_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f__09178_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f__09183_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f__09182_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_1__f__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_2__f__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_0__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_0__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_10__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_11__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_11_clk_regs/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_12__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_13__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_13__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_14__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_14__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_15__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_15__002_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_16__002_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_17__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_17__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_17__002_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_18__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_18__002_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_19__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_1__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_20__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_21__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_22__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_23__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_24__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_24__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_25__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_26__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_27__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_29__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_30__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_31__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_32__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_32__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_33__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_36__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_37__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_39__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_3__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_4__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_4__002_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_6__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_7__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_8__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_9__000_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_9__001_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_9__002_/Y     10     12     -2 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_09401_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_11468_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18623_/Q     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_0__f__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_1_1__f_clk_regs/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_0__f__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_1__f__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_2__f__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_2__f_sclk_regs/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_3__f__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_2_3__f_sclk_regs/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_10__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_11__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_12__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_13__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_15_clk_regs/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_16__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_19__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_1__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_1__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_20__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_22__000_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_23__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_27__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_28__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_2__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_33__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_34__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_38__000_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_40__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_41__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_42__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_4__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_5__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_6__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_7__001_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_7__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkbuf_leaf_8__002_/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout209/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/fanout212/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/max_cap181/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/max_cap183/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/max_cap184/Y     10     11        (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/max_cap186/Y     10     11        (VIOLATED)
+rst_n_pad/p2c                             8      9        (VIOLATED)
+
+max capacitance
+
+Pin                                        Limit         Cap       Slack
+------------------------------------------------------------------------
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18515_/Q    0.095000    0.097391   -0.002391 (VIOLATED)
+i_sg13cmos5l_dsa1_dig_core.dsa1_dig/_18516_/Q    0.095000    0.097251   -0.002251 (VIOLATED)
+
+
+
+===========================================================================
+report_parasitic_annotation -report_unannotated
+============================================================================
+Found 161 unannotated drivers.
+ analog_PAD[0]
+ analog_PAD[1]
+ analog_PAD[2]
+ clk_PAD
+ do_q_PAD
+ do_q_b_PAD
+ dsm_clk_PAD
+ input_PAD[0]
+ input_PAD[1]
+ input_PAD[2]
+ input_PAD[3]
+ output_PAD[0]
+ output_PAD[1]
+ rst_n_PAD
+ do_q_b_pad/pad
+ do_q_pad/pad
+ dsm_clk_pad/pad
+ g_outputs\[0\].output_pad/pad
+ g_outputs\[1\].output_pad/pad
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload0/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload1/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload10/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload100/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload101/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload102/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload103/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload104/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload105/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload106/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload107/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload108/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload109/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload11/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload110/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload111/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload112/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload113/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload114/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload115/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload116/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload117/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload118/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload119/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload12/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload120/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload121/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload122/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload123/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload124/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload125/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload126/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload127/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload128/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload129/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload13/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload130/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload131/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload132/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload14/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload15/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload16/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload17/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload18/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload19/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload2/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload20/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload21/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload22/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload23/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload24/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload25/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload26/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload27/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload28/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload29/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload3/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload30/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload31/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload32/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload33/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload34/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload35/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload36/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload37/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload38/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload39/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload4/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload40/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload41/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload42/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload43/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload44/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload45/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload46/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload47/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload48/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload49/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload5/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload50/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload51/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload52/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload53/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload54/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload55/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload56/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload57/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload58/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload59/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload6/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload60/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload61/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload62/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload63/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload64/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload65/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload66/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload67/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload68/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload69/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload7/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload70/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload71/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload72/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload73/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload74/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload75/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload76/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload77/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload78/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload79/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload8/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload80/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload81/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload82/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload83/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload84/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload85/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload86/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload87/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload88/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload89/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload9/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload90/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload91/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload92/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload93/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload94/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload95/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload96/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload97/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload98/Y
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/clkload99/Y
+ ib_pad/pad
+ ib_pad/padbare
+ ib_pad/padres
+ vcm_pad/pad
+ vcm_pad/padbare
+ vcm_pad/padres
+ vi_pad/pad
+ vi_pad/padbare
+ vi_pad/padres
+Found 6 partially unannotated drivers.
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/output51/Y
+  dsm2/di_trim[3]
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/output52/Y
+  dsm2/di_trim[2]
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/output53/Y
+  dsm2/di_trim[1]
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/output54/Y
+  dsm2/di_trim[0]
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/output56/Y
+  dsm2/di_dith_amp[1]
+ i_sg13cmos5l_dsa1_dig_core.dsa1_dig/output57/Y
+  dsm2/di_dith_amp[0]
+
+===========================================================================
+max slew violation count 0
+max fanout violation count 190
+max cap violation count 2
+============================================================================
+
+===========================================================================
+check_setup -verbose -unconstrained_endpoints -multiple_clock -no_clock -no_input_delay -loops -generated_clocks
+===========================================================================
+Warning: There are 12 input ports missing set_input_delay.
+  analog_PAD[0]
+  analog_PAD[1]
+  analog_PAD[2]
+  clk_PAD
+  do_q_PAD
+  do_q_b_PAD
+  dsm_clk_PAD
+  input_PAD[0]
+  input_PAD[1]
+  output_PAD[0]
+  output_PAD[1]
+  rst_n_PAD
+Warning: There are 12 unconstrained endpoints.
+  analog_PAD[0]
+  analog_PAD[1]
+  analog_PAD[2]
+  clk_PAD
+  do_q_PAD
+  do_q_b_PAD
+  dsm_clk_PAD
+  input_PAD[0]
+  input_PAD[1]
+  input_PAD[2]
+  input_PAD[3]
+  rst_n_PAD

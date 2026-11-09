@@ -95,11 +95,11 @@ The reduction was checked on the v1.1.0 ring (two-port resistances of the full n
 
 **The clamp cell** at transistor level from its schematic devices: `sg13_hv_nmos` 2268/0.6 um, the 126/9.5 um MOS capacitor, IHP's inverter (108/0.5 and 350/0.5 um), the 129.3 kOhm rppd trigger, between `clv_clamp` and `cls_clamp`, and a second copy between `clv_clamp_vdda` and `cls_clamp_vdda` on the segment. `hbm.py --no-clamp clamp_vdda` leaves the second one out.
 
-**The core**, DSA1's own, and dsm2 as a box with its input protection:
+**The core**, DSA1's own, and dsm2 as a box with its input protection. The box is the model's view: dsm2's inside is not extracted, only its pins, its output stand-ins and its input protection:
 
 | part | value | source |
 |---|---|---|
-| core-rail decap | 143.1 pF in three banks, split over the 8 core-ring points: `DECAPHV32` 1378 cells x 79.01 fF = 108.88 pF, `DECAPHV16` 792 x 30.52 fF = 24.17 pF, `DECAPHV8` 1600 x 6.272 fF = 10.04 pF | cell counts from `netlist/pnl/sg13cmos5l_dsa1_dig_top.pnl.v` (1369, 607, 759) plus `macros/dsa1_dig/final/pnl/dsa1_dig_top.pnl.v` (9, 185, 841). C per cell: the `$DECAPHV_DIR/cdl/ez130_8t_decap_hv.cdl` device (one `sg13_hv_pmos`, W 1.66 um, L 0.82 / 4.18 / 10.9 um, gate on VSS) in ngspice, AC at 1 MHz biased at 1.2 V, tt. It moves under 4 % up to 5 V. The liberty has no capacitance. |
+| core-rail decap | 82.21 pF in three banks, split over the 8 core-ring points: `DECAPHV32` 589 cells x 79.01 fF = 46.54 pF, `DECAPHV16` 775 x 30.52 fF = 23.65 pF, `DECAPHV8` 1917 x 6.272 fF = 12.02 pF | cell counts from `netlist/pnl/sg13cmos5l_dsa1_dig_top.pnl.v` (511, 200, 339) in the chip rows, plus `macros/dsa1_dig/final/pnl/dsa1_dig_top.pnl.v` (78, 575, 1578) in the macro. C per cell: the `$DECAPHV_DIR/cdl/ez130_8t_decap_hv.cdl` device (one `sg13_hv_pmos`, W 1.66 um, L 0.82 / 4.18 / 10.9 um, gate on VSS) in ngspice, AC at 1 MHz biased at 1.2 V, tt. It moves under 4 % up to 5 V. The liberty has no capacitance. |
 | decap series R | per bank 1 / (2 pi f_c C): 4.459, 3.311 and 0.458 ohm per cell class, plus 0.5 ohm for the whole bank (assumption) | f_c is the decap library's own channel-corner estimate, 60 MHz, 0.4 GHz and 10 GHz (`$DECAPHV_DIR/doc/decap_hv.md`) |
 | core n-well junction | a high-current diode vss to vdd of 20000 um^2, split over the 8 points | assumption, as in OpenBLAU: a bound, not measured |
 | output pads (2 on VDD) | the macro's `BUFX3` that drives `c2p` (`AND2X1` for `adc_conv`), input at its vss (unpowered core), on the nearest core-ring point | `netlist/pnl`, `macros/dsa1_dig/final/pnl`. Devices from `$EZ130_DIR/cdl/ez130_8t.cdl` |

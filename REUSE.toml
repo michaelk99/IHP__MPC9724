@@ -155,3 +155,15 @@ SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
 path = "scripts/release_note.template.md"
 SPDX-FileCopyrightText = "2026 Michael Koefinger"
 SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
+
+[[annotations]]
+path = ["ip/dsm2_core/doc/**", "ip/dsm2_core/lvs/**", "ip/dsm2_core/model/**", "ip/dsm2_core/sizing/**", "ip/dsm2_core/schematic/**"]
+SPDX-FileCopyrightText = "2026 Michael Koefinger"
+SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"
+
+# The SPDX line of these two notebooks is followed by a JSON escape in the same string, which reuse reads as part of the expression.
+[[annotations]]
+path = ["ip/dsm2_core/sizing/size_sw_tgate.ipynb", "ip/dsm2_core/sizing/size_sw_tgate_cmfb2.ipynb"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Michael Koefinger"
+SPDX-License-Identifier = "Apache-2.0 WITH SHL-2.1"

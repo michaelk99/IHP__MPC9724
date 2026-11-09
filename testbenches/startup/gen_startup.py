@@ -362,7 +362,7 @@ ADC_CONV_AT = 456e-6                # one adc_conv pulse, one clk cycle wide, in
 # The settled currents are means over a whole number of data_in periods, 8 of them are also 125 dsm_clk periods
 P_WINDOW = 8 * T_CLK
 T_END_POWER = 520e-6
-ORDERS = ("io_first", "core_first", "bounce", "power_dsa1", "power_dsm")
+ORDERS = ("io_first", "core_first", "bounce", "power_dsa1", "power_dsm", "vdda_last")
 POWER_ORDERS = ("power_dsa1", "power_dsm")
 # The package in the order bounce. Bond wire 25 um gold, about 1 nH and 50 mOhm per mm, plus the QFN
 # lead and its board pad. Each supply pin has 100 nF on the board, each output 10 pF of trace and receiver.
@@ -392,10 +392,24 @@ T_DSM_LEAD = 2 * T_SCLK
 # di_rst_b rises on the 10th rising clk edge after rst_n. Start-up orders only.
 DEFON = os.environ.get("STARTUP_DEFON", "") == "1"
 T_DEFON_RUN = T_SCLK_ON + (-(-(T_RST - T_SCLK_ON) // T_CLK) + 9) * T_CLK
+# STARTUP_END_US ends a DEFON start-up run early, for the slow extracted view. Reads it cuts off are reported, not judged.
+END_US = os.environ.get("STARTUP_END_US")
+# STARTUP_CORNER=ss_m40: ss MOS, worst-case R and C, -40 C, with dsm2's cold tolerances. Default tt 27 C.
+CORNER = os.environ.get("STARTUP_CORNER", "tt")
+COLD = {"mos_tt": "mos_ss", "res_typ": "res_wcs", "cap_typ": "cap_wcs"}
+# vdda_last: VDD first, IOVDD second as in core_first, VDDA once IOVDD is up, with dsm2 already enabled
+T_VDDA_LAST = T_SECOND + RAMP
 VI_PAD = "analog_PAD_0_"            # dsm2's vi, which a source at half of VDDA drives when dsm2 is in
+VCM_PAD = "analog_PAD_1_"           # dsm2's vcm, 0.96 MOhm out of vcm_gen, so 1 MOhm would halve it
 # Breakpoints every 0.25 ns from 1 to 6 ns after both dsm_clk edges, as dsm2's loop benches place them from 1 to 4 ns
 # after di_clk, plus 2 ns for the dsm_clk pad. Without them dsm2 stalls about 16 clocks in at its vi ESD diode.
 BRK = [1e-9 + k * 0.25e-9 for k in range(21)]
+
+
+def ramp_starts(order):
+    """{supply: start of its ramp}."""
+    io, core = (T_FIRST, T_SECOND) if order == "io_first" else (T_SECOND, T_FIRST)
+    return {"IOVDD": io, "VDD": core, "VDDA": T_VDDA_LAST if order == "vdda_last" else core}
 
 
 def frames(order, dsm2=False):
@@ -422,6 +436,9 @@ def dsm2_run_specified():
 
 def t_end(order, dsm2=False):
     if dsm2 and DEFON and order not in POWER_ORDERS:
+        if END_US:
+            assert float(END_US) * 1e-6 >= T_DEFON_RUN + 30e-6, "STARTUP_END_US leaves under 20 us of modulation to check"
+            return float(END_US) * 1e-6
         return max(T_END, T_DEFON_RUN + T_END_DSM2 - dsm2_run_specified())
     if dsm2 and order not in POWER_ORDERS:
         return T_END_BOUNCE_DSM2 if order == "bounce" else T_END_DSM2
@@ -500,7 +517,7 @@ def stimulus(order, bonds=None, ports=None, dsm2=False):
     dsm2 = dsm2 and order not in POWER_ORDERS
     has = lambda n: n in ports
     vdda = has("VDDA")
-    t_io, t_core = (T_FIRST, T_SECOND) if order == "io_first" else (T_SECOND, T_FIRST)
+    t0s = ramp_starts(order)
     pkg = order == "bounce"
     pw = order in POWER_ORDERS
     mosi, ss = [(0, 0)], [(0, 1)]
@@ -527,10 +544,10 @@ def stimulus(order, bonds=None, ports=None, dsm2=False):
     # wires make far too slow, and the bounce is measured after the ramps anyway
     ramp = lambda t, v: f"{v}" if pkg and dsm2 else f"PWL(0 0 {t:.6g} 0 {t + RAMP:.6g} {v})"
     lines = [f"* {order}: the supply ramps, the host on the IOVDD rail, written by gen_startup.py",
-             f"VIOVDD IOVDD_s 0 {ramp(t_io, 3.3)}", f"RIOVDD IOVDD_s {b('IOVDD')} 0.5",
-             f"VVDD VDD_s 0 {ramp(t_core, 1.2)}", f"RVDD VDD_s {b('VDD')} 0.5"]
+             f"VIOVDD IOVDD_s 0 {ramp(t0s['IOVDD'], 3.3)}", f"RIOVDD IOVDD_s {b('IOVDD')} 0.5",
+             f"VVDD VDD_s 0 {ramp(t0s['VDD'], 1.2)}", f"RVDD VDD_s {b('VDD')} 0.5"]
     if vdda:
-        lines += [f"VVDDA VDDA_s 0 {ramp(t_core, 1.5)}", f"RVDDA VDDA_s {b('VDDA')} 0.5"]
+        lines += [f"VVDDA VDDA_s 0 {ramp(t0s['VDDA'], 1.5)}", f"RVDDA VDDA_s {b('VDDA')} 0.5"]
     if dsm2 and not pkg:
         lines += ["* maxord=1 makes gear backward Euler: with the second order dsm2 stalls on the VDDA ramp near 0.35 V, at vcm and its",
                   "* switched-cap nodes, with any of the bench's or dsm2's own tolerances",
@@ -560,7 +577,7 @@ def stimulus(order, bonds=None, ports=None, dsm2=False):
         if pkg:
             lines += wire(p, b(p), bonds[p], p)
     # vi and vcm: a source tracking VDDA in the bounce case, open (1 MOhm) otherwise, as the board holds them while VDDA ramps. The other analog pads stay at 1 MOhm.
-    # With dsm2 as transistors only vi is driven, in every order, since dsm2's vcm_gen drives vcm.
+    # With dsm2 as transistors only vi is driven, in every order, and vcm is left to dsm2's vcm_gen with 10 GOhm.
     analog = [p for p in ports if p.startswith(("analog_PAD_", "bidir_PAD_"))]
     for p in analog:
         if dsm2 and p == VI_PAD:
@@ -568,9 +585,9 @@ def stimulus(order, bonds=None, ports=None, dsm2=False):
         elif pkg and vdda and p in ANALOG_BIAS and not dsm2:
             lines += [f"B{p} {p}_d 0 V={V_VCM}*V(VDDA_s)", f"R{p} {p}_d {b(p)} {R_SRC}"] + wire(b(p), p, bonds[p], p)
         elif pkg and p in bonds:
-            lines += [f"R{p} {b(p)} 0 1Meg"] + wire(b(p), p, bonds[p], p)
+            lines += [f"R{p} {b(p)} 0 {'10G' if dsm2 and p == VCM_PAD else '1Meg'}"] + wire(b(p), p, bonds[p], p)
         else:
-            lines.append(f"R{p} {p} 0 1Meg")
+            lines.append(f"R{p} {p} 0 {'10G' if dsm2 and p == VCM_PAD else '1Meg'}")
     # The 0/1 levels of the bench-driven pad inputs. dsm2's outputs toggle at every rising dsm_clk edge, complementary, as a worst case of the bit stream. The adc_conv pulse is one clk cycle wide.
     for c in (p for p in ports if p.startswith("c_")):
         if dsm_active(order) and c in ("c_dsm_do_q", "c_dsm_do_q_b"):
@@ -636,6 +653,13 @@ def testbench(template, order, ports=None, dsm2=None):
         return "\n+ ".join(" ".join(names[i:i + 6]) for i in range(0, len(names), 6))
     real = bool(dsm2) and order not in POWER_ORDERS
     save, wr = probes(order, ports, dsm2)
+    if CORNER == "ss_m40":
+        for a, b in COLD.items():
+            template = template.replace(f" {a}\n", f" {b}\n")
+        # dsm2's tolerances at -40 C. XSPICE forces trtol to 1 anyway.
+        template = template.replace("\n.control", "\n.temp -40\n.options gmin=1e-10 reltol=1e-3 trtol=7\n.control", 1)
+    else:
+        assert CORNER == "tt", f"STARTUP_CORNER {CORNER} is not tt or ss_m40"
     return (template.replace("@ORDER@", order).replace("@SAVE@", cont(save)).replace("@WRDATA@", cont(wr))
             .replace("@CHIP@", "chip.spice" if real else "chip_box.spice")
             .replace("@DSM2@", ".include dsm2.spice" if real else "* dsm2 is a box in this order"))
@@ -859,6 +883,7 @@ endmodule
             assert [level(t0 + (i + 1) * T_SCLK - 1e-8) for i in range(23)] == frame_bits(addr, wdata), (order, addr)
         assert f"Vdsm_clk_PAD_l dsm_clk_PAD_l 0 PULSE(0 1 {run - 5e-6:.8g} " in sr and "Vc_dsm" not in sr, sr
         assert "Banalog_PAD_0_ analog_PAD_0__d 0 V=0.5*V(VDDA_s)" in sr and "Banalog_PAD_1_" not in sr, sr
+        assert f"Ranalog_PAD_1_ analog_PAD_1_{'_b' if order == 'bounce' else ''} 0 10G" in sr, sr
         # the bounce starts with the supplies up and keeps the second order, the start-up orders ramp with backward Euler
         assert ("VVDDA VDDA_s 0 1.5\n" in sr and "maxord" not in sr) if order == "bounce" else (".options maxord=1" in sr and "VVDDA VDDA_s 0 PWL(" in sr), sr
         assert sr.rstrip().endswith(f".tran 5n {t_end(order, True):.6g} 0 200n"), sr

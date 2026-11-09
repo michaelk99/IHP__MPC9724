@@ -1,0 +1,13 @@
+.subckt sw_tgate_cmfb2 p m g gb vdd vss
+*.PININFO vdd:B vss:B p:B m:B gb:I g:I
+MMN p g m vss sg13_lv_nmos w=1u l=1u ng=1
+MMP p gb m vdd sg13_lv_pmos w=3u l=1u ng=1
+MMND1 p gb p vss sg13_lv_nmos w=0.5u l=1u ng=1
+MMND2 m gb m vss sg13_lv_nmos w=0.5u l=1u ng=1
+MMPD1 p g p vdd sg13_lv_pmos w=1.5u l=1u ng=1
+MMPD2 m g m vdd sg13_lv_pmos w=1.5u l=1u ng=1
+MMNG1 m vss m vss sg13_lv_nmos w=0.5u l=1u ng=1
+MMNG2 m vss m vss sg13_lv_nmos w=0.5u l=1u ng=1
+MMPG1 m vdd m vdd sg13_lv_pmos w=1.5u l=1u ng=1
+MMPG2 m vdd m vdd sg13_lv_pmos w=1.5u l=1u ng=1
+.ends

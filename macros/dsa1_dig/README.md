@@ -20,7 +20,7 @@ One bitstream goes in and 22-bit words come out over SPI at 512 Hz.
 
 ## Where the RTL comes from
 
-`rtl/` is a frozen copy from the jku-phd development repo
+`rtl/` is a frozen copy from the private RTL repository
 (`circuit-level/hdl/DSADC1`), with the VHDL entity renamed from
 `dsa1_dig_top_v2` to `dsa1_dig_top`. The decimator is not copied: both macros
 read the same six SystemVerilog files from `../decimator/rtl`.

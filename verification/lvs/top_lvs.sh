@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2026 Michael Koefinger
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # GDS-level LVS of the chip with the macro and every standard cell extracted, the tapeout gate.
-# Run inside IIC-OSIC-TOOLS at the repo root, with the AGENTS.md environment set:
+# Run inside IIC-OSIC-TOOLS at the repo root, with the environment of doc/running.md set:
 #   verification/lvs/top_lvs.sh [layout/sg13cmos5l_dsa1_dig_top.gds.gz]
 #   verification/lvs/top_lvs.sh --netgen-only        compare the last extraction again
 # It reads the unfilled GDS, the delivery GDS minus its fill. fill_isolation.py shows the fill

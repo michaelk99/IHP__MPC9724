@@ -10,7 +10,7 @@
 // above 2*fb, and once the rate is free the alias is set by the CIC alone: the
 // image at fs/D - fb folds to fb at the CIC output rate, so every half-band
 // sits at 0.0 dB there. This chain therefore has no half-band at all. See
-// SKILLS/dsm-decimation-architecture and system-level/matlab/dec_v5_*.
+// system-level/matlab/dec_v5_* of the private RTL repository.
 //
 //   65536 Hz --CIC/32--> 2048 --sinc2^9--> 1024 --sinc2^16--> 512 --comp--> 512
 //

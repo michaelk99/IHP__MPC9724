@@ -1,0 +1,131 @@
+Startpoint: ss (input port clocked by sclk)
+Endpoint: _18259_ (removal check against rising-edge clock sclk)
+Path Group: asynchronous
+Path Type: min
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                              0.0000    0.0000   clock sclk (rise edge)
+                              0.0000    0.0000   clock network delay (propagated)
+                              0.0000    0.0000 v input external delay
+     1    0.0032    0.0210    0.0078    0.0078 v ss (in)
+     1    0.0022    0.0158    0.0518    0.0596 v hold261/Y (BUFX3)
+     1    0.0023    0.0159    0.0501    0.1096 v hold258/Y (BUFX3)
+     1    0.0020    0.0156    0.0496    0.1593 v hold262/Y (BUFX3)
+     3    0.0729    0.1383    0.1397    0.2990 v input4/Y (BUFX3)
+     1    0.0100    0.0315    0.1078    0.4068 v hold263/Y (BUFX3)
+     2    0.0233    0.0508    0.0878    0.4946 v hold259/Y (BUFX3)
+     1    0.0036    0.0571    0.0701    0.5647 ^ _18208_/Y (NOR2BX1)
+                    0.0571    0.0001    0.5648 ^ _18259_/RB (DFFRQX1)
+                                        0.5648   data arrival time
+
+                              0.0000    0.0000   clock sclk (rise edge)
+                              0.0000    0.0000   clock source latency
+     2    0.0677    0.0000    0.0055    0.0055 ^ sclk (in)
+     1    0.0155    0.0214    0.0544    0.0599 ^ delaybuf_1_sclk/Y (BUFX12)
+     1    0.0145    0.0209    0.0591    0.1190 ^ delaybuf_2_sclk/Y (BUFX12)
+     1    0.0134    0.0204    0.0582    0.1772 ^ delaybuf_3_sclk/Y (BUFX12)
+     1    0.0131    0.0203    0.0579    0.2352 ^ delaybuf_4_sclk/Y (BUFX12)
+     1    0.0053    0.0166    0.0534    0.2885 ^ clkbuf_regs_1_sclk/Y (BUFX12)
+     4    0.0438    0.0352    0.0672    0.3558 ^ clkbuf_0_sclk_regs/Y (BUFX12)
+    16    0.1031    0.0677    0.1061    0.4618 ^ clkbuf_2_0__f_sclk_regs/Y (BUFX12)
+                    0.0689    0.0074    0.4692 ^ _18259_/CK (DFFRQX1)
+                              0.0500    0.5192   clock uncertainty
+                              0.0000    0.5192   clock reconvergence pessimism
+                             -0.0555    0.4637   library removal time
+                                        0.4637   data required time
+-------------------------------------------------------------------------------------
+                                        0.4637   data required time
+                                       -0.5648   data arrival time
+-------------------------------------------------------------------------------------
+                                        0.1012   slack (MET)
+
+
+Startpoint: _20056_ (rising edge-triggered flip-flop clocked by clk)
+Endpoint: _20057_ (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: min
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                              0.0000    0.0000   clock clk (rise edge)
+                              0.0000    0.0000   clock source latency
+     2    0.0546    0.0000    0.0032    0.0032 ^ clk (in)
+     1    0.0120    0.0198    0.0504    0.0536 ^ delaybuf_4_clk/Y (BUFX12)
+     1    0.0116    0.0196    0.0570    0.1105 ^ delaybuf_5_clk/Y (BUFX12)
+     1    0.0099    0.0188    0.0556    0.1661 ^ delaybuf_6_clk/Y (BUFX12)
+     1    0.0117    0.0196    0.0563    0.2224 ^ delaybuf_7_clk/Y (BUFX12)
+     1    0.0045    0.0163    0.0520    0.2745 ^ clkbuf_regs_0_clk/Y (BUFX12)
+     2    0.0357    0.0312    0.0661    0.3406 ^ clkbuf_0_clk_regs/Y (BUFX12)
+     9    0.1461    0.0895    0.1137    0.4543 ^ clkbuf_1_0__f_clk_regs/Y (BUFX12)
+    13    0.0309    0.0309    0.1053    0.5597 ^ clkbuf_leaf_17_clk_regs/Y (BUFX12)
+                    0.0309    0.0003    0.5600 ^ _20056_/CK (DFFRQX1)
+     1    0.0017    0.0197    0.1518    0.7118 v _20056_/Q (DFFRQX1)
+                    0.0197    0.0000    0.7118 v _20057_/D (DFFRQX1)
+                                        0.7118   data arrival time
+
+                              0.0000    0.0000   clock clk (rise edge)
+                              0.0000    0.0000   clock source latency
+     2    0.0574    0.0000    0.0033    0.0033 ^ clk (in)
+     1    0.0134    0.0204    0.0513    0.0547 ^ delaybuf_4_clk/Y (BUFX12)
+     1    0.0130    0.0202    0.0582    0.1129 ^ delaybuf_5_clk/Y (BUFX12)
+     1    0.0113    0.0195    0.0568    0.1697 ^ delaybuf_6_clk/Y (BUFX12)
+     1    0.0131    0.0202    0.0576    0.2272 ^ delaybuf_7_clk/Y (BUFX12)
+     1    0.0059    0.0170    0.0532    0.2805 ^ clkbuf_regs_0_clk/Y (BUFX12)
+     2    0.0385    0.0327    0.0675    0.3480 ^ clkbuf_0_clk_regs/Y (BUFX12)
+     9    0.1618    0.0981    0.1200    0.4680 ^ clkbuf_1_0__f_clk_regs/Y (BUFX12)
+    10    0.0835    0.0576    0.1283    0.5963 ^ clkbuf_leaf_16_clk_regs/Y (BUFX12)
+                    0.0580    0.0041    0.6004 ^ _20057_/CK (DFFRQX1)
+                              0.0500    0.6504   clock uncertainty
+                             -0.0137    0.6367   clock reconvergence pessimism
+                              0.0226    0.6593   library hold time
+                                        0.6593   data required time
+-------------------------------------------------------------------------------------
+                                        0.6593   data required time
+                                       -0.7118   data arrival time
+-------------------------------------------------------------------------------------
+                                        0.0526   slack (MET)
+
+
+Startpoint: _18242_ (rising edge-triggered flip-flop clocked by sclk)
+Endpoint: _18275_ (rising edge-triggered flip-flop clocked by sclk)
+Path Group: sclk
+Path Type: min
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                              0.0000    0.0000   clock sclk (rise edge)
+                              0.0000    0.0000   clock source latency
+     2    0.0649    0.0000    0.0102    0.0102 ^ sclk (in)
+     2    0.0116    0.0196    0.0561    0.0663 ^ clkbuf_0_sclk/Y (BUFX12)
+     3    0.0357    0.0313    0.0680    0.1343 ^ clkbuf_1_1__f_sclk/Y (BUFX12)
+     4    0.0176    0.0223    0.0657    0.2000 ^ clkbuf_leaf_1_sclk/Y (BUFX12)
+     1    0.0051    0.0291    0.1400    0.3400 ^ _18226_/ECK (CGX3)
+     2    0.0117    0.0196    0.0601    0.4001 ^ clkbuf_0__09177_/Y (BUFX12)
+     9    0.0339    0.0304    0.0670    0.4671 ^ clkbuf_1_1__f__09177_/Y (BUFX12)
+                    0.0304    0.0007    0.4678 ^ _18242_/CK (DFFRQX1)
+     1    0.0019    0.0204    0.1523    0.6201 v _18242_/Q (DFFRQX1)
+                    0.0204    0.0001    0.6202 v _18275_/D (DFFRQX1)
+                                        0.6202   data arrival time
+
+                              0.0000    0.0000   clock sclk (rise edge)
+                              0.0000    0.0000   clock source latency
+     2    0.0677    0.0000    0.0107    0.0107 ^ sclk (in)
+     2    0.0144    0.0209    0.0581    0.0688 ^ clkbuf_0_sclk/Y (BUFX12)
+     3    0.0399    0.0334    0.0703    0.1392 ^ clkbuf_1_1__f_sclk/Y (BUFX12)
+     4    0.0196    0.0234    0.0679    0.2070 ^ clkbuf_leaf_1_sclk/Y (BUFX12)
+     1    0.0066    0.0324    0.1438    0.3509 ^ _18224_/ECK (CGX3)
+     2    0.0160    0.0216    0.0640    0.4148 ^ clkbuf_0__09175_/Y (BUFX12)
+     8    0.0411    0.0340    0.0709    0.4858 ^ clkbuf_1_0__f__09175_/Y (BUFX12)
+                    0.0342    0.0022    0.4880 ^ _18275_/CK (DFFRQX1)
+                              0.0500    0.5380   clock uncertainty
+                             -0.0070    0.5310   clock reconvergence pessimism
+                              0.0178    0.5488   library hold time
+                                        0.5488   data required time
+-------------------------------------------------------------------------------------
+                                        0.5488   data required time
+                                       -0.6202   data arrival time
+-------------------------------------------------------------------------------------
+                                        0.0714   slack (MET)
+
+

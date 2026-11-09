@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # Negative control of the dsm2 checks: dsm2's vdd moved from VDDA to VDD in a copy of the chip netlist must make core_first fail.
 # Runs core_first with dsm2's schematic on the mutant (as long as core_first itself) and requires the checker to exit 1 on the VDD current line.
-# Run inside IIC-OSIC-TOOLS at the repo root with the AGENTS.md environment set: testbenches/startup/run_dsm2_mutant.sh
+# Run inside IIC-OSIC-TOOLS at the repo root with the environment of doc/running.md set: testbenches/startup/run_dsm2_mutant.sh
 set -euo pipefail
 M=${STARTUP_MUT:-testbenches/startup/build_dsm2_mut}
 rm -rf $M

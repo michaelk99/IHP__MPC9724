@@ -1,0 +1,83 @@
+.subckt ota_fcasc2_top vdd vfb voutp voutn vi_p vi_n ibias_200n di_ena vss vbn
+*.PININFO ibias_200n:I vdd:B vss:B vi_p:I vi_n:I voutn:O voutp:O vfb:I vbn:O di_ena:I
+xdp1 vtail vi_p vi_n vd1 vd2 ota_fcasc2_dp
+xnbc1 d_ena_b ibias_200n voutp voutn d_ena vcp vd2 vd1 vbn vfb vss ota_fcasc2_nbiascasc
+xpbc1 vdd vtail d_ena_b voutn voutp d_ena vcp ota_fcasc2_pbiascasc
+xena1 vdd d_ena di_ena d_ena_b vss ota_fcasc2_ena
+xcdec19 vdd vss cap_dec
+xcdec18 vdd vss cap_dec
+xcdec17 vdd vss cap_dec
+xcdec16 vdd vss cap_dec
+xcdec15 vdd vss cap_dec
+xcdec14 vdd vss cap_dec
+xcdec13 vdd vss cap_dec
+xcdec12 vdd vss cap_dec
+xcdec11 vdd vss cap_dec
+xcdec10 vdd vss cap_dec
+.ends
+
+* expanding   symbol:  ota_fcasc2_dp.sym # of pins=5
+.subckt ota_fcasc2_dp itail vi_p vi_n io_p io_n
+*.PININFO itail:I vi_p:I vi_n:I io_n:B io_p:B
+XMP1 io_n vi_p itail itail sg13_lv_pmos w=2u l=1u ng=1 m=4 mm_ok=1
+XMP2 io_p vi_n itail itail sg13_lv_pmos w=2u l=1u ng=1 m=4 mm_ok=1
+XMPD1 itail itail itail itail sg13_lv_pmos w=2u l=1u ng=1 m=2 mm_ok=1
+.ends
+
+
+* expanding   symbol:  ota_fcasc2_nbiascasc.sym # of pins=11
+.subckt ota_fcasc2_nbiascasc d_ena_b ibias_200n voutp voutn d_ena io_bias_200n vd2 vd1 vbn vfb vss
+*.PININFO vss:B d_ena_b:I ibias_200n:I d_ena:I vbn:O io_bias_200n:I vd1:B voutp:B vd2:B voutn:B vfb:I
+XMNSW3 vcn d_ena_b vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMNSW4 vbn d_ena_b vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMNSW5 ibias_200n d_ena vcn vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMN6 vcn vcn vbn vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMN5 vbn vbn vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMND2 vss vcn vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=27 mm_ok=1
+XMND1 vss vbn vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=20 mm_ok=1
+XMN7 vd7 vbn vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMN8 io_bias_200n vcn vd7 vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMN1 vd1 vfb vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=8 mm_ok=1
+XMN3 voutp vcn vd1 vss sg13_lv_nmos w=0.5u l=3u ng=1 m=5 mm_ok=1
+XMN2 vd2 vfb vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=8 mm_ok=1
+XMN4 voutn vcn vd2 vss sg13_lv_nmos w=0.5u l=3u ng=1 m=5 mm_ok=1
+XMNSW1 vfb d_ena_b vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMNC7 vss vd7 vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+.ends
+
+
+* expanding   symbol:  ota_fcasc2_pbiascasc.sym # of pins=7
+.subckt ota_fcasc2_pbiascasc vdd itail d_ena_b voutn voutp d_ena vcp
+*.PININFO vdd:B d_ena:I d_ena_b:I vcp:B itail:O voutp:B voutn:B
+XMPSW4 vcp d_ena vdd vdd sg13_lv_pmos w=3.5u l=2u ng=1 m=1 mm_ok=1
+XMPSW3 vbp d_ena vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=1 mm_ok=1
+XMP8 vp8 vbp vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=1 mm_ok=1
+XMP9 vbp vcp vp8 vdd sg13_lv_pmos w=3.5u l=2u ng=1 m=1 mm_ok=1
+XMPR vcp d_ena_b vbp vdd sg13_lv_pmos w=0.5u l=10u ng=1 m=1 mm_ok=1
+XMP3 vp3 vbp vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=6 mm_ok=1
+XMP10 itail vcp vp3 vdd sg13_lv_pmos w=3.5u l=2u ng=1 m=6 mm_ok=1
+XMP4 vp4 vbp vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=5 mm_ok=1
+XMP6 voutp vcp vp4 vdd sg13_lv_pmos w=3.5u l=2u ng=1 m=5 mm_ok=1
+XMP5 vp5 vbp vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=5 mm_ok=1
+XMP7 voutn vcp vp5 vdd sg13_lv_pmos w=3.5u l=2u ng=1 m=5 mm_ok=1
+XMPD2 vdd vbp vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=48 mm_ok=1
+XMPD3 vdd vcp vdd vdd sg13_lv_pmos w=3.5u l=2u ng=1 m=4 mm_ok=1
+.ends
+
+
+* expanding   symbol:  ota_fcasc2_ena.sym # of pins=5
+.subckt ota_fcasc2_ena vdd d_ena di_ena d_ena_b vss
+*.PININFO vdd:B vss:B di_ena:I d_ena_b:O d_ena:O
+XMPEN0 d_ena_b di_ena vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=1 mm_ok=1
+XMNEN0 d_ena_b di_ena vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+XMPEN1 d_ena d_ena_b vdd vdd sg13_lv_pmos w=1u l=2u ng=1 m=1 mm_ok=1
+XMNEN1 d_ena d_ena_b vss vss sg13_lv_nmos w=0.5u l=3u ng=1 m=1 mm_ok=1
+.ends
+
+
+* expanding   symbol:  cap_dec.sym # of pins=2
+.subckt cap_dec vdd vss
+*.PININFO vdd:B vss:B
+XM1 vdd vss vdd vdd sg13_hv_pmos w=1u l=4u ng=1 m=1 mm_ok=1
+.ends
+

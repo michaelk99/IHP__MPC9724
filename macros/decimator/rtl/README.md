@@ -13,7 +13,7 @@ The 128x decimation filter of the DSADC1 delta-sigma ADC. One bit in at
 65536 Hz --CIC(N=6, D=32)--> 2048 --sinc2^9--> 1024 --sinc2^16--> 512 --comp9--> 512 Hz
 ```
 
-These files are a frozen copy from the jku-phd development repo
+These files are a frozen copy from the private RTL repository
 (`circuit-level/hdl/DSADC1/DEC/decimator_v5/src`), one module per file. Both
 macros in this repository read them: `macros/decimator` hardens the filter
 alone, and `macros/dsa1_dig` reads the same six files rather than keeping a
@@ -110,5 +110,5 @@ samples for `decimator`, 284 observations for `dsa1_dig`. The testbench uses
 no hierarchical reference, which is what lets the same file run against a flat
 netlist.
 
-The filter itself is checked against the bit-true MATLAB model in jku-phd,
+The filter itself is checked against the bit-true MATLAB model in the private RTL repository,
 where the RTL is bit exact over 32767 samples.

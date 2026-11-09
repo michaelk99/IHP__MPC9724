@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # Negative control of the VDD isolation check: the vdd pins of the two do_q pads moved to VDD in a copy of the chip netlist must make it fail.
 # Needs the build of a run_startup.sh run for its power_dsa1 data, runs power_dsm on the mutant (about 25 minutes alone) and requires the checker to exit 1 with DIFFERENT in its report.
-# Run inside IIC-OSIC-TOOLS at the repo root with the AGENTS.md environment set: testbenches/startup/run_isolation_mutant.sh
+# Run inside IIC-OSIC-TOOLS at the repo root with the environment of doc/running.md set: testbenches/startup/run_isolation_mutant.sh
 set -euo pipefail
 good=testbenches/startup/build
 M=$good/mut

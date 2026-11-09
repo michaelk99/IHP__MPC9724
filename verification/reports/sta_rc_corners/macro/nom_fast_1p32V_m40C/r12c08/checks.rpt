@@ -1,0 +1,7 @@
+max fanout
+
+Pin                                   Limit Fanout  Slack
+---------------------------------------------------------
+_14108_/Y                                16     20     -4 (VIOLATED)
+fanout178/Y                              16     17        (VIOLATED)
+

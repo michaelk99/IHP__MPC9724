@@ -1,0 +1,13 @@
+testbenches/startup/build_defon_vlast/startup_vdda_last.txt: data to 515.00 us, di_rst_b rises at 447.85 us
+74 di_clk rises from 442.85 us
+v(xchip.dsm_do_q): 63 edges, 62 clocked at 2.39 to 4.67 ns after a di_clk rise, one at 447.851 us 121.2 ns after a rise (+1.2 ns from di_rst_b)
+v(xchip.dsm_do_q_b): 63 edges, 62 clocked at 2.46 to 4.92 ns after a di_clk rise, one at 447.851 us 120.8 ns after a rise (+0.8 ns from di_rst_b)
+v(xchip.dsm_do_q_dec): 63 edges, 62 clocked at 2.34 to 4.60 ns after a di_clk rise, one at 447.851 us 121.1 ns after a rise (+1.1 ns from di_rst_b)
+dsm2 from di_ena at 60.0 us to IOVDD up at 245.2 us: 0.0 uA over 100 ns at 163.40 us, di_clk -0.01 V, IOVDD 0.44 V there
+  never above 100 uA
+  never above 30 uA
+vcm 0.3990 V, mean from 10 us after di_rst_b to the end
+VDDA ramp 255.2 to 345.0 us: dsm2 at most 7.22 uA over 1 us at 327.9 us, largest sample 25.3 uA at 320.0 us
+  250 to 300 us: dsm2 0.61 uA, VDDA 0.750 V
+  300 to 350 us: dsm2 5.38 uA, VDDA 1.500 V
+  350 to 400 us: dsm2 7.04 uA, VDDA 1.500 V

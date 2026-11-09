@@ -6,7 +6,7 @@
 // surroundings do, runs dsa1_ic_bus_master against the DUT's SPI slave, and
 // reports every transaction and conversion over the FTDI UART.
 //
-// dsa1_ic_bus_master comes from jku-phd through ghdl synth, never copied, with
+// dsa1_ic_bus_master comes from the private RTL repository through ghdl synth, never copied, with
 // sclk left running: the slave takes a new ADC word only on sclk edges.
 //
 // In loopback mosi feeds miso inside this FPGA and ss stays high, so a

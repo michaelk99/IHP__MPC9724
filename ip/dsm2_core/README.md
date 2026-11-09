@@ -11,12 +11,30 @@ These are dsm2's oscillator variant views of 2026-11-02, the views that tape out
 | `cdl/dsm2_core.cdl` | `5df9700351cb3b2c1804480eb62dfc12` | same delivery, the LVS netlist without the xschem path comments, 48 subckts |
 | `spice/` | `MD5SUMS` there | same delivery, its ngspice bundle: schematic `dsm2_core`, extracted `dsm2_core_pex` (Magic full RC of this GDS), header, smoke benches, see `spice/README.md` |
 
-dsm2's own LVS of these views, read at intake, kept with the delivery outside the repo (`lvs/`):
+## LVS record
 
-- `klayout_lvs.log`: KLayout 0.30.12, "Netlists match", 0 errors.
-- `netgen_lvs.out`: Magic and Netgen, "Circuits match uniquely", 1477 devices and 696 nets on both sides. The 2753 property errors are all `mm_ok` on schematic devices, a model flag the extraction does not carry.
+dsm2's own LVS of the variant GDS (md5 `00624787128efe33ca6ddf5273170e56`, `lvs/gds_md5.txt`), run 2026-10-31 (the designer names iic-osic-tools:next, image dd952ba01866, the logs do not record it), kept in `lvs/`:
 
-Both logs are dated 2026-10-31 02:25 and name `layout/dsm2_core.gds` without an md5. The chip's top LVS compares this GDS device by device against this CDL (`verification/lvs/`).
+- `lvs/klayout_lvs.log`: KLayout LVS, extracts `cap_cmomf` and ends "Netlists match". It covers the 106 MOM capacitors that the chip's Magic LVS drops from the dsm2 comparison, because Magic does not extract them.
+- `lvs/netgen_lvs.out`: Magic and Netgen, "Circuits match uniquely", 1477 devices and 696 nets on both sides. The 2753 property errors are all `mm_ok` on schematic devices, a model flag the extraction does not carry.
+
+The chip's top LVS compares this GDS device by device against `cdl/dsm2_core.cdl` (`verification/lvs/`).
+
+## Sizing and schematics
+
+`schematic/` holds the xschem schematics of `bias_gm`, `bias_trim`, `dsm2_osc`, `sw_tgate`, `sw_tgate_cmfb2`, `sc_int2`, `cmfb_sc2`, `vcm_gen`, `quantizer2_top` and its `quantizer2_sal` and `quantizer2_dith` that the sizing notebooks read. `sizing/` holds the nine gm/ID notebooks and the OTA script, see `sizing/README.md`. All nine notebooks were rerun in this tree. They are tt derivations from SG13G2 tables, not evidence over PVT.
+
+`model/` holds dsm2's Python behavioural models of the modulator (system level with integrator leak and noise, bit stream PSD, dither dead zone), see `model/README.md`. On 2026-11-09 the references to the designer's system-level notebook, which is not in this repo, were replaced by the setup they stood for. Only comment, docstring, help, print and prose text changed, no logic or number: `model/dither_deadzone.py`, `model/dsm_system.py`, `model/psd_bitstream.py`, `sizing/size_ota_fcasc2.py`, `sizing/size_sc_int2.ipynb`, `sizing/size_sw_tgate.ipynb`, `sizing/size_sw_tgate_cmfb2.ipynb`, `doc/ota_fcasc2_README.md`, `doc/sc_int2_README.md`, `doc/dsm2_README.md`. The setup is in `model/README.md`.
+
+## Docs from the dsm2 design tree
+
+Delivered with the views and not edited apart from the 2026-11-09 wording change above, in `doc/`: `dsm2_README.md` (the modulator), `dsm2_osc_README.md` (the oscillator variant, its frequencies are schematic values, the extracted view gives 583 to 671 kHz at code 4 and 1053 to 1195 kHz at code 15 over corners, per the designer's 2026-11-07 runs), `quantizer2_README.md`, `sc_int2_README.md`, `cmfb_sc2_README.md`, `vcm_gen_README.md`, `ota_fcasc2_README.md`, `bias_gm_README.md`, `bias_trim_README.md` and `measurement_plan.md` (the predicted value for each lab number, written before the tape-out. This is the 2026-11-09 version, in which the designer reworded only the row "SNDR at -6 dBFS, O2" after the tape-out: the about 49 dB with the on-chip clock holds for tone tests, DC readings do not see it). Some links inside them point into the dsm2 design tree and do not resolve here.
+
+On the die, [doc/pinout.md](../../doc/pinout.md) and [doc/host_protocol.md](../../doc/host_protocol.md) govern where they differ from `measurement_plan.md`:
+
+- `ibias_test`: the plan says "through at most 1.5 Mohm to ground" and offers 1 Mohm as a fallback. 200 nA across 1 Mohm is 0.2 V, below the 0.3 V floor of the oscillator variant. The safe rule is an SMU at 0.3 to 0.8 V, or 1.5 to 4 MOhm to ground, never 10 MOhm.
+- Power-up: the plan lists an "SPI write of the defaults". Since v1.2.1 dsm2 is on from reset and needs no write.
+- Reset release: the plan says 9 clocks (137 us). The chip's counter releases `di_rst_b` 9 to 10 `clk` periods after `rst_n`, 137 to 153 us at 65536 Hz.
 
 | File | What it is |
 | --- | --- |

@@ -1,0 +1,362 @@
+.subckt quantizer2_top vi_p vi_n di_clk di_dith[2] di_dith[1] di_dith[0] di_amp_s[3] di_amp_s[2] di_amp_s[1] di_amp_s[0]
++ di_amp_s_b[3] di_amp_s_b[2] di_amp_s_b[1] di_amp_s_b[0] do_qi do_qi_b do_q do_q_b do_q_dec vdd di_en di_rst_b di_dith_en di_qout_en vss
+*.PININFO vi_p:B vi_n:B di_clk:I di_en:I do_qi:O do_qi_b:O di_rst_b:I vdd:B vss:B do_q:O do_q_b:O do_q_dec:O di_dith_en:I
+*+ di_dith[2:0]:I di_amp_s[3:0]:I di_amp_s_b[3:0]:I di_qout_en:I
+XSAL0 di_clk vdd vi_n vi_p d_n d_p vss di_en vg_q[2] vg_q[1] vg_q[0] vg_p[2] vg_p[1] vg_p[0] quantizer2_sal
+XINV0 d_p_1 d_p vdd vss sg13cmos5l_inv_1
+XINV1 d_p_2 d_p_1 vdd vss sg13cmos5l_inv_2
+XGATE_P d_p_b d_p_2 d_preset_b vdd vss sg13cmos5l_nand2_2
+XINV3 d_n_1 d_n vdd vss sg13cmos5l_inv_1
+XINV4 d_n_2 d_n_1 vdd vss sg13cmos5l_inv_2
+XGATE_N d_n_b d_n_2 d_preset vdd vss sg13cmos5l_nor2_2
+XNOR0 do_qi d_p_b do_qi_b vdd vss sg13cmos5l_nor2_2
+XNOR1 do_qi_b d_n_b do_qi vdd vss sg13cmos5l_nor2_2
+XAND_RST d_preset_b di_en di_rst_b vdd vss sg13cmos5l_and2_2
+XINV7 d_preset d_preset_b vdd vss sg13cmos5l_inv_4
+MPDUMHV1 vdd vss vdd vdd sg13_hv_pmos w=3u l=450n ng=1
+MNDUMHV1 vss vdd vss vss sg13_hv_nmos w=1u l=450n ng=1
+MPDUMHV vdd vss vdd vdd sg13_hv_pmos w=3u l=450n ng=1
+MNDUMHV vss vdd vss vss sg13_hv_nmos w=1u l=450n ng=1
+XDITH di_clk di_dith[2] di_dith[1] di_dith[0] di_amp_s[3] di_amp_s[2] di_amp_s[1] di_amp_s[0] di_amp_s_b[3] di_amp_s_b[2]
++ di_amp_s_b[1] di_amp_s_b[0] vi_p vi_n vg_q[2] vg_q[1] vg_q[0] vg_p[2] vg_p[1] vg_p[0] vdd di_en di_dith_en vss quantizer2_dith
+XAQ0 net1 do_qi di_qout_en vdd vss sg13cmos5l_and2_1
+XQD10 net2 net1 vdd vss sg13cmos5l_inv_1
+XQD20 do_q net2 vdd vss sg13cmos5l_inv_2
+XAQ1 net3 do_qi_b di_qout_en vdd vss sg13cmos5l_and2_1
+XQD11 net4 net3 vdd vss sg13cmos5l_inv_1
+XQD21 do_q_b net4 vdd vss sg13cmos5l_inv_2
+XDC1 net5 do_qi vdd vss sg13cmos5l_inv_1
+XDC2 do_q_dec net5 vdd vss sg13cmos5l_inv_2
+XDD1 net6 do_qi_b vdd vss sg13cmos5l_inv_1
+XDD2 net7 net6 vdd vss sg13cmos5l_inv_2
+XDDL d_qdum_x net7 vss vdd vss sg13cmos5l_and2_1
+* noconn d_qdum_x
+.ends
+
+* expanding   symbol:  quantizer2_sal.sym # of pins=10
+.subckt quantizer2_sal di_clk vdd vi_n vi_p do_n do_p vss di_en vg_q[2] vg_q[1] vg_q[0] vg_p[2] vg_p[1] vg_p[0]
+*.PININFO vdd:B vss:B di_en:B di_clk:B do_p:B do_n:B vi_n:B vi_p:B vg_q[2:0]:B vg_p[2:0]:B
+XINV0 vdd vss di_en d_en_b inv_en
+XINV1 vdd vss d_en_b d_en inv_en
+XAND0 d_gclk d_en di_clk vdd vss sg13cmos5l_and2_2
+MP1 do_p do_n vdd vdd sg13_lv_pmos w=6u l=500n ng=4
+MP0 do_n do_p vdd vdd sg13_lv_pmos w=6u l=500n ng=4
+MN4 do_p do_n v_p vss sg13_lv_nmos w=2u l=500n ng=4
+MN3 do_n do_p v_q vss sg13_lv_nmos w=2u l=500n ng=4
+MN1 v_p vi_n vtail vss sg13_lv_nmos w=16u l=500n ng=4
+MN0 v_q vi_p vtail vss sg13_lv_nmos w=16u l=500n ng=4
+MN2 vtail d_gclk vss vss sg13_lv_nmos w=32u l=500n ng=8
+MP5 v_p d_gclk vdd vdd sg13_lv_pmos w=6u l=500n ng=4
+MP2 do_p d_gclk vdd vdd sg13_lv_pmos w=6u l=500n ng=4
+MP3 do_n d_gclk vdd vdd sg13_lv_pmos w=6u l=500n ng=4
+MP4 v_q d_gclk vdd vdd sg13_lv_pmos w=6u l=500n ng=4
+MMN43[3] do_p vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MN43[2] do_p vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MN43[1] do_p vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MN43[0] do_p vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MMNDUM2[3] do_n vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM2[2] do_n vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM2[1] do_n vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM2[0] do_n vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM1 vss vss vss vss sg13_lv_nmos w=16u l=500n ng=4
+MNDUM0 vtail vss vss vss sg13_lv_nmos w=8u l=500n ng=2
+MMPDUM1[3] do_p vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM1[2] do_p vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM1[1] do_p vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM1[0] do_p vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MMPDUM0[3] do_n vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM0[2] do_n vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM0[1] do_n vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM0[0] do_n vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MMPDUM2[11] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[10] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[9] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[8] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[7] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[6] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[5] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[4] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[3] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[2] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[1] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MPDUM2[0] vdd vdd vdd vdd sg13_lv_pmos w=1.5u l=500n ng=1
+MMNDUM3[5] vss vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM3[4] vss vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM3[3] vss vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM3[2] vss vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM3[1] vss vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MNDUM3[0] vss vss vss vss sg13_lv_nmos w=500n l=500n ng=1
+MMAQ0 v_q vg_q[0] vtail vss sg13_lv_nmos w=1.5u l=500n ng=1
+MMAQ1 v_q vg_q[1] vtail vss sg13_lv_nmos w=3u l=500n ng=2
+MMAQ2 v_q vg_q[2] vtail vss sg13_lv_nmos w=6u l=500n ng=4
+MMAP0 v_p vg_p[0] vtail vss sg13_lv_nmos w=1.5u l=500n ng=1
+MMAP1 v_p vg_p[1] vtail vss sg13_lv_nmos w=3u l=500n ng=2
+MMAP2 v_p vg_p[2] vtail vss sg13_lv_nmos w=6u l=500n ng=4
+MMNDA0[1] vss vss vss vss sg13_lv_nmos w=1.5u l=500n ng=1
+MNDA0[0] vss vss vss vss sg13_lv_nmos w=1.5u l=500n ng=1
+MMNDA1[1] vtail vss vss vss sg13_lv_nmos w=1.5u l=500n ng=1
+MNDA1[0] vtail vss vss vss sg13_lv_nmos w=1.5u l=500n ng=1
+MMNDA2[1] vtail vss vtail vss sg13_lv_nmos w=1.5u l=500n ng=1
+MNDA2[0] vtail vss vtail vss sg13_lv_nmos w=1.5u l=500n ng=1
+MMAQD v_q vss vtail vss sg13_lv_nmos w=1.5u l=500n ng=1
+MMAPD v_p vss vtail vss sg13_lv_nmos w=1.5u l=500n ng=1
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym # of pins=2
+.subckt sg13cmos5l_inv_1 Y A VDD VSS
+
+*.PININFO Y:O A:I
+MM1 Y A VSS VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM2 Y A VDD VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_inv_2.sym # of pins=2
+.subckt sg13cmos5l_inv_2 Y A VDD VSS
+
+*.PININFO Y:O A:I
+MM1 Y A VSS VSS sg13_lv_nmos w=1.48u l=130.00n ng=2
+MM2 Y A VDD VDD sg13_lv_pmos w=2.24u l=130.00n ng=2
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_nand2_2.sym # of pins=3
+.subckt sg13cmos5l_nand2_2 Y A B VDD VSS
+
+*.PININFO Y:O B:I A:I
+MM1 Y A net1 VSS sg13_lv_nmos w=1.44u l=130.00n ng=2
+MM2 net1 B VSS VSS sg13_lv_nmos w=1.44u l=130.00n ng=2
+MM3 Y A VDD VDD sg13_lv_pmos w=2.24u l=130.00n ng=2
+MM4 Y B VDD VDD sg13_lv_pmos w=2.24u l=130.00n ng=2
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_nor2_2.sym # of pins=3
+.subckt sg13cmos5l_nor2_2 Y A B VDD VSS
+
+*.PININFO Y:O B:I A:I
+MM1 Y A VSS VSS sg13_lv_nmos w=1.48u l=130.00n ng=2
+MM2 Y B VSS VSS sg13_lv_nmos w=1.48u l=130.00n ng=2
+MM3 net1 A VDD VDD sg13_lv_pmos w=2.24u l=130.00n ng=2
+MM4 Y B net1 VDD sg13_lv_pmos w=2.24u l=130.00n ng=2
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_and2_2.sym # of pins=3
+.subckt sg13cmos5l_and2_2 X A B VDD VSS
+
+*.PININFO A:I B:I X:O
+MM1 net1 A net2 VSS sg13_lv_nmos w=640.00n l=130.00n ng=1
+MM2 net2 B VSS VSS sg13_lv_nmos w=640.00n l=130.00n ng=1
+MM3 X net1 VSS VSS sg13_lv_nmos w=1.48u l=130.00n ng=2
+MM4 net1 B VDD VDD sg13_lv_pmos w=840.00n l=130.00n ng=1
+MM5 net1 A VDD VDD sg13_lv_pmos w=840.00n l=130.00n ng=1
+MM6 X net1 VDD VDD sg13_lv_pmos w=2.24u l=130.00n ng=2
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_inv_4.sym # of pins=2
+.subckt sg13cmos5l_inv_4 Y A VDD VSS
+
+*.PININFO A:I Y:O
+MM1 Y A VSS VSS sg13_lv_nmos w=2.96u l=130.00n ng=4
+MM2 Y A VDD VDD sg13_lv_pmos w=4.48u l=130.00n ng=4
+.ends
+
+
+* expanding   symbol:  quantizer2_dith.sym # of pins=12
+.subckt quantizer2_dith di_clk di_dith[2] di_dith[1] di_dith[0] di_amp_s[3] di_amp_s[2] di_amp_s[1] di_amp_s[0] di_amp_s_b[3]
++ di_amp_s_b[2] di_amp_s_b[1] di_amp_s_b[0] vi_p vi_n vg_q[2] vg_q[1] vg_q[0] vg_p[2] vg_p[1] vg_p[0] vdd di_en di_dith_en vss
+*.PININFO di_dith_en:I di_en:I di_clk:I di_dith[2:0]:I di_amp_s[3:0]:I di_amp_s_b[3:0]:I vg_q[2:0]:B vg_p[2:0]:B vi_p:B vi_n:B
+*+ vdd:B vss:B
+XINVEN d_en_b di_dith_en vdd vss sg13cmos5l_inv_1
+XINVENL d_enl_b di_en vdd vss sg13cmos5l_inv_1
+RRDLY d_rc di_clk 118.58k $SUB=vss $[rhigh] w=0.5e-6 l=40e-6 b=0
+MMCDLY vss d_rc vss vss sg13_lv_nmos w=7u l=1u ng=2
+XIRC1 d_rc_b d_rc vdd vss sg13cmos5l_inv_1
+XIRC2 d_dl[1] d_rc_b vdd vss sg13cmos5l_inv_1
+XDLY[3] d_dl[3] d_dl[2] vdd vss sg13cmos5l_dlygate4sd3_1
+XDLY[2] d_dl[2] d_dl[1] vdd vss sg13cmos5l_dlygate4sd3_1
+XAPH d_p12 d_dl[2] d_dl[3] vdd vss sg13cmos5l_and2_1
+XAPHE d_ph d_p12 di_dith_en vdd vss sg13cmos5l_and2_1
+XNORBI d_nph d_dl[2] d_dl[3] vdd vss sg13cmos5l_nor2_1
+XABVI d_bvi d_nph di_dith_en vdd vss sg13cmos5l_and2_1
+XIBVI d_bvi_b d_bvi vdd vss sg13cmos5l_inv_1
+XOBVC d_bvc d_p12 d_en_b vdd vss sg13cmos5l_or2_1
+XIBVC d_bvc_b d_bvc vdd vss sg13cmos5l_inv_1
+XINVB[2] d_bb[2] di_dith[2] vdd vss sg13cmos5l_inv_1
+XINVB[1] d_bb[1] di_dith[1] vdd vss sg13cmos5l_inv_1
+XINVB[0] d_bb[0] di_dith[0] vdd vss sg13cmos5l_inv_1
+XNA1[2] d_c1_b[2] d_ph di_dith[2] vdd vss sg13cmos5l_nand2_1
+XNA1[1] d_c1_b[1] d_ph di_dith[1] vdd vss sg13cmos5l_nand2_1
+XNA1[0] d_c1_b[0] d_ph di_dith[0] vdd vss sg13cmos5l_nand2_1
+XIA1[2] d_c1[2] d_c1_b[2] vdd vss sg13cmos5l_inv_1
+XIA1[1] d_c1[1] d_c1_b[1] vdd vss sg13cmos5l_inv_1
+XIA1[0] d_c1[0] d_c1_b[0] vdd vss sg13cmos5l_inv_1
+XNA0[2] d_c0_b[2] d_ph d_bb[2] vdd vss sg13cmos5l_nand2_1
+XNA0[1] d_c0_b[1] d_ph d_bb[1] vdd vss sg13cmos5l_nand2_1
+XNA0[0] d_c0_b[0] d_ph d_bb[0] vdd vss sg13cmos5l_nand2_1
+XIA0[2] d_c0[2] d_c0_b[2] vdd vss sg13cmos5l_inv_1
+XIA0[1] d_c0[1] d_c0_b[1] vdd vss sg13cmos5l_inv_1
+XIA0[0] d_c0[0] d_c0_b[0] vdd vss sg13cmos5l_inv_1
+MMPLAD net1 d_enl_b vdd vdd sg13_lv_pmos w=1u l=0.5u ng=1
+RRTOP net1 t[24] 238.02k $SUB=vss $[rhigh] w=0.5e-6 l=80.4e-6 b=0
+RRL[7] t[24] t[23] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RL[6] t[23] t[22] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RL[5] t[22] t[21] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RL[4] t[21] t[20] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RL[3] t[20] t[19] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RL[2] t[19] t[18] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RL[1] t[18] t[17] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RL[0] t[17] t[16] 12.383k $SUB=vss $[rhigh] w=0.5e-6 l=4.08e-6 b=0
+RRBOT t[16] vss 238.02k $SUB=vss $[rhigh] w=0.5e-6 l=80.4e-6 b=0
+MMCDLYD vss vdd vss vss sg13_lv_nmos w=7u l=1u ng=2
+MMPLADD vdd vdd vdd vdd sg13_lv_pmos w=1u l=0.5u ng=1
+RRDUM[1] vss vss 30.033k $SUB=vss $[rhigh] w=0.5e-6 l=10.05e-6 b=0
+RDUM[0] vss vss 30.033k $SUB=vss $[rhigh] w=0.5e-6 l=10.05e-6 b=0
+RRDUMT[1] vss vss 59.45k $SUB=vss $[rhigh] w=0.5e-6 l=20e-6 b=0
+RDUMT[0] vss vss 59.45k $SUB=vss $[rhigh] w=0.5e-6 l=20e-6 b=0
+MMAMHN[3] vh di_amp_s[3] t[21] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MAMHN[2] vh di_amp_s[2] t[24] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MAMHN[1] vh di_amp_s[1] t[22] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MAMHN[0] vh di_amp_s[0] t[23] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MMAMHP[3] t[21] di_amp_s_b[3] vh vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MAMHP[2] t[24] di_amp_s_b[2] vh vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MAMHP[1] t[22] di_amp_s_b[1] vh vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MAMHP[0] t[23] di_amp_s_b[0] vh vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MMAMLN[3] vl di_amp_s[3] t[19] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MAMLN[2] vl di_amp_s[2] t[16] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MAMLN[1] vl di_amp_s[1] t[18] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MAMLN[0] vl di_amp_s[0] t[17] vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MMAMLP[3] t[19] di_amp_s_b[3] vl vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MAMLP[2] t[16] di_amp_s_b[2] vl vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MAMLP[1] t[18] di_amp_s_b[1] vl vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MAMLP[0] t[17] di_amp_s_b[0] vl vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MMGQHN[2] vg_q[2] d_c1[2] vh vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGQHN[1] vg_q[1] d_c1[1] vh vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGQHN[0] vg_q[0] d_c1[0] vh vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MMGQHP[2] vh d_c1_b[2] vg_q[2] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGQHP[1] vh d_c1_b[1] vg_q[1] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGQHP[0] vh d_c1_b[0] vg_q[0] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MMGQLN[2] vg_q[2] d_c0[2] vl vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGQLN[1] vg_q[1] d_c0[1] vl vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGQLN[0] vg_q[0] d_c0[0] vl vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MMGQLP[2] vl d_c0_b[2] vg_q[2] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGQLP[1] vl d_c0_b[1] vg_q[1] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGQLP[0] vl d_c0_b[0] vg_q[0] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MMGPHN[2] vg_p[2] d_c0[2] vh vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGPHN[1] vg_p[1] d_c0[1] vh vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGPHN[0] vg_p[0] d_c0[0] vh vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MMGPHP[2] vh d_c0_b[2] vg_p[2] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGPHP[1] vh d_c0_b[1] vg_p[1] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGPHP[0] vh d_c0_b[0] vg_p[0] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MMGPLN[2] vg_p[2] d_c1[2] vl vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGPLN[1] vg_p[1] d_c1[1] vl vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MGPLN[0] vg_p[0] d_c1[0] vl vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MMGPLP[2] vl d_c1_b[2] vg_p[2] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGPLP[1] vl d_c1_b[1] vg_p[1] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MGPLP[0] vl d_c1_b[0] vg_p[0] vdd sg13_lv_pmos w=0.5u l=0.13u ng=1
+MMPDQ[2] vg_q[2] d_en_b vss vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MPDQ[1] vg_q[1] d_en_b vss vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MPDQ[0] vg_q[0] d_en_b vss vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MMPDP[2] vg_p[2] d_en_b vss vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MPDP[1] vg_p[1] d_en_b vss vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+MPDP[0] vg_p[0] d_en_b vss vss sg13_lv_nmos w=0.5u l=0.13u ng=1
+CCFQ0 v_bq vg_q[0] cap_cmomf w=7.6e-6 l=4.1e-6
+CCFQ1[1] v_bq vg_q[1] cap_cmomf w=7.6e-6 l=4.1e-6
+CFQ1[0] v_bq vg_q[1] cap_cmomf w=7.6e-6 l=4.1e-6
+CCFQ2[1] v_bq vg_q[2] cap_cmomf w=7.6e-6 l=4.1e-6
+CFQ2[0] v_bq vg_q[2] cap_cmomf w=7.6e-6 l=4.1e-6
+CCFQ2[3] vg_q[2] v_bq cap_cmomf w=7.6e-6 l=4.1e-6
+CFQ2[2] vg_q[2] v_bq cap_cmomf w=7.6e-6 l=4.1e-6
+CCFQD v_bq v_bq cap_cmomf w=7.6e-6 l=4.1e-6
+MMBCQN t[20] d_bvc v_bq vss sg13_lv_nmos w=21u l=0.13u ng=6
+MMBCQP v_bq d_bvc_b t[20] vdd sg13_lv_pmos w=21u l=0.13u ng=6
+MMBIQN vi_p d_bvi v_bq vss sg13_lv_nmos w=21u l=0.13u ng=6
+MMBIQP v_bq d_bvi_b vi_p vdd sg13_lv_pmos w=21u l=0.13u ng=6
+CCFP0 vg_p[0] v_bp cap_cmomf w=7.6e-6 l=4.1e-6
+CCFP1[1] vg_p[1] v_bp cap_cmomf w=7.6e-6 l=4.1e-6
+CFP1[0] vg_p[1] v_bp cap_cmomf w=7.6e-6 l=4.1e-6
+CCFP2[1] vg_p[2] v_bp cap_cmomf w=7.6e-6 l=4.1e-6
+CFP2[0] vg_p[2] v_bp cap_cmomf w=7.6e-6 l=4.1e-6
+CCFP2[3] v_bp vg_p[2] cap_cmomf w=7.6e-6 l=4.1e-6
+CFP2[2] v_bp vg_p[2] cap_cmomf w=7.6e-6 l=4.1e-6
+CCFPD v_bp v_bp cap_cmomf w=7.6e-6 l=4.1e-6
+MMBCPN t[20] d_bvc v_bp vss sg13_lv_nmos w=21u l=0.13u ng=6
+MMBCPP v_bp d_bvc_b t[20] vdd sg13_lv_pmos w=21u l=0.13u ng=6
+MMBIPN vi_n d_bvi v_bp vss sg13_lv_nmos w=21u l=0.13u ng=6
+MMBIPP v_bp d_bvi_b vi_n vdd sg13_lv_pmos w=21u l=0.13u ng=6
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_and2_1.sym # of pins=3
+.subckt sg13cmos5l_and2_1 X A B VDD VSS
+
+*.PININFO A:I B:I X:O
+MM1 net1 A net2 VSS sg13_lv_nmos w=640.00n l=130.00n ng=1
+MM2 net2 B VSS VSS sg13_lv_nmos w=640.00n l=130.00n ng=1
+MM3 X net1 VSS VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM4 net1 B VDD VDD sg13_lv_pmos w=840.00n l=130.00n ng=1
+MM5 net1 A VDD VDD sg13_lv_pmos w=840.00n l=130.00n ng=1
+MM6 X net1 VDD VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+.ends
+
+
+* expanding   symbol:  inv_en.sym # of pins=4
+.subckt inv_en vdd vss di di_b
+*.PININFO vdd:B vss:B di:I di_b:O
+MP0 di_b di vdd vdd sg13_hv_pmos w=3u l=450n ng=3
+MN0 di_b di vss vss sg13_hv_nmos w=1u l=450n ng=1
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_dlygate4sd3_1.sym # of pins=2
+.subckt sg13cmos5l_dlygate4sd3_1 X A VDD VSS
+
+*.PININFO A:I X:O
+MM1 net3 A VSS VSS sg13_lv_nmos w=420.00n l=130.00n ng=1
+MM2 net1 net3 VSS VSS sg13_lv_nmos w=420.00n l=500.0n ng=1
+MM3 net2 net1 VSS VSS sg13_lv_nmos w=420.00n l=500.0n ng=1
+MM4 X net2 VSS VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM5 net3 A VDD VDD sg13_lv_pmos w=420.00n l=130.00n ng=1
+MM6 net1 net3 VDD VDD sg13_lv_pmos w=1.000u l=500.0n ng=1
+MM7 net2 net1 VDD VDD sg13_lv_pmos w=1.000u l=500.0n ng=1
+MM8 X net2 VDD VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_nor2_1.sym # of pins=3
+.subckt sg13cmos5l_nor2_1 Y A B VDD VSS
+
+*.PININFO Y:O B:I A:I
+MM1 Y A VSS VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM2 Y B VSS VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM3 net1 A VDD VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+MM4 Y B net1 VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_or2_1.sym # of pins=3
+.subckt sg13cmos5l_or2_1 X A B VDD VSS
+
+*.PININFO X:O B:I A:I
+MM1 net1 B VSS VSS sg13_lv_nmos w=550.00n l=130.00n ng=1
+MM2 net1 A VSS VSS sg13_lv_nmos w=550.00n l=130.00n ng=1
+MM3 X net1 VSS VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM4 net2 A VDD VDD sg13_lv_pmos w=840.00n l=130.00n ng=1
+MM5 net1 B net2 VDD sg13_lv_pmos w=840.00n l=130.00n ng=1
+MM6 X net1 VDD VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+.ends
+
+
+* expanding   symbol:  sg13cmos5l_stdcells/sg13cmos5l_nand2_1.sym # of pins=3
+.subckt sg13cmos5l_nand2_1 Y A B VDD VSS
+
+*.PININFO A:I B:I Y:O
+MM1 Y A net1 VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM2 net1 B VSS VSS sg13_lv_nmos w=740.00n l=130.00n ng=1
+MM3 Y A VDD VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+MM4 Y B VDD VDD sg13_lv_pmos w=1.12u l=130.00n ng=1
+.ends
+

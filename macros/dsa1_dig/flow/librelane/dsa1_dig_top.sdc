@@ -1,9 +1,8 @@
 # SPDX-FileCopyrightText: 2026 Michael Koefinger
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # Timing constraints for dsa1_dig_top on EZ130, used for both implementation and signoff.
-# Translated from the Genus constraints of the same design:
-#   svn r_tapeouts/2024_DSADC/TO_IHPSG13G2/cad_libs/TO_DSA1_DIGITAL/DIG_TOP/syn_genus/scripts_ihpsg13/constraints.sdc
-# Kept as close to that file as OpenSTA allows, so the area and power comparison uses the same intent.
+# Translated from the Genus constraints of the same design in the 2024 DSA1 tape-out, not in this repo.
+# Kept as close to them as OpenSTA allows, so the area and power comparison uses the same intent.
 # Deviations are listed in ../../README.md.
 
 # Clocks. clk: modulator clock, constrained at 1 MHz (real 65.536 kHz). sclk: SPI clock, constrained at 10 MHz (real 200 kHz).

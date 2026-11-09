@@ -1,0 +1,9 @@
+07-Nov-2026 07:58:45 | INFO    | KLayout version detected: 0.30.12
+07-Nov-2026 07:58:45 | INFO    | Using DRC JSON file: /foss/pdks/ihp-sg13cmos5l/libs.tech/klayout/python/sg13cmos5l_pycell_lib/sg13cmos5l_tech_mod.json
+07-Nov-2026 07:58:45 | INFO    | Running IHP-SG13CMOS5L main checks on design /foss/designs/sg13cmos5l_dsa1_dig/release/v.1.2.1/gds/MPC9724.gds.gz, topcell: MPC9724
+07-Nov-2026 08:00:59 | INFO    | Running IHP-SG13CMOS5L density checks on design /foss/designs/sg13cmos5l_dsa1_dig/release/v.1.2.1/gds/MPC9724.gds.gz, topcell: MPC9724
+07-Nov-2026 08:02:16 | INFO    | Completed running Density checks.
+07-Nov-2026 08:02:16 | INFO    | =====================================================================================
+07-Nov-2026 08:02:16 | INFO    | KLayout DRC Check Passed: No DRC violations detected in the layout.
+07-Nov-2026 08:02:16 | INFO    | =====================================================================================
+07-Nov-2026 08:02:16 | INFO    | Total DRC Run time: 211.15 seconds (including execution, analysis, and reporting)

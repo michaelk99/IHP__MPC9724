@@ -1,0 +1,18 @@
+testbenches/startup/build_defon_vcm/startup_core_first.txt: data to 480.00 us, di_rst_b rises at 447.85 us
+40 di_clk rises from 77.35 us
+v(xchip.dsm_do_q): 29 edges, 28 clocked at 1.77 to 2.33 ns after a di_clk rise, one at 447.851 us 121.2 ns after a rise (+1.2 ns from di_rst_b)
+v(xchip.dsm_do_q_b): 29 edges, 28 clocked at 1.83 to 2.38 ns after a di_clk rise, one at 447.851 us 120.8 ns after a rise (+0.8 ns from di_rst_b)
+v(xchip.dsm_do_q_dec): 29 edges, 28 clocked at 1.72 to 2.26 ns after a di_clk rise, one at 447.851 us 121.1 ns after a rise (+1.1 ns from di_rst_b)
+dsm2 from di_ena at 60.0 us to IOVDD up at 245.1 us: 166.9 uA over 100 ns at 186.27 us, di_clk 0.75 V, IOVDD 1.20 V there
+  above 100 uA from 186.172 to 186.468 us (0.297 us), di_clk 0.76 to 0.74 V, IOVDD 1.19 to 1.20 V
+  above 30 uA from 175.814 to 187.468 us (11.654 us), di_clk 0.87 to 0.67 V, IOVDD 0.85 to 1.24 V
+vcm 0.7528 V, mean from 10 us after di_rst_b to the end
+VDDA ramp 15.1 to 105.2 us: dsm2 at most 9.24 uA over 1 us at 104.2 us, largest sample 9.4 uA at 105.2 us
+  0 to 50 us: dsm2 0.28 uA, VDDA 0.600 V
+  50 to 100 us: dsm2 4.46 uA, VDDA 1.350 V
+  100 to 150 us: dsm2 11.44 uA, VDDA 1.500 V
+  150 to 200 us: dsm2 21.79 uA, VDDA 1.500 V
+  200 to 250 us: dsm2 7.02 uA, VDDA 1.500 V
+  250 to 300 us: dsm2 7.02 uA, VDDA 1.500 V
+  300 to 350 us: dsm2 7.02 uA, VDDA 1.500 V
+  350 to 400 us: dsm2 7.02 uA, VDDA 1.500 V

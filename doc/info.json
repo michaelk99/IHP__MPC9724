@@ -34,6 +34,18 @@
     },
     "sg13cmos5l_ip__bondpad_70x70": {
       "dependencies": {}
+    },
+    "sg13cmos5l_ip__helm": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_ip__jku": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_ip__jku_names": {
+      "dependencies": {}
+    },
+    "sg13cmos5l_ip__title": {
+      "dependencies": {}
     }
   },
   "tools": {

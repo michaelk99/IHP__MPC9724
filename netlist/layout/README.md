@@ -1,7 +1,3 @@
-# Extracted Layout Netlists
+# Layout netlist
 
-Layout netlists of `sg13cmos5l_dsa1_dig_top`, extracted from the GDS during LVS.
-
-They are written by `make klayout-lvs` (`sg13cmos5l_dsa1_dig_top_klayout.cir`) and by `make magic-lvs` (`sg13cmos5l_dsa1_dig_top_magic.ext.spc`), which move the extracted netlist here out of the LVS run folder in `verification/lvs/`.
-
-This folder stays empty until the top-level LVS is finished. See [Layout Versus Schematic (LVS)](https://github.com/iic-jku/ihp-sg13cmos5l-ams-chip-template/blob/main/README.md#layout-versus-schematic-lvs) in the top-level README.
+The layout netlist is the Magic extraction of `MPC9724` made by the top LVS. It is 8.8 MB with the macro and every standard cell extracted, so only its zipped form with the IO cells, bondpad and logos as black boxes is kept, in [../lvs_reference/](../lvs_reference/README.md) as `sg13cmos5l_dsa1_dig_top.boxed.spice.gz`.

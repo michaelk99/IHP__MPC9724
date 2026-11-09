@@ -37,8 +37,8 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_startup import (CORE_INPUTS, DEFON, FRAMES, HOST_PINS, ORDERS, P_WINDOW, POWER_ORDERS, RAMP,  # noqa: E402
-                         T_CLK, T_DSM, T_DSM_ON, T_FIRST, T_RST, T_SCLK, T_SECOND, T_STORE, dsm2_times, frames, t_dsm_clk)
+from gen_startup import (CORE_INPUTS, DEFON, END_US, FRAMES, HOST_PINS, ORDERS, P_WINDOW, POWER_ORDERS, RAMP,  # noqa: E402
+                         T_CLK, T_DSM, T_DSM_ON, T_RST, T_SCLK, T_SECOND, T_STORE, dsm2_times, frames, ramp_starts, t_dsm_clk)
 
 I_MAX = 10e-3
 T_SUSTAINED = 1e-6
@@ -53,9 +53,9 @@ T_BASE = (T_SECOND + RAMP + 10e-6, T_DSM_ON - 5e-6)     # the bounce's quiet win
 SUPPLIES = (("IOVDD", "viovdd"), ("VDD", "vvdd"), ("VDDA", "vvdda"))
 # dsm2 as transistors
 I_DSM2 = "i(v.xchip.vdsm2_vdd)"     # its own current, positive into its vdd pin
-# its design values: 28 uA average and 600 uA over 10 ns, and 140 uA over 100 ns from the dsm2 peer, 2026-10-31,
-# schematic ff 125 C, quantizer fight excluded. Its enable inrush there is 137 uA over 100 ns and 365 uA over 10 ns (370 its worst case).
-DSM2_AVG, DSM2_P100, DSM2_P10 = 28e-6, 140e-6, 600e-6
+# dsm2's design values for the oscillator variant at ff 1.55 V 125 C, per dsm2's designer on 2026-11-01 (quoted in doc/specifications.md).
+# The checker had 28 and 140 uA until 2026-11-08, the values of the 6dd2926 baseline. 370 uA over 10 ns is its enable inrush worst case.
+DSM2_AVG, DSM2_P100, DSM2_P10 = 32e-6, 220e-6, 600e-6
 DSM2_P10_WORST = 370e-6
 T_SETTLE = 10e-6                    # after DSM_RST_B, before the modulator is measured
 DENSITY = (0.3, 0.7)                # do_q's ones with vi at half of VDDA, a first-order modulator alternates
@@ -63,10 +63,6 @@ AGREE = 0.95                        # do_q_b against do_q and do_q_dec against d
 VDD_SHARE = 0.1                     # the VDD current may move by this share of dsm2's current when it starts
 DSM2_EDGES = 0.25                   # the bounce: do_q edges per dsm_clk period at least
 R_SRC_VI = 50                       # the vi source's resistance, gen_startup.R_SRC
-# dsm2 6dd2926's known quantizer latch fight: with a 1 in the output latch its preset fights it, about 195 uA disabled and
-# 200 uA in reset instead of 0.6 uA. Above this mean before DSM_EN or in reset the run is in that state, and the 100 ns and
-# 10 ns peaks are judged from DSM_RST_B on, outside the fight. dsm2's fixed GDS and CDL are due 2026-11-02.
-I_FIGHT = 100e-6
 
 
 def load(path):
@@ -111,6 +107,9 @@ def check(w, order, dsm2=None):
     # with DEFON di_qout_en is high from VDD up, so the pads may follow dsm2 from then on
     t_quiet = dsm2_times(order)[0 if DEFON else 1] if dsm2 else np.inf
     for t0, addr, name, want, _ in FRAMES:
+        if END_US and t0 + 24 * T_SCLK > t[-1]:
+            notes.append(f"read {name}: after the run's end at {t[-1] * 1e6:.1f} us (STARTUP_END_US), not checked")
+            continue
         word = read_word(w, t0, pad(0), "v(iovdd)")
         good = word == want
         ok &= good
@@ -183,14 +182,6 @@ def first_cross(w, name, thr, after=0.0):
     return float(t[k[0] + 1]) if len(k) else None
 
 
-def fight_spans(w, until):
-    """[(start, end)] where dsm2's current sits above I_FIGHT for at least 200 ns before until: its latch fight.
-    The running modulator's spikes last nanoseconds."""
-    t, above = w["time"], (w[I_DSM2] > I_FIGHT) & (w["time"] < until)
-    edges = np.flatnonzero(np.diff(np.concatenate(([0], above.astype(int), [0]))))
-    return [(float(t[a]), float(t[b - 1])) for a, b in zip(edges[0::2], edges[1::2]) if t[b - 1] - t[a] >= 200e-9]
-
-
 def check_dsm2(w, order, pm):
     """(ok, notes) of dsm2 as transistors: its start-up, its own VDDA current, the modulator, and in the start-up
     orders the VDD current when dsm2 starts. pm maps dsm2's pins to their traces."""
@@ -228,27 +219,17 @@ def check_dsm2(w, order, pm):
     i_off = tmean(w, I_DSM2, on - 20e-6, on - 2e-6)
     i_rst = tmean(w, I_DSM2, run - 20e-6, run - 1e-6)
     i_run = tmean(w, I_DSM2, run + T_SETTLE, t1)
-    fights = fight_spans(w, run + 2 * T_DSM)
     a = on - 1e-6
-    if fights:
-        inside = sum(f1 - f0 for f0, f1 in fights)
-        level = sum(tmean(w, I_DSM2, f0, f1) * (f1 - f0) for f0, f1 in fights) / inside
-        f100 = max(peak_mean(w, I_DSM2, f0 - 50e-9, f1 + 50e-9, 100e-9)[0] for f0, f1 in fights)
-        notes.append(f"dsm2's known latch fight (6dd2926, quantizer output latch against its preset, fixed GDS due 2026-11-02) occurred: "
-                     f"{len(fights)} stretch{'es' if len(fights) > 1 else ''} from {fights[0][0] * 1e6:.2f} to {fights[-1][1] * 1e6:.2f} us, "
-                     f"{inside * 1e6:.2f} us in all at {level * 1e6:.1f} uA, up to {f100 * 1e6:.1f} uA over 100 ns, left out of the peaks below")
-    pad = [(f0 - 20e-9, f1 + 20e-9) for f0, f1 in fights]
-    p100, at100 = peak_mean(w, I_DSM2, a, t1, 100e-9, pad)
-    p10, at10 = peak_mean(w, I_DSM2, a, t1, 10e-9, pad)
-    fight = bool(fights)
+    p100, at100 = peak_mean(w, I_DSM2, a, t1, 100e-9)
+    p10, at10 = peak_mean(w, I_DSM2, a, t1, 10e-9)
     good = i_run <= DSM2_AVG and p100 <= DSM2_P100 and p10 <= DSM2_P10 and i_run > 0
     ok &= good
     notes.append(f"dsm2's VDDA current: {i_off * 1e9:.2f} nA before DSM_EN, {i_rst * 1e6:.2f} uA enabled in reset, {i_run * 1e6:.2f} uA running "
                  f"(mean from {(run + T_SETTLE) * 1e6:.0f} us to the end, design {DSM2_AVG * 1e6:.0f} uA), peaks {p100 * 1e6:.1f} uA over 100 ns at "
                  f"{at100 * 1e6:.2f} us (design {DSM2_P100 * 1e6:.0f}) and {p10 * 1e6:.1f} uA over 10 ns at {at10 * 1e6:.2f} us (design "
-                 f"{DSM2_P10 * 1e6:.0f}, dsm2's worst case {DSM2_P10_WORST * 1e6:.0f}), peaks from DSM_EN on{' outside the latch fight' if fight else ', no latch fight'}, {'pass' if good else 'FAIL'}")
-    e100, e_at = peak_mean(w, I_DSM2, on - 1e-6, on + 20e-6, 100e-9, pad)
-    e10, _ = peak_mean(w, I_DSM2, on - 1e-6, on + 20e-6, 10e-9, pad)
+                 f"{DSM2_P10 * 1e6:.0f}, dsm2's worst case {DSM2_P10_WORST * 1e6:.0f}), peaks from DSM_EN on, {'pass' if good else 'FAIL'}")
+    e100, e_at = peak_mean(w, I_DSM2, on - 1e-6, on + 20e-6, 100e-9)
+    e10, _ = peak_mean(w, I_DSM2, on - 1e-6, on + 20e-6, 10e-9)
     notes.append(f"dsm2's enable inrush: {e100 * 1e6:.1f} uA over 100 ns at {e_at * 1e6:.3f} us, {e10 * 1e6:.1f} uA over 10 ns, "
                  f"{tmean(w, I_DSM2, on, on + 10e-6) * 10e-6 * 1e12:.1f} pC in the first 10 us after DSM_EN")
     # the modulator: one sample per dsm_clk period, a quarter period before the next rising edge
@@ -297,9 +278,8 @@ def check_dsm2(w, order, pm):
                  f"dsm2 disabled, before DSM_EN: up to {d1 * 1e6:.2f} uA over 1 us at {d_at * 1e6:.1f} us")
     # each supply while its own regulator is still at 0: current into the source is the chip back-powering that rail
     if order != "bounce":
-        first, second = (("IOVDD",), ("VDD", "VDDA")) if order == "io_first" else (("VDD", "VDDA"), ("IOVDD",))
         for sup, src in SUPPLIES:
-            b = T_FIRST if sup in first else T_SECOND
+            b = ramp_starts(order)[sup]
             a = 5e-6
             sel = (t > a) & (t < b)
             x = -w[f"i({src})"][sel]
@@ -676,27 +656,13 @@ def self_test():
     ok, notes, _ = check(bad, "core_first", SYN_PM)
     assert not ok and any(n.startswith("VDD current") and "FAIL" in n for n in notes), notes
     # over the design values: on average, over 100 ns, over 10 ns
-    for extra, what in ((15e-6 * (w["time"] > 700e-6), "average"), (150e-6 * ((w["time"] > 740e-6) & (w["time"] < 740.2e-6)), "100 ns"),
+    for extra, what in ((20e-6 * (w["time"] > 700e-6), "average"), (230e-6 * ((w["time"] > 740e-6) & (w["time"] < 740.2e-6)), "100 ns"),
                         (700e-6 * ((w["time"] > 745e-6) & (w["time"] < 745.012e-6)), "10 ns")):
         bad = dict(w)
         bad[I_DSM2] = w[I_DSM2] + extra
         ok, notes, _ = check(bad, "core_first", SYN_PM)
         assert not ok and any(n.startswith("dsm2's VDDA current") and n.endswith("FAIL") for n in notes), (what, notes)
-    # dsm2's latch fight before DSM_RST_B is named and left out of the peaks, a peak after DSM_RST_B still fails
-    bad = dict(w)
-    bad[I_DSM2] = np.where((w["time"] > 200e-6) & (w["time"] < 717.6e-6), 195e-6, w[I_DSM2])
-    ok, notes, _ = check(bad, "core_first", SYN_PM)
-    assert ok and any("latch fight (6dd2926" in n and "1 stretch from 200.00 to 717.60 us" in n and "at 195.0 uA" in n for n in notes), notes
-    assert any("outside the latch fight, pass" in n for n in notes), notes
-    # a fight of one clock period at the clock start, as core_first showed it, is found too
-    one = dict(w)
-    one[I_DSM2] = np.where((w["time"] > 712e-6) & (w["time"] < 713e-6), 202e-6, w[I_DSM2])
-    ok, notes, _ = check(one, "core_first", SYN_PM)
-    assert ok and any("1 stretch from 712.00 to 713.00 us" in n for n in notes), notes
-    bad[I_DSM2] = bad[I_DSM2] + 150e-6 * ((w["time"] > 740e-6) & (w["time"] < 740.2e-6))
-    ok, notes, _ = check(bad, "core_first", SYN_PM)
-    assert not ok, notes
-    assert not any("known latch fight" in n for n in check(w, "core_first", SYN_PM)[1]) and any("no latch fight, pass" in n for n in check(w, "core_first", SYN_PM)[1])
+    assert any("peaks from DSM_EN on, pass" in n for n in check(w, "core_first", SYN_PM)[1])
     # DSM_RST_B never reaching dsm2, a stuck do_q, do_q_dec not following, a missing trace
     bad = dict(w)
     bad["v(xchip.rstb)"] = 0 * w["time"]
@@ -904,7 +870,7 @@ def main(argv=None):
     lines.append("PASS" if all_ok else "FAIL")
     text = "\n".join(lines) + "\n"
     open(os.path.join(a.out, "startup_report.md"), "w").write(text)
-    startup = {k: v for k, v in waves.items() if k in ("io_first", "core_first")}
+    startup = {k: v for k, v in waves.items() if k in ("io_first", "core_first", "vdda_last")}
     if startup:
         plot(startup, os.path.join(a.out, "startup.png"))
     print(text)

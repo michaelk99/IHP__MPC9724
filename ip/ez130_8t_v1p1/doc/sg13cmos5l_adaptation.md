@@ -83,7 +83,7 @@ direction flip forced.
 - **The `.lib` files carry zero routing content** (`grep -c` for
   metal/layer/routing returns 0 on all three) and their corners are already this
   chip's family: tt 1.20 V/25 C, ss 1.08 V/125 C, ff 1.32 V/-40 C. See the
-  *Supply* section of the repo `CLAUDE.md`.
+  *Supply* section of the project notes.
 - **The CDL calls `sg13_lv_nmos` / `sg13_lv_pmos`**, the same device subcircuits
   SG13CMOS5L uses.
 - The Verilog views and the cell list have no technology content.
@@ -101,7 +101,7 @@ decide whether the two libraries can sit in one design.
   is in neither PDK's layer properties. Every cell carries exactly one 235/4
   shape, so the boundary is there; it is just somewhere the repo's own tooling
   does not look. Anything in `scripts/` that reads 189/4 to get a cell width
-  (see *Full-custom layout* in `CLAUDE.md`) reads this library as having no
+  (see *Full-custom layout* in the project notes) reads this library as having no
   boundary, and the drawn bbox is not a substitute.
   `scripts/add_prboundary.py` copies 235/4 onto 189/4 and has to be re-run on
   every vendor drop; `--check` says whether it is due.
@@ -348,7 +348,7 @@ of setup margin.** Four things bound how far that reads:
   byte-identical across all three periods.
 - **Power is OpenSTA with the RTL VCD through `read_vcd`**, which on a flat
   post-layout netlist annotates only top-level pins and propagates from there
-  (see *Power* in `CLAUDE.md`). Same method on both sides, so the ratio is
+  (see *Power* in the project notes). Same method on both sides, so the ratio is
   worth more than the absolute.
 - **8T against 9T is a whole-block choice.** 3.36 um rows do not abut 3.78 um
   rows, and the `CoreSite` name collides, so the two libraries cannot share a

@@ -4,7 +4,7 @@
 # Negative controls of top_lvs.sh: each edit of the reference must give netgen's mismatch verdict, then the clean compare runs again so the tracked report is the passing one.
 # A mutant counts as detected only when top_lvs.sh exits 1 and a fresh lvs.rpt has netgen's "Netlists do not match." and a failing final result. A crash or a stale report fails.
 # The final result can be "Top level cell failed pin matching." when netgen's symmetry breaking after the mismatch also swaps two top pins, as dsm2_pins does since v1.2.1.
-# Needs the extraction of a clean top_lvs.sh run. Run inside IIC-OSIC-TOOLS at the repo root with the AGENTS.md environment set: verification/lvs/top_lvs_mutants.sh
+# Needs the extraction of a clean top_lvs.sh run. Run inside IIC-OSIC-TOOLS at the repo root with the environment of doc/running.md set: verification/lvs/top_lvs_mutants.sh
 set -uo pipefail
 out=verification/lvs/sg13cmos5l_dsa1_dig_top.gds.lvs
 ok=0

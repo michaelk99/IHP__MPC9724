@@ -1,0 +1,1 @@
+PASS: top LVS on release/v.1.2.1/gds/MPC9724.gds.gz, cell MPC9724 against sg13cmos5l_dsa1_dig_top, Final result: Circuits match uniquely, no property errors

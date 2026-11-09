@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2026 Michael Koefinger
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # The IHP Open-Silicon-MPW part of a release: gds/, doc/ and ReleaseNote.md in OUT, next to what `make release` copied.
-# Run inside IIC-OSIC-TOOLS at the repo root, with the AGENTS.md environment set:
+# Run inside IIC-OSIC-TOOLS at the repo root, with the environment of doc/running.md set:
 #   OUT=release/v.1.2.0 scripts/release_ihp.sh
 #   scripts/release_ihp.sh --self-test
 # The internal flow keeps its cell name, only the copy in OUT/gds is renamed to NAME.

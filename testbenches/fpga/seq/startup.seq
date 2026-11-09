@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 #
 # The manual startup sequence, step for step as in
-# jku-phd circuit-level/hdl/DSADC1/DIG_TOP/sim/startup.md
+# private RTL repository, circuit-level/hdl/DSADC1/DIG_TOP/sim/startup.md
 
 write BLOCK_CTRL_0 0x0000   #  1 disable all blocks
 write BLOCK_CTRL_1 0x00FE   #  2 decimator off during bring-up

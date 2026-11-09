@@ -1,0 +1,7 @@
+setup_ws 47.34150983008147
+hold_ws 0.05505857037243209
+setup_tns 0.0
+hold_tns 0.0
+max_slew_violations 0
+max_cap_violations 2
+max_fanout_violations 190

@@ -706,7 +706,7 @@ async def test_psd(dut):
     1024.
 
     The stimulus is the CIFF4 record the HDL benches use, written by the MATLAB
-    flow in jku-phd (system-level/matlab/tb_CIFF4_MOD_DEC.m and friends). It is
+    flow of the private RTL repository (system-level/matlab/tb_CIFF4_MOD_DEC.m and friends). It is
     81 MB, so it is read in place from STIM_FILE rather than copied here. Its
     conventions, from that bench: fs = 65536 Hz, a 42 Hz tone at -4 dBFS,
     4194304 samples, which is 64 s and hence the 1/64 Hz resolution the MATLAB
@@ -727,14 +727,13 @@ async def test_psd(dut):
 
     log = logging.getLogger("psd")
 
-    default_stim = Path.home() / (
-        "projects/jku-phd/circuit-level/hdl/DSADC1/DEC/decimator_v5/sim/stim_dac_sine_dec.txt"
-    )
+    rtl_repo = Path(os.getenv("RTL_REPO_DIR", str(Path(__file__).resolve().parents[3] / "rtl-repo")))
+    default_stim = rtl_repo / "circuit-level/hdl/DSADC1/DEC/decimator_v5/sim/stim_dac_sine_dec.txt"
     stim_file = Path(os.getenv("STIM_FILE", str(default_stim)))
     if not stim_file.is_file():
         raise cocotb.result.SimFailure(
             f"modulator bitstream not found at {stim_file}. "
-            "Set STIM_FILE to stim_dac_sine_dec.txt in the jku-phd checkout."
+            "Set STIM_FILE to stim_dac_sine_dec.txt in the private RTL repository checkout."
         )
 
     FS_IN, DEC, F_IN, FB = 65536.0, 128, 42.0, 128.0

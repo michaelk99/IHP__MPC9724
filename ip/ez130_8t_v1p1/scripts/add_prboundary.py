@@ -6,7 +6,7 @@
 
 `sg13cmos5l_stdcell` and every full-custom cell in this repo carry the boundary
 on `prBoundary.boundary` **189/4**, and the repo's tooling reads that layer to
-get a cell width (see *Full-custom layout* in `CLAUDE.md`). Layer 235 is in
+get a cell width (see *Full-custom layout* in the project notes). Layer 235 is in
 neither PDK's layer properties, so EZ130 reads as having no boundary at all,
 and the drawn bbox is not a substitute: it overstates every width by the NWell
 overhang.

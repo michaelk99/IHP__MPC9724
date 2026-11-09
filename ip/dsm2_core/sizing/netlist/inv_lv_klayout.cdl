@@ -1,0 +1,5 @@
+.subckt inv_lv a y vdd vss
+*.PININFO vdd:B vss:B a:I y:O
+MMP y a vdd vdd sg13_lv_pmos w=2u l=0.13u ng=1
+MMN y a vss vss sg13_lv_nmos w=1u l=0.13u ng=1
+.ends

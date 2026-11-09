@@ -1,0 +1,26 @@
+Warning: There are 12 input ports missing set_input_delay.
+  analog_PAD[0]
+  analog_PAD[1]
+  analog_PAD[2]
+  clk_PAD
+  do_q_PAD
+  do_q_b_PAD
+  dsm_clk_PAD
+  input_PAD[0]
+  input_PAD[1]
+  output_PAD[0]
+  output_PAD[1]
+  rst_n_PAD
+Warning: There are 12 unconstrained endpoints.
+  analog_PAD[0]
+  analog_PAD[1]
+  analog_PAD[2]
+  clk_PAD
+  do_q_PAD
+  do_q_b_PAD
+  dsm_clk_PAD
+  input_PAD[0]
+  input_PAD[1]
+  input_PAD[2]
+  input_PAD[3]
+  rst_n_PAD

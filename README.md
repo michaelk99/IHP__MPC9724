@@ -6,7 +6,7 @@
 
 Institute for Integrated Circuits and Quantum Computing, Johannes Kepler University (JKU), Linz, Austria
 
-The chip carries the digital back end of the DSADC1 delta-sigma ADC: the 128x decimation filter, the SPI slave and the configuration register file, hardened on ETH Zurich's EZ130 8T standard cells. Next to it sits `dsm2_core`, a first-order delta-sigma modulator on its own 1.5 V supply, in a pad ring segment of its own. 20 bondpads on a 1.3 mm die.
+The chip carries the digital back end of the DSADC1 delta-sigma ADC: the 128x decimation filter, the SPI slave and the configuration register file, hardened on ETH Zurich's EZ130 8T standard cells. Next to it sits `dsm2_core`, a first-order delta-sigma modulator on its own 1.5 V supply, in a pad ring segment of its own. 21 bondpads on a 1.3 mm die, 20 of them bonded.
 
 The flow, the directory layout and the two example macros come from the [ihp-sg13cmos5l AMS chip template](https://github.com/iic-jku/ihp-sg13cmos5l-ams-chip-template) by Simon Dorrer and Harald Pretl, Apache-2.0 WITH SHL-2.1. `CITATION.cff` records that lineage and the per-file SPDX headers keep it accurate.
 
@@ -14,7 +14,7 @@ The flow, the directory layout and the two example macros come from the [ihp-sg1
 > The EZ130 8T v1.1 cell library (ETH Zurich, Apache-2.0) is in `ip/ez130_8t_v1p1`, and its thick-oxide decoupling in `ip/ez130_8t_decap_hv`. The builds read them through `EZ130_DIR` and `DECAPHV_DIR`, which default to those folders.
 
 > [!IMPORTANT]
-> Every target runs inside the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) container, tag `2026.08` or later, the one the sign-off ran on, with `PDK=ihp-sg13cmos5l`. A parse-time guard in each `Makefile` stops the run if the PDK is wrong.
+> Every target runs inside the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) container, the pinned sign-off image of `scripts/image.env` (`:next` built 2026-10-08, PDK `5eddf3e`), with `PDK=ihp-sg13cmos5l`. A parse-time guard in each `Makefile` stops the run if the PDK is wrong.
 
 <p align="center">
   <a href="render/img/sg13cmos5l_dsa1_dig_top_black.png">
@@ -41,7 +41,7 @@ The flow, the directory layout and the two example macros come from the [ihp-sg1
 | Output rate | 512 Hz, read over SPI as a 22-bit word |
 | Power at typical | 3.075 uW, of which 1.171 uW leakage (`dsa1_dig_top`) |
 
-Fourteen signals leave the die: `clk`, `rst_n`, the 1-bit modulator bitstream, the four SPI lines and the conversion flag for the DSA1 back end, and `dsm_clk`, `do_q`, `do_q_b`, `vi`, `vcm` and `ibias_test` for dsm2. The 145 configuration register bits stay inside, except the 14 that control dsm2, the decimator input mux and the `adc_conv` gate. The register file is carried on purpose, so the taped area is comparable against the earlier `dsa1_dig_top`.
+Fourteen signals leave the die: `clk`, `rst_n`, the 1-bit modulator bitstream, the four SPI lines and the conversion flag for the DSA1 back end, and `dsm_clk`, `do_q`, `do_q_b`, `vi`, `vcm` and `ibias_test` for dsm2. The 145 configuration register bits stay inside, except the 16 that control dsm2, the decimator input mux and the `adc_conv` gate. The register file is carried on purpose, so the taped area is comparable against the earlier `dsa1_dig_top`.
 
 The decimator also exists as a standalone macro under `macros/decimator`, for area, power and leakage numbers. It is **not** instantiated on this chip. `macros/counter` and `macros/inverter` are the template's example blocks, kept as archetypes for `make macro`, and are not on the die either.
 
@@ -49,6 +49,11 @@ The decimator also exists as a standalone macro under `macros/decimator`, for ar
 ## Documentation
 
 - **[doc/specifications.md](doc/specifications.md)**: technology, supplies, clocking, power, and what is and is not verified.
+- **[doc/signoff.md](doc/signoff.md)**: the sign-off record of the delivered chip, with IHP's audit dispositions.
+- **[doc/Datasheet.md](doc/Datasheet.md)**: the data sheet items, linked to the documents that hold them.
+- **[doc/regmap.md](doc/regmap.md)**: the SPI register map.
+- **[doc/TRL-Mixed-Signal-IP.md](doc/TRL-Mixed-Signal-IP.md)**: the maturity checklist.
+- **[doc/esd_hbm.md](doc/esd_hbm.md)**: the HBM ESD model check.
 - **[doc/pinout.md](doc/pinout.md)**: the QFN24 lead table, the pad table per side, the board notes, with the port and the role each pad carries.
 - **[doc/floorplan.md](doc/floorplan.md)**: die and core geometry, macro placement, PDN, decoupling.
 - **[doc/rtl2gds.md](doc/rtl2gds.md)**: the hardening flow, the metal density rules, the thick-oxide decoupling ban, and how to read each sign-off verdict.
@@ -57,7 +62,6 @@ The decimator also exists as a standalone macro under `macros/decimator`, for ar
 - **[macros/decimator/README.md](macros/decimator/README.md)**, **[macros/dsa1_dig/README.md](macros/dsa1_dig/README.md)**: per-macro results and open points.
 - **[packaging/result.md](packaging/result.md)**: bond plan, wire lengths and skew.
 - **[doc/host_protocol.md](doc/host_protocol.md)**: the programs and records of the FPGA master board, and what the chip requires of any bench host.
-- **[PLAN.md](PLAN.md)**: what is left before tapeout, and what is already settled.
 
 
 ## Building it
@@ -73,9 +77,7 @@ make sim-rtl-cocotb sim-gl-cocotb
 make bondplan
 ```
 
-The top level also builds for an FPGA, where the SPI slave is the readout, so
-the filter and the bring-up sequence are exercised over the chip's own
-interface. See [macros/dsa1_dig/fpga/README.md](macros/dsa1_dig/fpga/README.md). A second board drives it the way the chip's surroundings will, owning the sample clock and the bitstream, see [testbenches/fpga/README.md](testbenches/fpga/README.md).
+The top level also builds for an FPGA, where the SPI slave is the readout, so the filter and the bring-up sequence are exercised over the chip's own interface. See [macros/dsa1_dig/fpga/README.md](macros/dsa1_dig/fpga/README.md). A second board drives it the way the chip's surroundings will, owning the sample clock and the bitstream, see [testbenches/fpga/README.md](testbenches/fpga/README.md).
 
 ```sh
 make -C macros/dsa1_dig synth-fpga   # resource report
@@ -102,21 +104,23 @@ make release-ihp VERSION=1.2.1    # release/v.1.2.1 with gds/, netlist/, doc/ an
 scripts/release_ihp.sh --self-test    # the zero-area check fails on a flat polygon
 ```
 
-`release/v.<version>/gds/MPC9724.gds.gz` is a copy of the layout with the top cell renamed, saved with IHP's KLayout options and checked for zero-area polygons. The internal cell name stays `sg13cmos5l_dsa1_dig_top`.
+`release/v.1.2.1/` also holds `img/` (renders), `packaging/` (the bond plan) and its `README.md`, added next to what the target writes. `release/v.<version>/gds/MPC9724.gds.gz` is a copy of the layout with the top cell renamed, saved with IHP's KLayout options and checked for zero-area polygons. The internal cell name stays `sg13cmos5l_dsa1_dig_top`.
 
+
+IHP's template expects the sources under `MPC9724-main/`. This repository keeps the sources at the root, the mapping is in [doc/layout_index.md](doc/layout_index.md).
 
 ## Verification status
 
 | | |
 |---|---|
-| Router DRC, KLayout DRC | router zero, 37 recommended bondpad items in the chip's KLayout DRC (v1.1.1 sign-off in [doc/signoff.md](doc/signoff.md)) |
-| Metal density, `M<n>Fil.h` and `M<n>Fil.k` | zero window violations, globals 47 to 54 % |
+| Router DRC, KLayout DRC | router zero, 37 recommended bondpad items in the chip's KLayout DRC (sign-off record in [doc/signoff.md](doc/signoff.md)) |
+| Metal density, `M<n>Fil.h` and `M<n>Fil.k` | zero window violations, globals 46 to 54 % |
 | Netgen LVS, layout against the synthesized netlist | `Circuits match uniquely` |
-| Macro RTL against its hardened netlist | `sim-gl`, identical sample for sample, and `lec`, EQY 1323 of 1323 partitions |
+| Macro RTL against its hardened netlist | `sim-gl`, identical sample for sample, and `lec`, EQY 1325 of 1325 partitions |
 | Filter against the bit-true model | 500 of 500 for the decimator, all 8 stimulus modes for the digital top, 0 of 32768 on the full DSM record |
 | Clock domain crossing, clk and sclk | `sim-cdc`, every word right from sclk 1.05 to 12.7 times clk at random phase and jitter, RTL and gate level |
-| Chip cocotb, RTL and gate level | 12 tests pass, the PSD one opt-in with `PSD=1` |
-| HBM ESD, 2 kV | 1.2 V nodes (3.88 V), the VDDA rail (4.40 V), dsm2's analog pins behind its own protection (4.41 V) and HV (8.98 V) inside the indicative limits at RON 1 and 4, with a second IOVDD cell without a wire, see [doc/esd_hbm.md](doc/esd_hbm.md) |
+| Chip cocotb, RTL and gate level | 13 tests pass, the PSD one opt-in with `PSD=1` |
+| HBM ESD, 2 kV | model result at RON 1 and 4 on the tape-out layout: 1.2 V nodes (3.87 V), the VDDA rail (4.38 V), dsm2's analog pins behind its protection (4.41 V) and HV (8.84 V) inside the indicative limits, see [doc/esd_hbm.md](doc/esd_hbm.md) |
 | Transistor-level LVS against a drawn schematic | not achievable on this PDK, see [testbenches/README.md](testbenches/README.md) |
 | Xschem transient bench | stimulus still the template's, not meaningful yet |
 

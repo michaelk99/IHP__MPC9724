@@ -3,7 +3,7 @@
 `top_lvs.sh` is the tapeout gate: the chip extracted from its GDS by Magic and compared by netgen, with the macro and every standard cell compared device by device.
 
 ```
-verification/lvs/top_lvs.sh                  inside IIC-OSIC-TOOLS, at the repo root, the AGENTS.md environment set
+verification/lvs/top_lvs.sh                  inside IIC-OSIC-TOOLS, at the repo root, the environment of doc/running.md set
 klayout -b -r verification/lvs/fill_isolation.py
 ```
 

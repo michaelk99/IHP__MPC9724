@@ -3,7 +3,7 @@
 The provided set of the quality assessment criteria, using TRL (Technology Readiness Level) scale, is a tool for designers to auto evaluate a submitted design. The purpose of this tool is to
 have a short overview of IP in terms of its maturity.
 
-A level counts only when every box of it and of the levels below is ticked. TRL1 has two open boxes, the architecture equations and the HDL model of dsm2, so `doc/info.json` gives `trl` 0.
+A level counts only when every box of it and of the levels below is ticked. TRL1 to TRL3 are ticked. The first open box is the modulator-level mismatch Monte Carlo of TRL4, so `doc/info.json` gives `trl` 3.
 
 ---
 
@@ -11,11 +11,9 @@ A level counts only when every box of it and of the levels below is ticked. TRL1
 
 - [x] Is the IP functionality clearly described? `doc/specifications.md`
 - [x] Is the IP principle of operation explained in detail? `doc/specifications.md` (Signal chain), `models/README.md` (What it reproduces), `ip/dsm2_core/doc/dsm2_README.md` (the modulator and its blocks)
-- [ ] Are the IP architecture design equations fully listed?
-- [ ] Do authors supply any mixed-signal HDL functional model (e.g. Verilog-A) of the IP?
+- [x] Are the IP architecture design equations fully listed? `ip/dsm2_core/model/equations.md` (spec, loop, NTF and STF with values, switched-capacitor realisation, leak, dither, decimation, noise budget), every closed-form value recomputed by `ip/dsm2_core/model/check_equations.py` (96 checks, 0 failed, against model and simulation values, nothing measured)
+- [x] Do authors supply any mixed-signal HDL functional model (e.g. Verilog-A) of the IP? `ip/dsm2_core/model/dsm2_core.va` (Verilog-A, OpenVAF and ngspice), checked bit for bit against `ip/dsm2_core/model/dsm_system.py` in `ip/dsm2_core/model/va_check/` (model against model, nothing measured). `ip/dsm2_core/verilog/dsm2_core_model.v` stays a PRBS stand-in for the cocotb bench
 - [x] Are functional simulation results of the IP reported for a typical case? `doc/specifications.md` (Verification status), `models/README.md`
-
-*Open: the architecture equations of the modulator are not listed in one place. `ip/dsm2_core/sizing/` derives block sizes, not the architecture. The blocks are now covered: `size_sc_int2.ipynb` and `size_ota_fcasc2.py` give the integrator (OSR 512, coefficient a1 = 1/3, kT/C capacitors, settling and slew budget), `size_quantizer2.ipynb` the comparator and the dither, `size_cmfb_sc2.ipynb` and `size_vcm_gen.ipynb` the common mode blocks. The loop (spec, noise budget, NTF synthesis with `H_inf` 1.2 and a1 = 1/3, CIFB realisation, ABCD, 1-bit quantizer) is set up in the models in `ip/dsm2_core/model/`, see the Setup in its `README.md`. It is still not fully listed: the NTF and the STF are not written out as expressions with values, and the quantizer model is a simulation, not an equation. This box stays open until the modulator-level equations are written down with values. Python behavioural model in `ip/dsm2_core/model/`, no HDL model. `verilog/dsm2_core_model.v` is a PRBS stand-in for the cocotb bench, not a functional model.*
 
 ## TRL2 - Concept formulation
 

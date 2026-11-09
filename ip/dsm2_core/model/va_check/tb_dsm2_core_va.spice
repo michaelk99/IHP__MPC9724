@@ -1,0 +1,56 @@
+* tb_dsm2_core_va.spice: ngspice bench of the dsm2_core Verilog-A model (../dsm2_core.va)
+* SPDX-FileCopyrightText: 2026 Michael Koefinger
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+* Needs dsm2_core.osdi (openvaf ../dsm2_core.va) in the working directory. run_va_check.py sets the .param values per case.
+* vi is vref + vdc + vamp sin(2 pi fsig t + phase), vref an ideal vdd/2, as in the dsm2_README.md bench.
+* di_clk rises through vsup/2 at (k + 0.5)/fs, so the bit of clock k sits at (k + 0.75)/fs as psd_bitstream.py samples it.
+
+.param vsup=1.5 vctl=1.2 fs=1.024e6 tr=1n
+.param vdc=0.3 vamp=0 fsig=687.5 phase=0 nclk=256
+.param ena=1 rstb=1 trst=0 qout=1 dith=0 amp1=0 amp0=0 vext=0 btest=0 osc=0 csel=0
+.param t3=0 t2=1 t1=0 t0=0
+* the leak of the Python reference, the model default is the sc_int2 PEX fit
+.param leak=8.511380382023768e-4
+
+.control
+pre_osdi dsm2_core.osdi
+set filetype=binary
+run
+write tb_dsm2_core_va.raw v(do_q) v(do_q_b) v(do_q_dec) v(do_clk_osc) v(do_osc_oe) v(vcm) v(ibias_test) i(vib)
+.endc
+
+.model dsm2va dsm2_core leak={leak}
+.options method=gear reltol=1e-3 trtol=20
+.tran 100n {(nclk + 0.5) / fs}
+
+VDD vdd 0 {vsup}
+VSS vss 0 0
+VREF vref 0 {vsup / 2}
+VI vi vref DC {vdc} SIN({vdc} {vamp} {fsig} 0 0 {phase})
+VCLK di_clk 0 PULSE(0 {vsup} {0.5 / fs - tr / 2} {tr} {tr} {0.5 / fs - tr} {1 / fs})
+
+* static controls at 1.2 V levels, di_rst_b released at trst
+VENA di_ena 0 {ena * vctl}
+VRST di_rst_b 0 PULSE(0 {rstb * vctl} {trst} {tr} {tr} 1 2)
+VQOE di_qout_en 0 {qout * vctl}
+VDEN di_dith_en 0 {dith * vctl}
+VA1 di_dith_amp_1 0 {amp1 * vctl}
+VA0 di_dith_amp_0 0 {amp0 * vctl}
+VVX di_vcm_ext 0 {vext * vctl}
+VBT di_btest_en 0 {btest * vctl}
+VOSC di_osc_en 0 {osc * vctl}
+VSEL di_clk_sel 0 {csel * vctl}
+VT3 di_trim_3 0 {t3 * vctl}
+VT2 di_trim_2 0 {t2 * vctl}
+VT1 di_trim_1 0 {t1 * vctl}
+VT0 di_trim_0 0 {t0 * vctl}
+
+* ibias_test into an SMU-like 0.5 V source, vcm left to the model
+VIB ibias_test vib 0
+VIBS vib 0 0.5
+
+* pins in the CDL .subckt order
+N1 vi vcm di_clk di_ena di_rst_b di_trim_3 di_trim_2 di_trim_1 di_trim_0 di_dith_en di_dith_amp_1
++ di_dith_amp_0 di_vcm_ext di_btest_en di_qout_en do_q do_q_b do_q_dec ibias_test vdd vss di_osc_en di_clk_sel do_clk_osc do_osc_oe dsm2va
+
+.end

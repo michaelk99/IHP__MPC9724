@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Michael Koefinger
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# default outputs of dsm_system.py
+psd_system.csv
+dc_system.csv

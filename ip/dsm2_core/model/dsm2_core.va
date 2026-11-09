@@ -1,0 +1,132 @@
+// SPDX-FileCopyrightText: 2026 Michael Koefinger
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// dsm2_core functional model in Verilog-A, for OpenVAF and ngspice OSDI. Model, not the circuit.
+// Ports in the order of the CDL .subckt (cdl/dsm2_core.cdl), buses as scalars, so an instance line carries the pin list of the CDL .subckt line.
+// On each rising edge of the loop clock: q = (y + d >= 0), then y <= (1 - leak) y + a1 (vi - vcm) - a1 (vdac - vcm), vdac = vdd for q = 1, vss for q = 0.
+// y is vo_p - vo_n, clipped at +-ysat. d is the quantizer2 dither, A (2c - 7)/7 from the 17-bit LFSR.
+// Numbers and sources in va_check/README.md.
+`include "constants.vams"
+`include "disciplines.vams"
+
+// logic level 0..1 of a pin against vdd/2
+`define LG(p) (0.5 * (1.0 + tanh((V(p, vss) - 0.5 * vsup) / vw)))
+// one LFSR bit: master tracks t while the clock is low, slave copies it while high, both cleared while di_dith_en is low
+`define BIT(m, s, t) \
+        I(m) <+ ch * ddt(V(m)) + gon * wm * (V(m) - dith * (t)) + gon * (1.0 - dith) * V(m) + gl * V(m); \
+        I(s) <+ ch * ddt(V(s)) + gon * ws * (V(s) - V(m)) + gon * (1.0 - dith) * V(s) + gl * V(s);
+`define B(s) (V(s) > 0.5 ? 1 : 0)
+
+module dsm2_core(vi, vcm, di_clk, di_ena, di_rst_b, di_trim_3, di_trim_2, di_trim_1, di_trim_0, di_dith_en, di_dith_amp_1,
+                 di_dith_amp_0, di_vcm_ext, di_btest_en, di_qout_en, do_q, do_q_b, do_q_dec, ibias_test, vdd, vss,
+                 di_osc_en, di_clk_sel, do_clk_osc, do_osc_oe);
+    inout vi, vcm, ibias_test, vdd, vss;
+    input di_clk, di_ena, di_rst_b, di_trim_3, di_trim_2, di_trim_1, di_trim_0, di_dith_en, di_dith_amp_1, di_dith_amp_0;
+    input di_vcm_ext, di_btest_en, di_qout_en, di_osc_en, di_clk_sel;
+    output do_q, do_q_b, do_q_dec, do_clk_osc, do_osc_oe;
+    electrical vi, vcm, di_clk, di_ena, di_rst_b, di_trim_3, di_trim_2, di_trim_1, di_trim_0, di_dith_en, di_dith_amp_1;
+    electrical di_dith_amp_0, di_vcm_ext, di_btest_en, di_qout_en, do_q, do_q_b, do_q_dec, ibias_test, vdd, vss;
+    electrical di_osc_en, di_clk_sel, do_clk_osc, do_osc_oe;
+    // master (m) and slave (s) hold nodes of y, q and the 17 LFSR bits, oscillator phase in cycles, output filters
+    electrical my, mq, sy, sq, ph, fq, fqb, fqd, fck, foe;
+    electrical m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16;
+    electrical s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16;
+
+    parameter real a1 = 1.0 / 3.0 from (0:inf);
+    parameter real leak = 2.73e-4 from [0:1);   // Magic PEX fit of the final sc_int2 layout
+    parameter real ysat = 1.41 from (0:inf);
+    parameter real dith_a0 = 76.5e-3 from [0:inf);
+    parameter real dith_a1 = 50.1e-3 from [0:inf);
+    parameter real dith_a2 = 104.4e-3 from [0:inf);
+    parameter real dith_a3 = 23.3e-3 from [0:inf);
+    parameter real osc_f0 = 565.9e3 from (0:inf);
+    parameter real osc_f4 = 822.9e3 from (0:inf);
+    parameter real osc_f15 = 1479.1e3 from (0:inf);
+    parameter real osc_scale = 0.7824 from (0:inf);   // extracted 643.8 kHz over schematic 822.9 kHz at code 4
+    parameter real i_unit = 8.33e-9 from [0:inf);
+    parameter real r_vcm = 1e6 from (0:inf);
+    parameter real tr_out = 0.5e-9 from (0:inf);
+    parameter real c_res = 2.7e-12 from [0:inf);
+
+    // hold nodes: 1 nF, 1 S while tracking (1 ns), 1 pS always (1000 s)
+    real ch, gon, gl, gpin, gvcm, vw;
+    real vsup, wv, ena, rstb, dith, ck, wm, ws, sel, run, f, ty, tq, d, amp, vfb, qi, qoe, tf;
+    integer nb0, nb1, nb2, code, trim;
+
+    analog begin
+        ch = 1e-9; gon = 1.0; gl = 1e-12; gpin = 1e-12; gvcm = 1e-9; vw = 0.05;
+        vsup = V(vdd, vss);
+        ena = `LG(di_ena);
+        rstb = `LG(di_rst_b);
+        dith = `LG(di_dith_en);
+        sel = `LG(di_clk_sel);
+        trim = (V(di_trim_3, vss) > 0.5 * vsup ? 8 : 0) + (V(di_trim_2, vss) > 0.5 * vsup ? 4 : 0)
+             + (V(di_trim_1, vss) > 0.5 * vsup ? 2 : 0) + (V(di_trim_0, vss) > 0.5 * vsup ? 1 : 0);
+
+        // oscillator: phase node in cycles, pulled to 0 while stopped. The pull is cut hard while running, its tail slowed the clock.
+        run = ena * `LG(di_osc_en);
+        f = osc_scale * (trim <= 4 ? osc_f0 + (osc_f4 - osc_f0) * trim / 4.0
+                                   : osc_f4 + (osc_f15 - osc_f4) * (trim - 4) / 11.0);
+        if (analysis("static"))
+            I(ph) <+ gon * V(ph);
+        else
+            I(ph) <+ ch * ddt(V(ph)) - ch * f * run + (run > 0.5 ? 0.0 : gon * (1.0 - run)) * V(ph);
+        if (run > 0.01)
+            $bound_step(0.02 / f);
+
+        // loop clock and the two track windows. They must not overlap at the edge, an overlap of 1e-5 already cost bits.
+        ck = sel * run * 0.5 * (1.0 - tanh(sin(`M_TWO_PI * V(ph)) / 0.05)) + (1.0 - sel) * `LG(di_clk);
+        wm = ena * 0.5 * (1.0 - tanh((ck - 0.15) / 0.025));
+        ws = ena * 0.5 * (1.0 + tanh((ck - 0.85) / 0.025));
+
+        // dither code from the held LFSR bits, s[i] holds the bit of i + 1 clocks ago
+        nb0 = 1 ^ `B(s13) ^ `B(s16);
+        nb1 = 1 ^ `B(s12) ^ `B(s15);
+        nb2 = 1 ^ `B(s11) ^ `B(s14);
+        code = nb0 + 2 * nb1 + 4 * nb2;
+        if (V(di_dith_amp_1, vss) > 0.5 * vsup)
+            amp = V(di_dith_amp_0, vss) > 0.5 * vsup ? dith_a3 : dith_a2;
+        else
+            amp = V(di_dith_amp_0, vss) > 0.5 * vsup ? dith_a1 : dith_a0;
+        d = dith > 0.5 ? amp * (2 * code - 7) / 7.0 : 0.0;
+
+        // targets the master tracks while the clock is low, from the held slave values
+        tq = (rstb > 0.5 && V(sy) + d >= 0.0) ? 1.0 : 0.0;
+        vfb = tq > 0.5 ? V(vdd, vcm) : V(vss, vcm);
+        ty = (1.0 - leak) * V(sy) + a1 * V(vi, vcm) - a1 * vfb;
+        ty = min(max(ty, -ysat), ysat);
+
+        I(my) <+ ch * ddt(V(my)) + gon * wm * (V(my) - ty) + gl * V(my);
+        I(mq) <+ ch * ddt(V(mq)) + gon * wm * (V(mq) - tq) + gl * V(mq);
+        I(sy) <+ ch * ddt(V(sy)) + gon * ws * (V(sy) - V(my)) + gl * V(sy);
+        I(sq) <+ ch * ddt(V(sq)) + gon * ws * (V(sq) - V(mq)) + gl * V(sq);
+
+        // LFSR: three new bits per clock in front, the rest shifts by three
+        `BIT(m0, s0, nb2) `BIT(m1, s1, nb1) `BIT(m2, s2, nb0)
+        `BIT(m3, s3, `B(s0)) `BIT(m4, s4, `B(s1)) `BIT(m5, s5, `B(s2)) `BIT(m6, s6, `B(s3)) `BIT(m7, s7, `B(s4))
+        `BIT(m8, s8, `B(s5)) `BIT(m9, s9, `B(s6)) `BIT(m10, s10, `B(s7)) `BIT(m11, s11, `B(s8)) `BIT(m12, s12, `B(s9))
+        `BIT(m13, s13, `B(s10)) `BIT(m14, s14, `B(s11)) `BIT(m15, s15, `B(s12)) `BIT(m16, s16, `B(s13))
+
+        // latch preset, pad gating, outputs through a first-order edge of 10 to 90 % tr_out
+        qi = V(sq) * ena * rstb;
+        qoe = `LG(di_qout_en);
+        tf = tr_out / 2.2;
+        I(fq) <+ tf * ddt(V(fq)) + V(fq) - qi * qoe;
+        I(fqb) <+ tf * ddt(V(fqb)) + V(fqb) - (1.0 - qi) * qoe;
+        I(fqd) <+ tf * ddt(V(fqd)) + V(fqd) - qi;
+        I(fck) <+ tf * ddt(V(fck)) + V(fck) - run * 0.5 * (1.0 - tanh(sin(`M_TWO_PI * V(ph)) / 0.05));
+        I(foe) <+ tf * ddt(V(foe)) + V(foe) - sel;
+        V(do_q, vss) <+ vsup * V(fq);
+        V(do_q_b, vss) <+ vsup * V(fqb);
+        V(do_q_dec, vss) <+ vsup * V(fqd);
+        V(do_clk_osc, vss) <+ vsup * V(fck);
+        V(do_osc_oe, vss) <+ vsup * V(foe);
+
+        // bias test current, input pin
+        wv = ena * (1.0 - `LG(di_vcm_ext));
+        // vcm_gen: vdd/2 through r_vcm onto the reservoir c_res, 1 GOhm to vss while undriven
+        I(vcm, vss) <+ wv * (V(vcm, vss) - 0.5 * vsup) / r_vcm + (1.0 - wv) * gvcm * V(vcm, vss) + c_res * ddt(V(vcm, vss));
+        I(ibias_test, vss) <+ -ena * `LG(di_btest_en) * (1.0 - `LG(di_osc_en)) * i_unit * (16 + 2 * trim)
+                              * 0.5 * (1.0 + tanh((V(vdd, ibias_test) - 0.3) / 0.03)) + gpin * V(ibias_test, vss);
+        I(vi, vss) <+ gpin * V(vi, vss);
+    end
+endmodule

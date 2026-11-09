@@ -4,7 +4,7 @@
   "technology": "IHP",
   "unique_id": "9724",
   "license": "Apache-2.0 WITH SHL-2.1",
-  "trl": 0,
+  "trl": 3,
   "sealring_x": 1300.0,
   "sealring_y": 1300.0,
   "repository": "https://github.com/michaelk99/IHP__MPC9724",

@@ -14,7 +14,7 @@ The flow, the directory layout and the two example macros come from the [ihp-sg1
 > The EZ130 8T v1.1 cell library (ETH Zurich, Apache-2.0) is in `ip/ez130_8t_v1p1`, and its thick-oxide decoupling in `ip/ez130_8t_decap_hv`. The builds read them through `EZ130_DIR` and `DECAPHV_DIR`, which default to those folders.
 
 > [!IMPORTANT]
-> Every target runs inside the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) container, the pinned sign-off image of `scripts/image.env` (`:next` built 2026-10-08, PDK `5eddf3e`), with `PDK=ihp-sg13cmos5l`. A parse-time guard in each `Makefile` stops the run if the PDK is wrong.
+> Every target runs inside the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) container, the pinned images of `scripts/image.env` (amd64 built 2026-10-08 with PDK `5eddf3e`, arm64 built 2026-10-15 with PDK `a49358c`, `doc/dsm2_integration.md` section Tools), with `PDK=ihp-sg13cmos5l`. A parse-time guard in each `Makefile` stops the run if the PDK is wrong.
 
 <p align="center">
   <a href="render/img/sg13cmos5l_dsa1_dig_top_black.png">

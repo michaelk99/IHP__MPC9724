@@ -67,7 +67,7 @@ Launch Q slew at D is 17.3 ps (STA 19.7).
 
 ## Command
 
-Pinned sign-off image (PDK `ihp-sg13cmos5l` 5eddf3e), `scripts/image.env`. The runs here were on the ARM64 compute host, build `IMAGE_ARM64` of the same tag, 6 parallel ngspice. The nominal run and seeds 5 and 6 gave the same digits on the laptop (`IMAGE_AMD64`).
+Images of `scripts/image.env`. The runs here were on the ARM64 compute host in `IMAGE_ARM64` (PDK `ihp-sg13cmos5l` a49358c, model cards identical to the 5eddf3e of `IMAGE_AMD64`, OSDI models compiled for aarch64, ngspice-47 in both), 6 parallel ngspice. The nominal run and seeds 5 and 6 gave the same digits on the laptop (`IMAGE_AMD64`).
 
 ```sh
 H=verification/reports/hold_mc

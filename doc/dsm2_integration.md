@@ -199,13 +199,14 @@ The DSM die is signed off in `registry.iic.jku.at:5000/iic-osic-tools:next`, the
 | | |
 |---|---|
 | amd64 (laptop) | image id `sha256:bb525d654d8d7fa4abf2ff4f16443af8a3c3acedf5fded023ce3515200b29f8e`, repo digest `sha256:65771d5c6be66df4f8a7522421355b53964ce643dc4cc612b605f645063b1af4`, built 2026-10-08 |
-| arm64 (the ARM64 compute host) | image id `sha256:0ad78d950901...`, repo digest `sha256:2629177ffdeb631b4536cfb4cab5671b65eb2214bcea26d181bb7a878145f88b` |
-| PDK | ihp-sg13cmos5l `5eddf3e96c4b1a42bffe90dd58daa6089a77fc23`, from the image |
-| Tools | Magic 8.3.684, KLayout 0.30.12, ngspice-47 |
+| arm64 (the ARM64 compute host) | image id `sha256:0ad78d950901...`, repo digest `sha256:2629177ffdeb631b4536cfb4cab5671b65eb2214bcea26d181bb7a878145f88b`, built 2026-10-15 |
+| PDK | ihp-sg13cmos5l `5eddf3e96c4b1a42bffe90dd58daa6089a77fc23` in the amd64 image, `a49358cc0b20635fcb53c0940505e3563763fc7a` in the arm64 image |
+| Tools | amd64: Magic 8.3.684, OpenROAD 26Q4-168-g2721361cf, Yosys 0.69. arm64: Magic 8.3.685, OpenROAD 26Q4-407-geb14e40b7, Yosys 0.70. Icarus s20260301-538 (amd64) and s20260301-579 (arm64), GHDL 6.0.0.r535 (amd64) and r537 (arm64). Both: KLayout 0.30.12, ngspice-47, Netgen 1.5.324, LibreLane 3.1.0.dev3 |
 
 - `:next` moves, so jobs pin the digest, and `signoff_env.txt` records it.
-- The registry needs the JKU VPN. The ARM64 compute host already has the arm64 build, the laptop the amd64 one. They are two builds, so one DRC and one LVS run on both before results from the two hosts are mixed.
-- The ESD bench ran on 2026.09 for v1.1.1, and moves to `:next` too, so every row of `doc/signoff.md` comes from one image.
+- The registry needs the JKU VPN. Both digests are multi-arch indexes. The ARM64 compute host runs `IMAGE_ARM64`, the arm64 build of 2026-10-15, and also holds the arm64 variant of `IMAGE_AMD64`'s digest (2026-10-08, PDK `5eddf3e`, the laptop's tool versions). The laptop runs the amd64 build of 2026-10-08. `IMAGE_ARM64` and `IMAGE_AMD64` are two builds, so one DRC and one LVS run on both before results from the two hosts are mixed.
+- The two PDK commits were compared file by file on 2026-11-09. Symlinks followed and `.gz` files compared after `zcat`, the ngspice model cards, CDL, GDS, LEF and liberty are identical, and the LVS decks differ in one comment line of an include the deck does not load. `a49358c` limits the KLayout DRC deck's minimum (precheck) mode to the minimum rule set (no offgrid, angle, extra or antenna rules, `--precheck_drc` kept as an alias of the new `--minimum_drc`), and adds a rules page and a commented-out xschemrc line. The release precheck, top LVS and XOR ran on the laptop in `IMAGE_AMD64`, and `scripts/submission.sh` already passes `--no_offgrid --no_angle --disable_extra_rules` without antenna, so that deck change reaches no sign-off result. On the ARM64 host the model cards and ngspice-47 are the same, and the OSDI models (PSP103 and others) are compiled for aarch64. The v1.2.1 chip run `RUN_2026-11-04_15-49-13` and the `dsa1_dig` macro run of 2026-10-31 log Yosys 0.69 and 12 threads with no thread count set, the laptop's core count (the ARM64 host has 128), so both ran on the laptop in `IMAGE_AMD64`.
+- The ESD bench ran on 2026.09 for v1.1.1, and moves to `:next` too, so every row of `doc/signoff.md` comes from the pinned images of `scripts/image.env`.
 - The v1.1.1 LVS on 2026.08 is not hit by that bug: neither `clamp_vddvss`'s CDL nor the PDK stdcell CDL has a device with all terminals on one net, and the IO cells are black boxes in `top_lvs.sh`.
 
 ## Verification

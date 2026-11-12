@@ -1,0 +1,11 @@
+== 2026-11-09T18:16:20Z start env
+== 2026-11-09T18:16:23Z end env rc=0
+== 2026-11-09T18:16:23Z start precheck
+== 2026-11-09T18:18:57Z end precheck rc=0
+== 2026-11-09T18:18:57Z start xor
+== 2026-11-09T18:19:40Z end xor rc=0
+== 2026-11-09T18:19:40Z start compare
+== 2026-11-09T18:19:55Z end compare rc=0
+== 2026-11-09T18:19:55Z start lvs
+== 2026-11-09T18:25:17Z end lvs rc=0
+== 2026-11-09T18:25:17Z ALL DONE

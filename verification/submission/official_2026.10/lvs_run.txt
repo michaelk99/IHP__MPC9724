@@ -1,0 +1,4 @@
+cdl_magic.py: sg13cmos5l_SecondaryProtection also in runs/official2610/lvs/sg13cmos5l_io.spi, DIFFERENT, kept here
+cdl_magic.py: dropped 1 ptap1, 106 cap_cmomf
+PASS: top LVS from the GDS, the two digital macros, dsm2 and every standard cell device by device
+wall 320.11 s

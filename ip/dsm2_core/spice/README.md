@@ -1,6 +1,6 @@
 # dsm2_core netlists for ngspice, oscillator variant (quantizer2 preset fix)
 
-Read-only snapshot for the DSA1 start-up and supply-bounce bench, 2026-11-01. It replaces the previous snapshot. The only circuit change is in `quantizer2_top`: its output latch preset is now logical, so the latch no longer fights the preset devices while `di_ena` or `di_rst_b` is low. Ports, pin order and layout outline are unchanged.
+Read-only snapshot for the DSA1 start-up and supply-bounce bench, 2026-11-01. Against the previous snapshot the only circuit change is in `quantizer2_top`: its output latch preset is now logical, so the latch no longer fights the preset devices while `di_ena` or `di_rst_b` is low. Ports, pin order and layout outline are unchanged.
 
 | file | content |
 | --- | --- |
@@ -35,12 +35,12 @@ For the extracted view, include `dsm2_core_pex3.spice` and use `dsm2_core_pex`.
 
 ## Options and speed
 
-- Use `header.spice` as is. At -40 C add `.options gmin=1e-10 reltol=1e-3 trtol=7`. Without it, extracted runs at -40 C stopped on "Timestep too small" in the `dparea` part of the core-side `dpantenna` of the `ibias_test` ESD cell.
-- The start of an extracted transient is fragile at that same diode. A smoke bench with `vi` driven by one 0 V source from `vref` stalled at 5.6e-14 s on "Timestep too small". The same bench with `vi` as two series 0 V sources (`VI2 vi vi_dc 0`, `VI1 vi_dc vref 0`) runs, with the same operating point. If your bench stalls there, first change the node ordering around `vi` / `ibias_test` (an extra series 0 V source).
-- Clock timing at ff 1.55 V -40 C needs the tighter options. `reltol=5e-3 trtol=10` gave a false 0.40 ns phase gap there (3.33 ns with the tighter options).
+- Use `header.spice` as is. At -40 C add `.options gmin=1e-10 reltol=1e-3 trtol=7`, without it extracted runs stopped on "Timestep too small" in the `dparea` part of the core-side `dpantenna` of the `ibias_test` ESD cell.
+- The start of an extracted transient is fragile at that same diode. A smoke bench with `vi` driven by one 0 V source from `vref` stalled at 5.6e-14 s on "Timestep too small", with two series 0 V sources (`VI2 vi vi_dc 0`, `VI1 vi_dc vref 0`) it runs, with the same operating point. If your bench stalls there, first change the node ordering around `vi` / `ibias_test` with an extra series 0 V source.
+- Clock timing at ff 1.55 V -40 C needs the tighter options: `reltol=5e-3 trtol=10` gave a false 0.40 ns phase gap there (3.33 ns with the tighter options).
 - At `reltol` 1e-3 and looser, ngspice can flip an idle `sg13cmos5l_dfrbp_1` latch between two time points. Use `reltol=1e-4` where flop states matter.
-- The dsm2 loop benches add breakpoint sources every 0.25 ns from 1 to 4 ns after both clock edges, so the quantizer decision is never stepped over. Use them for any loop result that matters.
-- Smoke results (5 clocks, tt 1.5 V 27 C, average over clocks 2 to 5 just after the reset release): schematic 13.1 uA, `vcm` 0.744 V, 305 s. Extracted 14.5 uA, `vcm` 0.734 V, 995 s with the operating point included. Both exit 0, oscillator off. These show start-up behaviour, not the steady `vcm` and supply current, which depend on the first decisions after reset.
+- The dsm2 loop benches add breakpoint sources every 0.25 ns from 1 to 4 ns after both clock edges, so no quantizer decision is stepped over. Use them for any loop result that matters.
+- Smoke results (5 clocks, tt 1.5 V 27 C, average over clocks 2 to 5 just after the reset release): schematic 13.1 uA, `vcm` 0.744 V, 305 s. Extracted 14.5 uA, `vcm` 0.734 V, 995 s with the operating point included. Both exit 0, oscillator off. This is start-up behaviour, not the steady `vcm` and supply current, which depend on the first decisions after reset.
 
 ## Start-up
 
@@ -54,6 +54,6 @@ Sanity checks of one schematic run each (ngspice, `reltol=1e-4`), `di_ena` stepp
 
 - `quantizer2_top` with the preset fix: at tt 38 uA over 100 ns and 177 uA over 10 ns at enable, 33 pC in the first 10 us, 2.7 to 4.2 uA during reset, 3.9 uA running. At ff 1.55 V 125 C 82 uA over 100 ns and 201 uA over 10 ns.
 - While `di_rst_b` is low the quantizer output is held, so the integrator runs into saturation (`vo_p - vo_n` about 1.4 V). After `di_rst_b` rises it takes about 17 clocks at `vi` = +0.3 V before the bit stream follows the input, longer for inputs closer to full scale.
-- Oscillator variant, tt, oscillator enabled 1 us and selected 2 us after `di_ena`: 99 uA over 100 ns (above 80 uA for 0.08 us right after `di_ena`), 389 uA over 10 ns, 53 pC in the first 10 us, 16.0 uA running of which the oscillator draws 4.9 uA. The oscillator runs at 806 kHz at trim code 4 (schematic).
+- Oscillator variant, tt, oscillator enabled 1 us and selected 2 us after `di_ena`: 99 uA over 100 ns (above 80 uA for 0.08 us right after `di_ena`), 389 uA over 10 ns, 53 pC in the first 10 us, 16.0 uA running of which the oscillator draws 4.9 uA. The oscillator runs at 806 kHz at trim code 4 (schematic, inside `dsm2_core` on its own `bias_gm` bank). The cell alone on an ideal 200 nA source gives 822.9 kHz.
 - Oscillator variant, ff 1.55 V 125 C, same sequence: 215 uA over 100 ns (`clk_noverlap` 110 uA, `quantizer2_top` 82 uA in that window, above 80 uA for 0.12 us in all), 546 uA over 10 ns (`clk_noverlap` 301 uA, `quantizer2_top` 188 uA), 254 pC in the first 10 us, 29.0 uA running, 8.5 uA while disabled. Both peaks sit at the first clock edge after `di_ena`, before the oscillator is enabled.
 

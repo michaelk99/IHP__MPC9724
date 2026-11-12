@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # FPGA evaluation of the digital back end
 
-The **top level** goes on the FPGA, not the decimator alone. That is the whole point: `dsa1_dig_top` carries the SPI slave, so a host reads the decimated word out of `ADC_DATA_CH0_HIGH` and `ADC_DATA_CH0_LOW` exactly as it will from the chip. The filter and the bring-up software are exercised by the same run, over the same interface, and the FPGA needs no readout of its own.
+The **top level** goes on the FPGA, not the decimator alone. `dsa1_dig_top` carries the SPI slave, so a host reads the decimated word out of `ADC_DATA_CH0_HIGH` and `ADC_DATA_CH0_LOW` exactly as from the chip, and the FPGA needs no readout of its own.
 
 ```sh
 make -C macros/dsa1_dig synth-fpga    # yosys only, resource report
@@ -14,11 +14,11 @@ make -C macros/dsa1_dig build-fpga    # through to a bitstream
 make -C macros/dsa1_dig/fpga load_bitstream   # or flash_bitstream, see the board Makefile
 ```
 
-`BOARD` selects the board and defaults to `ulx3s`. Three are set up, the ULX3S (ECP5-85F, yosys and nextpnr-ecp5), the Arty A7-35T (Artix-7, the openXC7 flow in Docker, see [below](#arty-a7-35t)) and the Lattice ECP5 Versa kit (ECP5-45F, yosys and nextpnr-ecp5, see [below](#ecp5-versa)). `dsa1_dig_top` is around 1900 flops and a 27-bit datapath, which is comfortable on either. The template's iCE40 boards were dropped from this macro rather than left as untested stubs, and an iCE40HX1K (1280 logic cells) cannot hold it.
+`BOARD` selects the board and defaults to `ulx3s`. Three are set up: the ULX3S (ECP5-85F, yosys and nextpnr-ecp5), the Arty A7-35T (Artix-7, the openXC7 flow in Docker, see [below](#arty-a7-35t)) and the Lattice ECP5 Versa kit (ECP5-45F, yosys and nextpnr-ecp5, see [below](#ecp5-versa)). `dsa1_dig_top` is around 1900 flops and a 27-bit datapath, comfortable on each. The template's iCE40 boards are dropped, an iCE40HX1K (1280 logic cells) cannot hold it.
 
 ## What is measured so far
 
-Yosys and nextpnr-ecp5 on the ULX3S, 2026-09-23, after the external clock and reset of the two-board bring-up. Synthesis and place-and-route both complete. **Nothing has been run on hardware yet.**
+Yosys and nextpnr-ecp5 on the ULX3S, 2026-09-23, after the external clock and reset of the two-board bring-up. Synthesis and place-and-route both complete. **The ULX3S build has no hardware run on record.** The Arty and Versa builds ran on hardware, see [arty_duo](#arty-a7-35t-with-both-back-ends-of-the-eval-board) and [ECP5 Versa](#ecp5-versa).
 
 | | |
 |---|---|
@@ -31,21 +31,21 @@ Yosys and nextpnr-ecp5 on the ULX3S, 2026-09-23, after the external clock and re
 | `sclk` closure | 84.12 MHz, against 200 kHz |
 | Board clock | 241.96 MHz, against 25 MHz |
 
-The flop count is the number worth watching: it tracks the ASIC side, the difference being the harness, which says the same design is being evaluated and not a variant synthesis optimised differently. The +38 over the previous 1865 accounts for itself exactly: 23 for the PRBS23 LFSR, 6 for the repeat counter, 2 for the half-scale counter, one each for armed, fired and the two extra config synchronizer stages of the extended stimulus field, and one for the `ext_fs` select of the external clock.
+The flop count is the number to watch: it tracks the ASIC side, the difference being the harness, so the same design is evaluated and not a differently optimised variant. The +38 over 1865: 23 for the PRBS23 LFSR, 6 for the repeat counter, 2 for the half-scale counter, one each for armed and fired, 4 for the two config bits the extended stimulus field adds, each through two synchronizer flops, and one for the `ext_fs` select of the external clock.
 
-Timing has no meaning as a chip result, the margins are three orders of magnitude. It matters only as evidence the design is not accidentally combinational somewhere.
+The timing margins are three orders of magnitude and mean nothing for the chip. They only show the design is not accidentally combinational somewhere.
 
 ## What the harness adds, and why
 
-`rtl/dsa1_dig_fpga_top.sv` adds only what a board needs and what the chip gets from its padframe and core:
+`rtl/dsa1_dig_fpga_top.sv` adds only what the chip gets from its padframe and core:
 
-- **a 65536 Hz clock**, either from the board oscillator through `fs_gen.sv` or, with SW1 on at reset, from the master board's `clk_fs_pin`. A host with no hand on the switch asks for the pin's clock by writing TEST_CTRL_1 (register 13) bit 0 = 1, and for the board clock again with 0. Either takes effect at the next reset. The harness takes the write off the bus itself, framed as the slave frames it, so it needs no port on the die and works whichever back end is selected. A DUT reset returns the dies' TEST_CTRL_1 to 0, so the harness keeps its own copy, through every reset of `rst_n_pin`, until the board's reset button. `sim-dut-extclk` checks all of it. The second is the chip's real situation: clock and bitstream both arrive from outside. `fs_gen` is a phase accumulator, so that any board frequency works and the average rate is exact to the accumulator width instead of to an integer divider. 25 MHz does not divide by 65536 evenly, so a plain counter would be 0.06 % off and the comparison against a bit-true reference would drift. The master board uses the same `fs_gen`.
+- **a 65536 Hz clock**, from the board oscillator through `fs_gen.sv` or, with SW1 on at reset, from the master board's `clk_fs_pin`. The second is the chip's real situation: clock and bitstream both arrive from outside. A host can instead write TEST_CTRL_1 (register 13) bit 0 = 1 for the pin's clock and 0 for the board clock, effective at the next reset. The harness takes that write off the bus itself, framed as the slave frames it, so it needs no port on the die and works whichever back end is selected. A DUT reset returns the dies' TEST_CTRL_1 to 0, so the harness keeps its own copy through every reset of `rst_n_pin`, until the board's reset button. `sim-dut-extclk` checks all of it. `fs_gen` is a phase accumulator, so any board frequency gives the average rate exact to the accumulator width, where a counter from 25 MHz would be 0.06 % off. The master board uses the same `fs_gen`.
 - **a reset synchronizer** on the push button, ANDed with `rst_n_pin` from the master board, which is pulled up so the board still runs alone.
-- **the three-flop synchronizer on `data_in`** that `sg13cmos5l_dsa1_dig_core` puts in front of the macro. Without it the FPGA would see a different design from the silicon, by three input samples.
+- **the three-flop synchronizer on `data_in`** that `sg13cmos5l_dsa1_dig_core` puts in front of the macro. Without it the FPGA would differ from the silicon by three input samples.
 
 Everything else is wired straight out: the four SPI lines, `adc_conv`, and `o_tst_ctrl[6:0]` on the LEDs.
 
-**`rtl_gen/dsa1_dig_top.v` is the source, not `_cg.v`.** Yosys does not read VHDL, so the FPGA flow starts from the same `ghdl synth` output the ASIC flow does. The clock-gated variant carries EZ130 `CGX3` instances, which mean nothing to an FPGA, and yosys infers its own clock enables anyway.
+**`rtl_gen/dsa1_dig_top.v` is the source, not `_cg.v`.** Yosys does not read VHDL, so the FPGA flow starts from the same `ghdl synth` output as the ASIC flow. The clock-gated variant carries EZ130 `CGX3` instances, which mean nothing to an FPGA, and yosys infers its own clock enables.
 
 ## Running the evaluation
 
@@ -82,9 +82,9 @@ make -C macros/dsa1_dig/fpga BOARD=arty load_bitstream  # SRAM, needs openFPGALo
 make -C macros/dsa1_dig/fpga BOARD=arty flash_bitstream # the Quad-SPI flash, kept through a power cycle
 ```
 
-SRAM is lost at every power cycle, and the DUT then answers every SPI read with 0x0000. `flash_bitstream` writes the board's S25FL128S (2026-10-01, `arty_duo`, 0x0 to 0x220000) and the design runs again right after. The Arty boots from the flash only with its own mode jumper JP1 installed, not to be confused with JP1 on the XIAO adapter.
+SRAM is lost at every power cycle, and the DUT then answers every SPI read with 0x0000. `flash_bitstream` writes the board's S25FL128S (2026-10-01, `arty_duo`, 0x0 to 0x220000) and the design runs again right after. The Arty boots from flash only with its own mode jumper JP1 installed, not JP1 on the XIAO adapter.
 
-The chip database is cached in `~/.cache/openxc7`, outside the repository. `arty/arty_top.sv` sets the harness's board clock to 100 MHz, and `make -C testbenches/fpga sim-arty-top` checks that it converts at 512 Hz, not at the 2048 Hz the 25 MHz default would give. nextpnr-xilinx does not model speed grades, so the part is `xc7a35tcsg324-1`, the same die as the board's `-1L`.
+The chip database is cached in `~/.cache/openxc7`. `arty/arty_top.sv` sets the harness's board clock to 100 MHz, and `make -C testbenches/fpga sim-arty-top` checks that it converts at 512 Hz, not at the 2048 Hz the 25 MHz default would give. nextpnr-xilinx does not model speed grades, so the part is `xc7a35tcsg324-1`, the same die as the board's `-1L`.
 
 Measured 2026-09-29, `regymm/openxc7` with yosys 0.62:
 
@@ -98,9 +98,9 @@ Measured 2026-09-29, `regymm/openxc7` with yosys 0.62:
 | `clk_fs` closure | 31.47 MHz, against 65.536 kHz |
 | `sclk` closure | 243.90 MHz, against 400 kHz |
 
-The ULX3S and Versa numbers below and above predate the requests and have not been rebuilt, expect about 60 flops more.
+The ULX3S and Versa numbers predate the requests and are not rebuilt, expect about 60 flops more.
 
-nextpnr-xilinx times only `create_clock -period`, and only on the net behind the input buffer, so `arty.xdc` constrains `u_dut.clk_board`. Its numbers are a sanity check, not sign-off. Every port needs a pin and an IOSTANDARD, there is no unconstrained IO.
+nextpnr-xilinx times only `create_clock -period`, and only on the net behind the input buffer, so `arty.xdc` constrains `u_dut.clk_board`. Its numbers are a sanity check, not sign-off. Every port needs a pin and an IOSTANDARD.
 
 ### Pins and the host adapter
 
@@ -120,11 +120,11 @@ The DUT signals sit on Pmod JD, which has 200 Ohm series resistors on the board,
 | 10 | `clk_fs_pin` | G2 | down | D10, GPIO9, spare |
 | 12 | 3V3 | | | not connected |
 
-The rest of the board: `clk_board` E3 (100 MHz), `rst_n_btn` C2 (the red RESET button), `ext_fs_sw` SW0 (A8, on takes `clk_fs` from JD pin 10), `led[3:0]` on LD4 to LD7 and `led[7:4]` on the green channel of RGB LD0 to LD3. On the Arty the LEDs show `AUX_CTRL_0[7:0]` (register 12, reset 0xFF00, so all off), all eight under the host's control, `arty_top.sv` sets the harness's `LED_AUX`. AUX_CTRL_0 drives nothing on the chip and nothing in the harness, so a host can write it freely to see the SPI write path, with none of `TEST_CTRL_0`'s rules. `sim-arty-top` writes 0xFFA5 over SPI and checks the LEDs.
+The rest of the board: `clk_board` E3 (100 MHz), `rst_n_btn` C2 (the red RESET button), `ext_fs_sw` SW0 (A8, on takes `clk_fs` from JD pin 10), `led[3:0]` on LD4 to LD7 and `led[7:4]` on the green channel of RGB LD0 to LD3. The LEDs show `AUX_CTRL_0[7:0]` (register 12, reset 0xFF00, so all off), all eight under the host's control through the harness's `LED_AUX`, set in `arty_top.sv`. AUX_CTRL_0 drives nothing on the chip or in the harness, so a host can write it freely to see the SPI write path, with none of `TEST_CTRL_0`'s rules. `sim-arty-top` writes 0xFFA5 over SPI and checks the LEDs.
 
 The adapter carries two 10 kOhm pull-ups from `ss` and `rst_n` to Pmod pin 6, so both stay inactive before the FPGA is configured and while the XIAO boots, and a 1x10 probe header: GND, ss, mosi, miso, sclk, adc_conv, rst_n, data_in, clk_fs, GND. XIAO D2 (a strapping pin) and D6, D7 (UART0, where the boot ROM prints) stay unconnected.
 
-**JP1 is open whenever the XIAO's USB-C is plugged in**, which is flashing, the monitor and normal bench work, so the XIAO's regulator and the Arty's 3V3 never back-feed each other. Close it only for a standalone run, and then power the Arty from its barrel jack: on USB alone its budget is about 500 mA, and the ESP32-S3's WiFi transmit peaks of about 350 mA on top of the FPGA would brown it out. With JP1 closed there is no serial monitor, the XIAO's address comes from the hotspot's DHCP leases.
+**JP1 is open whenever the XIAO's USB-C is plugged in** (flashing, the monitor and normal bench work), so the XIAO's regulator and the Arty's 3V3 never back-feed each other. Close it only for a standalone run, with the Arty on its barrel jack: on USB alone its budget is about 500 mA, and the ESP32-S3's WiFi transmit peaks of about 350 mA on top of the FPGA would brown it out. With JP1 closed there is no serial monitor, the XIAO's address comes from the hotspot's DHCP leases.
 
 ### Bench with the ESP32 host and EasyConfig
 
@@ -138,16 +138,16 @@ The host firmware, EasyConfig and `bench_udp.py` are kept with the evaluation se
 6. Program 1 must fail with `miso` forced low, a probe-header wire from miso to GND, and pass again without it.
 7. EasyConfig: reset values read back as in `regs_cmos5l.csv`, each stimulus pattern in repeat mode streamed to CSV, and a `TEST_CTRL_0` value with `11` in bits 7:6 shown as blocked.
 
-**Nothing has run on hardware yet.**
+**On hardware, 2026-09-29**, with `arty_duo` ([below](#arty-a7-35t-with-both-back-ends-of-the-eval-board)): programs 1 to 6 pass on this chip's back end. On 2026-10-02 `arty_duo`, booted from flash, passed 15 of 15 bench tests on this chip's back end and 6 of 6 on the DSA1 die's ([doc/signoff.md](../../../doc/signoff.md)).
 
 ## Arty A7-35T with both back ends of the eval board
 
-A later eval board is to carry two dies on two SPI buses, one port each on the host: this chip, and the DSA1 die, whose own digital back end is decimator v4 with the same SPI slave. `arty_duo` puts both back ends into one Arty, behind the one Pmod bus the XIAO host has pins for, so a host can be tested against either slave, and the two decimators against each other on the same bitstream.
+A later eval board is to carry two dies on two SPI buses, one host port each: this chip, and the DSA1 die, whose digital back end is decimator v4 with the same SPI slave. `arty_duo` puts both back ends into one Arty behind the one Pmod bus the XIAO host has pins for, so a host can be tested against either slave, and the two decimators against each other on the same bitstream.
 
-- **The legacy back end is the one in silicon**, the private RTL repository at `LEGACY_REV` = `c353a7e`, checked equal to the RTL delivered for the 2024_DSADC tape-out. `legacy.mk` reads it from `RTL_REPO_DIR` at that commit, never copies it into this repo, and ghdl converts it into `legacy/build/`, which git ignores. Both designs call their top `dsa1_dig_top` and their decimator `decimator_top`, so `scripts/prefix_modules.py` prefixes every legacy module with `legacy_`. ghdl needs the container: `make -C macros/dsa1_dig/fpga/arty_duo legacy-rtl` there once, then build on the host as for the Arty.
+- **The legacy back end is the one in silicon**, the private RTL repository at `LEGACY_REV` = `c353a7e`, checked equal to the RTL delivered for the 2024_DSADC tape-out. `legacy.mk` reads it from `RTL_REPO_DIR` at that commit, never copies it into this repo, and ghdl converts it into `legacy/build/`, which git ignores. Both designs call their top `dsa1_dig_top` and their decimator `decimator_top`, so `scripts/prefix_modules.py` prefixes every legacy module with `legacy_`. ghdl needs the container: run `make -C macros/dsa1_dig/fpga/arty_duo legacy-rtl` there once, then build on the host as for the Arty.
 - **The bus switch**, `DUO=1` in `dsa1_dig_fpga_top.sv`. sclk and mosi reach both back ends, since each needs a running sclk for its ADC flag synchronizer. ss reaches only the selected one, and miso and adc_conv come from it. Both share the reset, `clk_fs` and `data_in`, as on the board, where DSA1's modulator feeds both decimators.
-- **Selecting.** Write TEST_CTRL_1 (register 13) bit 1 = 1 for the legacy back end and 0 for this chip's, keeping bit 0 for the clock. The harness decodes the write from the bus, whichever back end takes it. The switch waits for the next rising edge of ss, so neither slave ever sees part of a frame. The choice survives every DUT reset, `P`'s included, and the board button returns to this chip's. The LEDs show the selected back end's AUX_CTRL_0[7:0], and CHIP_ID (register 15) tells the two apart: 0x0001 this chip, read only, 0x0000 the DSA1 die, whose address 15 is plain storage. `sim-duo-switch` checks it, including that AUX_CTRL_0 and a read of 13 do not switch and that a DUT reset keeps the choice once frames run again. EasyConfig's `--duo` writes the same from its Die menu.
-- **Measured 2026-09-29**, through the ESP32 host: this chip's back end passes programs 1 to 6, the legacy one program 1 with 78 of 78 transactions (72 since program 1 leaves 13 and 15 alone) (programs 2 to 6 need the stimulus field it does not have), converting at 256 Hz. The modulator sine of the private RTL repository played into both, at 64 kHz: 32768 v5 words and 16384 v4 words bit-true against their models, SNR 126.8 dB and 125.1 dB in 125 Hz. The v4 model is `system-level/python/dec_v4_bit_true.py` of the private RTL repository, which `models/stream_psd.py` finds through `RTL_REPO_DIR`.
+- **Selecting.** Write TEST_CTRL_1 (register 13) bit 1 = 1 for the legacy back end and 0 for this chip's, keeping bit 0 for the clock. The harness decodes the write from the bus, whichever back end takes it, and switches at the next rising edge of ss, so neither slave sees part of a frame. The choice survives every DUT reset, `P`'s included, and the board button returns to this chip's. The LEDs show the selected back end's AUX_CTRL_0[7:0]. CHIP_ID (register 15) tells the two apart: 0x0001 this chip, read only, 0x0000 the DSA1 die, whose address 15 is plain storage. `sim-duo-switch` checks it, including that AUX_CTRL_0 and a read of 13 do not switch and that a DUT reset keeps the choice once frames run again. EasyConfig's `--duo` writes the same from its Die menu.
+- **Measured 2026-09-29**, through the ESP32 host: this chip's back end passes programs 1 to 6, the legacy one program 1 with 78 of 78 transactions (72 since program 1 leaves 13 and 15 alone), converting at 256 Hz. Programs 2 to 6 need the stimulus field it does not have. The modulator sine of the private RTL repository played into both at 64 kHz: 32768 v5 words and 16384 v4 words bit-true against their models, SNR 126.8 dB and 125.1 dB in 125 Hz. The v4 model is `system-level/python/dec_v4_bit_true.py` of the private RTL repository, which `models/stream_psd.py` finds through `RTL_REPO_DIR`.
 
 | | arty_duo |
 |---|---|
@@ -159,7 +159,7 @@ A later eval board is to carry two dies on two SPI buses, one port each on the h
 
 ## ECP5 Versa
 
-`BOARD=versa` and `BOARD=versa_duo`, the Lattice ECP5 Versa Development Kit with an LFE5UM-45F-7BG381I, in the Arty's two builds: this chip's back end alone, and both back ends of the eval board behind one bus, switched through TEST_CTRL_1 as on [`arty_duo`](#arty-a7-35t-with-both-back-ends-of-the-eval-board). yosys, nextpnr-ecp5 and ecppack run in the IIC-OSIC-TOOLS container, only loading runs on the host.
+`BOARD=versa` and `BOARD=versa_duo`, the Lattice ECP5 Versa Development Kit with an LFE5UM-45F-7BG381I, in the Arty's two builds: this chip's back end alone, and both back ends behind one bus, switched through TEST_CTRL_1 as on [`arty_duo`](#arty-a7-35t-with-both-back-ends-of-the-eval-board). yosys, nextpnr-ecp5 and ecppack run in the IIC-OSIC-TOOLS container, only loading runs on the host.
 
 ```sh
 # in the container
@@ -184,7 +184,7 @@ Built 2026-10-01:
 | `clk_fs` closure | 32.06 MHz, against 65.536 kHz | 32.23 MHz |
 | `sclk` closure | 95.02 MHz, against 400 kHz | 93.44 MHz |
 
-**JTAG.** The FT2232H's channel A is the JTAG port, and openFPGALoader has no Versa profile, so the board Makefiles use `-c ft2232`. The factory setting of jumper J50 also puts the on-board ispCLOCK (IDCODE 0x00191043) in the chain, which openFPGALoader does not know. The Makefiles declare it with `--misc-device 0x00191043,8,ispclock`, which worked with J50 in its factory setting on 2026-10-01 and also works with J50 set to the FPGA alone (1-2 and 3-5 closed, 4-6 open). The FPGA is index 0, IDCODE 0x01112043.
+**JTAG.** The FT2232H's channel A is the JTAG port, and openFPGALoader has no Versa profile, so the board Makefiles use `-c ft2232`. Jumper J50 in its factory setting also puts the on-board ispCLOCK (IDCODE 0x00191043) in the chain, unknown to openFPGALoader, so the Makefiles declare it with `--misc-device 0x00191043,8,ispclock`. That worked with J50 in its factory setting on 2026-10-01 and also works with J50 set to the FPGA alone (1-2 and 3-5 closed, 4-6 open). The FPGA is index 0, IDCODE 0x01112043.
 
 ### Pins and the host wiring
 
@@ -202,7 +202,7 @@ The DUT uses the even row of expansion header X3 (EXPCON1), pins 4 to 18, by the
 | 18 | `EXPCON_IO43` | `sclk_pin` | E8 | down | 5 |
 | 22, or any even pin 22 to 40 | GND | | | | 1 or 10 |
 
-`sclk` is on a plain IO, not a PCLK pin. It reaches its global clock buffer through the fabric, which closes at 93 MHz and is far above the host's 400 kHz to 5 MHz.
+`sclk` is on a plain IO, not a PCLK pin. It reaches its global clock buffer through the fabric, which closes at 93 MHz, far above the host's 400 kHz to 5 MHz.
 
 **Never wire X3 pins 3 and 23 (2.5 V), 21 (5VIN) or 29 (the clock chip's OSC output).** Pin 1 is GND too, but it sits next to the 2.5 V on pin 3, so use pin 22.
 

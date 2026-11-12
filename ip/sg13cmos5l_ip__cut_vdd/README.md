@@ -5,15 +5,11 @@ SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # sg13cmos5l_ip__cut_vdd
 
-A 10 x 180 um IO ring cell that carries iovss, iovdd and vss and has no vdd band. Two of them bound the segment of the pad ring where the vdd band is VDDA for the dsm2 pads.
-
-## Why
-
-The ring's vdd band runs unbroken through every IO cell. A cut cell on each end of a segment separates the VDD band outside from the VDDA band inside, 10 um of nothing between the two.
+A 10 x 180 um IO ring cell that carries iovss, iovdd and vss and has no vdd band. The ring's vdd band otherwise runs unbroken through every IO cell. Two of these cells bound the segment of the pad ring where the vdd band is VDDA for the dsm2 pads, each leaving 10 um between the VDD band outside and the VDDA band inside.
 
 ## Cell
 
-The cell is the PDK's `sg13cmos5l_Filler2000` with the vdd band deleted, so every other band, label and tap abuts as the filler does. `layout/cut_gen.py` copies the filler from the IO GDS, and the vdd band y ranges come from the IO LEF through the clamp cell's `rails.py`:
+The cell is the PDK's `sg13cmos5l_Filler2000` with the vdd band deleted, so every other band, label and tap abuts as the filler does. `layout/cut_gen.py` copies the filler from the IO GDS and takes the vdd band y ranges from the IO LEF through the clamp cell's `rails.py`:
 
 | layer | vdd band (um) | taken out |
 |---|---|---|
@@ -22,7 +18,7 @@ The cell is the PDK's `sg13cmos5l_Filler2000` with the vdd band deleted, so ever
 | TopMetal1 | none in the filler | nothing |
 | Metal1, Cont, Activ, NWell | the two n-taps at y 148.5 and 167 | every shape inside the Metal3 and Metal4 ranges |
 
-The taps go because they only tie the filler's wells to vdd. The wells run 0.62 um into the neighbours and would join VDD to VDDA. One Metal1 strip (y 115.62..140.17) and one Activ strip stay: they are the vss and iovss tap and cross y 140 by 0.17 um.
+The n-taps only tie the filler's wells to vdd, and the wells run 0.62 um into the neighbours and would join VDD to VDDA. One Metal1 strip (y 115.62..140.17) and one Activ strip stay: they are the vss and iovss tap and cross y 140 by 0.17 um.
 
 The LEF is the filler's with the `vdd` pin removed, as text, `CLASS PAD SPACER` on `sg13cmos5l_ioSite`. The liberty has the three `pg_pin`s and no timing. The CDL is an empty subckt with `vss iovdd iovss`. The blackbox is in `verilog/`.
 

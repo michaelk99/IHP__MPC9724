@@ -2,63 +2,29 @@
 
 Chip art: a knight's helmet, 100 x 100 um on `Metal4` with `NoMetFiller`, in the lower-right die corner of the IHP SG13CMOS5L chip. `script/make_helm_png.py` turns the photo `logo/helm_source.jpg` into the 1-bit `logo/helm.png` (400 x 400 px, black is metal), and `make all` draws it at 0.25 um per pixel.
 
-## Directory Structure
+## Files
 
-<details>
-<summary>Show Directory Structure</summary>
-
-```text
-📁 sg13cmos5l_ip__helm/
-├─ Makefile                         # Build automation
-├─ 📁 logo/
-│  ├─ README.md                     # copyright of the pictures
-│  ├─ helm_source.jpg               # Source photo
-│  └─ helm.png                      # 1-bit image, made by make_helm_png.py
-├─ 📁 script/
-│  ├─ make_helm_png.py              # photo to 1-bit image
-│  └─ img2lay.py                    # PNG-to-GDS converter
-├─ 📁 final/
-│  ├─ 📁 gds/
-│  │  └─ sg13cmos5l_ip__helm.gds   # Generated GDSII layout
-│  ├─ 📁 lef/
-│  │  └─ sg13cmos5l_ip__helm.lef   # LEF macro for place-and-route
-│  ├─ 📁 lib/
-│  │  └─ sg13cmos5l_ip__helm.lib   # Liberty timing stub
-│  └─ 📁 vh/
-│     └─ sg13cmos5l_ip__helm.vh    # Verilog blackbox stub
-└─ 📁 verification/
-   └─ 📁 drc/                       # DRC reports
-```
-
-</details>
-
+- `Makefile`: the build.
+- `logo/helm_source.jpg`: the source photo, `logo/helm.png`: the 1-bit image, `logo/README.md`: copyright of the pictures.
+- `script/make_helm_png.py`: photo to 1-bit image.
+- `script/img2lay.py`: PNG to GDS.
+- `final/gds/`, `final/lef/`, `final/lib/`, `final/vh/`: the generated GDS, LEF, Liberty stub and Verilog blackbox stub.
+- `verification/drc/`: the DRC reports.
 
 ## Usage
 
-The default Make target is `help`, so running `make` prints usage and all available targets with short descriptions.
-
-```bash
-make
-make help
-```
-
-Build everything (clean, generate logo GDS, LEF, Liberty, Verilog stub, run DRC):
-
-```bash
-make all
-```
+`make` prints the targets. `make all` cleans, generates the logo GDS, LEF, Liberty and Verilog stubs and runs DRC.
 
 ### PDK Guard
 
-Every target except `help` and `clean` needs the `ihp-sg13cmos5l` PDK. The container starts with `ihp-sg13g2` selected, so the wrong PDK is the default state here, and it splits the IP across two technologies: `img2lay.py` resolves the `LAYER` name through the layer properties of the active PDK, and `sak-drc.sh` runs the DRC against its rule deck, while the metal stack the logo is meant for is the CMOS5L one. The Makefile therefore compares `$PDK` against `REQUIRED_PDK` once when it is parsed, before any target runs:
+Every target except `help` and `clean` needs the `ihp-sg13cmos5l` PDK, but the container starts with `ihp-sg13g2`. `img2lay.py` resolves `LAYER` through the active PDK's layer properties and `sak-drc.sh` uses its rule deck, so the Makefile compares `$PDK` against `REQUIRED_PDK` at parse time, before any target runs:
 
 ```bash
 $ make all
 Makefile:21: *** PDK is "ihp-sg13g2", but this IP needs "ihp-sg13cmos5l". Run `sak-pdk ihp-sg13cmos5l` in this shell and retry, or pass REQUIRED_PDK= to skip this check.  Stop.
 ```
 
-The check is a parse-time conditional at the top of the Makefile, not a prerequisite of each target. Switch the PDK with `sak-pdk ihp-sg13cmos5l`, pass `REQUIRED_PDK=` to skip the check, or `REQUIRED_PDK=<pdk>` to require a different PDK.
-
+Switch with `sak-pdk ihp-sg13cmos5l`, pass `REQUIRED_PDK=` to skip the check, or `REQUIRED_PDK=<pdk>` to require a different PDK.
 
 ### Individual Targets
 
@@ -75,26 +41,21 @@ The check is a parse-time conditional at the top of the Makefile, not a prerequi
 
 ### Parameters
 
-The following Makefile variables can be overridden:
-
 | Variable      | Default  | Description                                                                           |
 |---------------|----------|---------------------------------------------------------------------------------------|
 | `BLOCK_SIZE`  | `100`    | Block edge in µm, the image is scaled to it                                           |
 | `PIXEL_SIZE`  | `0.25`   | Pixel size in µm (must be ≥ 0.21 µm, the Metal4 minimum space, single pixels and single-pixel gaps are drawn as is) |
 | `LAYER`       | `Metal4` | Metal layer the logo is drawn on, one of `Metal1`..`Metal4` or `TopMetal1`            |
 
-Setting `LAYER` keeps the GDS artwork (`logo` target) and the LEF obstruction (`lef` target) consistent. The `logo` target hands the name to `img2lay.py`, which resolves it through the PDK's KLayout layer properties (`Metal4` is `50/0`), and the `lef` target writes the same name into the `OBS`.
+`LAYER` sets both the GDS artwork (`img2lay.py` resolves it through the PDK's KLayout layer properties, `Metal4` is `50/0`) and the LEF `OBS`, so the two agree. The image is scaled to `BLOCK_SIZE`, so the GDS boundary and the LEF `SIZE` agree too.
 
 ```sh
 make all LAYER=TopMetal1
 ```
 
-The image is scaled to `BLOCK_SIZE`, so the GDS boundary and the LEF `SIZE` always agree.
-
-
 ## Logo Generator Script
 
-The `script/img2lay.py` script converts a PNG image into a GDSII layout:
+`script/img2lay.py` converts a PNG image into a GDSII layout:
 
 - Each horizontal run of dark pixels becomes a rectangle on the layer selected via `LAYER` (default `Metal4`, resolved to `50/0`)
 - Boundary layers `prBoundary` (189/0) and `NoMetFiller` (160/0) mark the block outline
@@ -105,22 +66,14 @@ The `script/img2lay.py` script converts a PNG image into a GDSII layout:
 - `--block-size` scales the image to the given block edge in µm and draws the boundary layers at that size
 - `--scale` downscales the image by a plain factor instead
 
-
 ## Design Rule Check (DRC)
 
-Runs DRC on the GDS layout in `final/gds/`. Both flows use `sak-drc.sh` and write their reports into per-cell run folders: `verification/drc/<CELL>.magic.drc/` (Magic) and `verification/drc/<CELL>.klayout.drc/` (KLayout, `.lyrdb`).
-
-**KLayout DRC** uses `sak-drc.sh` at the selected `DRC_LEVEL` (`precheck`, `macro` [default], or `regular`):
+Both flows run `sak-drc.sh` on the GDS in `final/gds/` and write per-cell run folders: `verification/drc/<CELL>.magic.drc/` and `verification/drc/<CELL>.klayout.drc/` (`.lyrdb`). KLayout runs at `DRC_LEVEL` `precheck`, `macro` (default) or `regular`.
 
 ```sh
 make klayout-drc
 make klayout-drc CELL=sg13cmos5l_ip__helm
 make klayout-drc DRC_LEVEL=regular
-```
-
-**Magic DRC** uses `sak-drc.sh`:
-
-```sh
 make magic-drc
 make magic-drc CELL=sg13cmos5l_ip__helm
 ```

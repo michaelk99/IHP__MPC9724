@@ -351,7 +351,7 @@ sim-gl: sim-rtl-out sim-gl-out ## Require the gate-level output to equal the RTL
 .PHONY: sim-gl
 
 # sim-gl only says the two agree, and they share a source. This says both are
-# right: the five on-chip stimulus patterns against the bit-true model.
+# right: the eight on-chip stimulus patterns against the bit-true model.
 MODEL_GATE := ../../models/gate_dsa1_dig_out.py
 
 model-gate: ## Require the RTL and gate-level stimulus responses to match the bit-true model

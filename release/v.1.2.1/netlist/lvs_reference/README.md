@@ -1,14 +1,14 @@
 # LVS reference of MPC9724
 
-The netlists the top LVS compared the layout against. They replace the CDL that was in `../schematic/`, which was a stale file of the template. The top LVS is a layout against these netlists, not against a drawn schematic.
+The netlists the top LVS compared the layout against, not a drawn schematic. They replace the stale template CDL that was in `../schematic/`.
 
-Built on 2026-11-07 by `verification/lvs/top_lvs.sh` of this repository on the release GDS, and kept here from that run. The result of the run is in `verification/submission/lvs.rpt`: `Circuits match uniquely`, no property error. The inputs of every file and the image are in `verification/submission/README.md`.
+Built and kept from the run of `verification/lvs/top_lvs.sh` on the release GDS on 2026-11-07. The result of the run is in `verification/submission/lvs.rpt`: `Circuits match uniquely`, no property error. The inputs of every file and the image are in `verification/submission/README.md`.
 
 ```sh
 LVS_CELL=MPC9724 LVS_OUT=<dir> verification/lvs/top_lvs.sh release/v.1.2.1/gds/MPC9724.gds.gz
 ```
 
-The script extracts the layout with Magic (`verification/lvs/top_lvs_extract.tcl`), writes the files below into `<dir>` and compares with netgen (`verification/lvs/top_lvs.tcl`). The layout cell `MPC9724` is compared with the reference cell `sg13cmos5l_dsa1_dig_top`. So the reference keeps the design's top name `sg13cmos5l_dsa1_dig_top` and is not a view of the chip under the release top name `MPC9724`.
+The script extracts the layout with Magic (`verification/lvs/top_lvs_extract.tcl`), writes the files below into `<dir>` and compares with netgen (`verification/lvs/top_lvs.tcl`). The layout cell `MPC9724` is compared with the reference cell `sg13cmos5l_dsa1_dig_top`, so the reference keeps the design's top name.
 
 ## Files
 
@@ -29,7 +29,7 @@ The IO cells' SPICE is not copied. It is the PDK's `libs.ref/sg13cmos5l_io/spice
 
 ## What the script changes before comparing
 
-- VSS and IOVSS are one net. Both tap the one substrate, which Magic extracts as one node, so the reference joins them. A metal short between them is invisible here. The DEF-level LibreLane LVS keeps them apart and passes (`verification/reports/lvs.netgen.rpt`).
+- VSS and IOVSS are one net: both tap the one substrate, which Magic extracts as one node, so the reference joins them. A metal short between them is invisible here. The DEF-level LibreLane LVS keeps them apart and passes (`verification/reports/lvs.netgen.rpt`).
 - The IO cells' `vss` pin is dropped from the IO SPICE and from their instances in the chip Verilog, because Magic never makes it a port. Not dropped from `Filler200` when the extraction has the pin, the clamp cell or the cut cell.
 - The IO cells, the bondpad and the logos are black boxes, compared by their pins as LibreLane's LVS does. Magic extracts the IO cells from the GDS and their clamps then disagree with the IO SPICE, which is the PDK's, not this design's.
 - Wells are tied in the three Verilog files (`verilog_tie_wells.py`).

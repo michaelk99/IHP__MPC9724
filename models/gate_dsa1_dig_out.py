@@ -3,7 +3,7 @@
 """Check a dsa1_dig_top_out.txt against the bit-true model, pattern by pattern.
 
 `make sim-gl` proves the hardened netlist equals the RTL, and both come from the
-same source, so it cannot prove either is right. This runs the five on-chip
+same source, so it cannot prove either is right. This runs the eight on-chip
 stimulus modes through models/, the five single ones and the three repeating
 ones, and requires every output word to match.
 

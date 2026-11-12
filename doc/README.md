@@ -7,14 +7,24 @@ Reference material for this chip and for the IHP SG13CMOS5L Open-PDK it is built
 | Document | Contents |
 | --- | --- |
 | [specifications.md](specifications.md) | Top-level specifications: technology, supplies, clock, corner list, macro inventory, functional behaviour of every block. |
-| [pinout.md](pinout.md) | The full 32-pad table per side, with the `sg13cmos5l_dsa1_dig_top` port and the role each pad carries inside `sg13cmos5l_dsa1_dig_core`. |
+| [pinout.md](pinout.md) | The QFN24 lead table and the 21 bondpads on four sides, with the `sg13cmos5l_dsa1_dig_top` port and the role each pad carries inside `sg13cmos5l_dsa1_dig_core`. |
 | [floorplan.md](floorplan.md) | Die and core geometry, hard-macro placement coordinates, the PDN strategy and the floorplan diagram. |
 | [../testbenches/README.md](../testbenches/README.md) | What the chip-level testbenches cover: the cocotb tests, the opt-in PSD run, two register-file properties bring-up software needs, and what is still unverified. |
 | [running.md](running.md) | How to run the targets in the IIC-OSIC-TOOLS container, the five exports they need, and what each gate proves. |
-| [rtl2gds.md](rtl2gds.md) | How RTL becomes GDS here: the cell library that lives outside the repo, the clock-gate pre-pass, why a hard macro carries its own metal fill, which verdicts mean what, and the traps already hit. |
+| [rtl2gds.md](rtl2gds.md) | How RTL becomes GDS here: the cell library outside the repo, the clock-gate pre-pass, why a hard macro carries its own metal fill, what each verdict means, the traps already hit. |
 | [../macros/decimator/rtl/README.md](../macros/decimator/rtl/README.md) | The SystemVerilog sources of the decimation filter: file list, word widths, why the CIC is order 6, and the house rules for editing them. |
+| [regmap.md](regmap.md) | The SPI register map, generated from `macros/dsa1_dig/regmap.yaml`. |
+| [Datasheet.md](Datasheet.md) | One page of the chip's key numbers, each linked to the document it comes from. |
+| [signoff.md](signoff.md) | The sign-off record of the delivered v1.2.1: checks, accepted items, the IHP audit dispositions. |
+| [tapeout_status.md](tapeout_status.md) | Status of v1.2.1 after the recheck of every Magic DRC verdict for the flatten flag, 2026-11-12, and the two `M1.e` items in dsm2. |
+| [dsm2_integration.md](dsm2_integration.md) | The design spec for integrating `dsm2_core` next to the back end. |
+| [esd_hbm.md](esd_hbm.md) | HBM ESD simulation of the pad ring on its extracted metal. |
+| [host_protocol.md](host_protocol.md) | How a bench host drives the chip: programs, records, and what the chip requires of any host. |
+| [layout_index.md](layout_index.md) | Where each item of IHP's `MPC9724-main/` structure lives in this repo. |
+| [TRL-Mixed-Signal-IP.md](TRL-Mixed-Signal-IP.md) and [info.json](info.json) | The TRL self-assessment (TRL3) and IHP's project metadata. |
+| [../release/](../release/) | One folder per release. [v.1.2.1](../release/v.1.2.1/README.md) is the delivered chip. |
 
-The three are cross-linked and are written against the design files, not the other way round. If you change a number in [flow/librelane/config.yaml](../flow/librelane/config.yaml), [rtl/](../rtl/) or [packaging/config.yaml](../packaging/config.yaml), mirror it here.
+`specifications.md`, `pinout.md` and `floorplan.md` are written against the design files, not the other way round. If you change a number in [flow/librelane/config.yaml](../flow/librelane/config.yaml), [rtl/](../rtl/) or [packaging/config.yaml](../packaging/config.yaml), mirror it here.
 
 ## Tools
 
@@ -36,16 +46,16 @@ The three are cross-linked and are written against the design files, not the oth
 
 ## Other
 
-[ihp-structure-proposals/](ihp-structure-proposals/) holds four proposed submission-repo layouts for IHP shuttle chips (an ADC, an LNA, an MCU and an op-amp), contributed to the discussion around a common directory structure. They are PDK-independent and are kept here verbatim from the SG13G2 template. The generator script that produced them, `gen_structure.py`, is deliberately not tracked (see [.gitignore](../.gitignore)).
+[ihp-structure-proposals/](ihp-structure-proposals/) holds four proposed submission-repo layouts for IHP shuttle chips (an ADC, an LNA, an MCU and an op-amp), PDK-independent and kept verbatim from the SG13G2 template. Their generator `gen_structure.py` is not tracked (see [.gitignore](../.gitignore)).
 
 ## Provenance and caveats
 
-The two PDK PDFs are copied unchanged out of `libs.doc/doc/` of the SG13CMOS5L PDK (`ihp-sg13cmos5l @ ff32f48`, the PDK in the IIC-OSIC-TOOLS 2026.08 image), renamed to lower case to match the folder convention: layout rules **Rev. 0.1 (2025-12-08)**, process specification **Rev. 0.2 (2025-12-15)**. The revision is on the title page of each document. A repo copy of a PDK document ages silently, so check that stamp against `$PDK_ROOT/$PDK/libs.doc/doc/` before letting one of these decide a rule.
+The two PDK PDFs are unchanged copies from `libs.doc/doc/` of the SG13CMOS5L PDK (`ihp-sg13cmos5l @ ff32f48`, the PDK in the IIC-OSIC-TOOLS 2026.08 image), renamed to lower case: layout rules **Rev. 0.1 (2025-12-08)**, process specification **Rev. 0.2 (2025-12-15)**, as on each title page. Check that stamp against `$PDK_ROOT/$PDK/libs.doc/doc/` before letting one of them decide a rule.
 
-Three items are carried over from the SG13G2 sibling of this template and are worth knowing about:
+Three items come from the SG13G2 sibling of this template:
 
-- **The layout cheatsheet is the SG13G2 sheet.** It is byte-identical to `sg13g2_os_layout_cheatsheet.xlsx`, so its layer list still contains `M5`, `TM2` and `TV2`, which do not exist on this stack. The `M1`..`M4`, `TM1`, `Contact`, `Via 1/2/3` and `TV1` rows apply here unchanged, ignore the rest. Two further columns are wrong on both PDKs: the resistance columns use bulk-aluminium resistivity and are optimistic by roughly a factor of two against the tech LEF, and the "min. Width" column lists 0.42 µm for TopMetal1 where the LEF says 1.64 µm. Take widths from the DRC deck, resistance from the tech LEF or from PEX, and current limits from the [LibreLane cheatsheet](librelane/librelane_cheatsheet.md) tables, which are read out of `sg13cmos5l_tech.lef`.
-- **The gm/ID techsweep plots are the SG13G2 sweep.** The LV and HV MOS ngspice models of this PDK are symbolic links into `ihp-sg13g2/libs.tech/ngspice/models/`, so the devices are the same devices and the curves are the same curves. The `.mat` lookup tables under [macros/inverter/scripts/sizing/data/](../macros/inverter/scripts/sizing/data/) are likewise byte-identical to the SG13G2 ones under a SG13CMOS5L name. The figure captions inside the PDFs still read "SG13G2". They will be regenerated when a SG13CMOS5L-specific sweep exists.
+- **The layout cheatsheet is the SG13G2 sheet**, byte-identical to `sg13g2_os_layout_cheatsheet.xlsx`. Its `M5`, `TM2` and `TV2` rows do not exist on this stack, the `M1`..`M4`, `TM1`, `Contact`, `Via 1/2/3` and `TV1` rows apply. On both PDKs the resistance columns use bulk-aluminium resistivity and are optimistic by roughly a factor of two against the tech LEF, and "min. Width" lists 0.42 µm for TopMetal1 where the LEF says 1.64 µm. Take widths from the DRC deck, resistance from the tech LEF or PEX, and current limits from the [LibreLane cheatsheet](librelane/librelane_cheatsheet.md) tables, read out of `sg13cmos5l_tech.lef`.
+- **The gm/ID techsweep plots are the SG13G2 sweep.** The LV and HV MOS ngspice models of this PDK are symbolic links into `ihp-sg13g2/libs.tech/ngspice/models/`, so the curves are the same. The `.mat` lookup tables under [macros/inverter/scripts/sizing/data/](../macros/inverter/scripts/sizing/data/) are byte-identical to the SG13G2 ones under a SG13CMOS5L name, and the PDF captions still read "SG13G2".
 - **The Verilog and SystemVerilog cheatsheets** are external documents with no PDK content at all.
 
-Nothing in `doc/` is generated by a make target. It is all hand-maintained.
+Only `regmap.md` is generated, by `make -C macros/dsa1_dig regmap`.

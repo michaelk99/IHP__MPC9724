@@ -32,10 +32,9 @@ A logo IP block for [Johannes Kepler University Linz](https://www.jku.at/), rend
 
 ## Usage
 
-The default Make target is `help`, so running `make` prints usage and all available targets with short descriptions.
+`make` (same as `make help`) prints all targets.
 
 ```bash
-make
 make help
 ```
 
@@ -47,14 +46,14 @@ make all
 
 ### PDK Guard
 
-Every target except `help` and `clean` needs the `ihp-sg13cmos5l` PDK. The container starts with `ihp-sg13g2` selected, so the wrong PDK is the default state here, and it splits the IP across two technologies: `img2lay.py` resolves the `LAYER` name through the layer properties of the active PDK, and `sak-drc.sh` runs the DRC against its rule deck, while the metal stack the logo is meant for is the CMOS5L one. The Makefile therefore compares `$PDK` against `REQUIRED_PDK` once when it is parsed, before any target runs:
+Every target except `help` and `clean` needs the `ihp-sg13cmos5l` PDK, because `img2lay.py` resolves `LAYER` through the active PDK's layer properties and `sak-drc.sh` uses its rule deck. The container starts with `ihp-sg13g2`, so the Makefile checks `$PDK` against `REQUIRED_PDK` at parse time:
 
 ```bash
 $ make all
 Makefile:21: *** PDK is "ihp-sg13g2", but this IP needs "ihp-sg13cmos5l". Run `sak-pdk ihp-sg13cmos5l` in this shell and retry, or pass REQUIRED_PDK= to skip this check.  Stop.
 ```
 
-The check is a parse-time conditional at the top of the Makefile, not a prerequisite of each target. Switch the PDK with `sak-pdk ihp-sg13cmos5l`, pass `REQUIRED_PDK=` to skip the check, or `REQUIRED_PDK=<pdk>` to require a different PDK.
+Switch the PDK with `sak-pdk ihp-sg13cmos5l`, pass `REQUIRED_PDK=` to skip the check, or `REQUIRED_PDK=<pdk>` to require a different PDK.
 
 
 ### Individual Targets
@@ -72,26 +71,24 @@ The check is a parse-time conditional at the top of the Makefile, not a prerequi
 
 ### Parameters
 
-The following Makefile variables can be overridden:
-
 | Variable      | Default  | Description                                                                           |
 |---------------|----------|---------------------------------------------------------------------------------------|
 | `BLOCK_SIZE`  | `100`    | Block edge in µm, the image is scaled to it                                           |
 | `PIXEL_SIZE`  | `0.50`   | Pixel size in µm (must be ≥ 0.21 µm, the Metal4 minimum space, single pixels and single-pixel gaps are drawn as is) |
 | `LAYER`       | `Metal4` | Metal layer the logo is drawn on, one of `Metal1`..`Metal4` or `TopMetal1`            |
 
-Setting `LAYER` keeps the GDS artwork (`logo` target) and the LEF obstruction (`lef` target) consistent. The `logo` target hands the name to `img2lay.py`, which resolves it through the PDK's KLayout layer properties (`Metal4` is `50/0`), and the `lef` target writes the same name into the `OBS`.
+`LAYER` sets both the GDS artwork (`logo`, resolved through the PDK's KLayout layer properties, `Metal4` is `50/0`) and the LEF `OBS` (`lef`).
 
 ```sh
 make all LAYER=TopMetal1
 ```
 
-The image is scaled to `BLOCK_SIZE`, so the GDS boundary and the LEF `SIZE` always agree.
+The image is scaled to `BLOCK_SIZE`, so the GDS boundary and the LEF `SIZE` agree.
 
 
 ## Logo Generator Script
 
-The `script/img2lay.py` script converts a PNG image into a GDSII layout:
+`script/img2lay.py` converts a PNG image into a GDSII layout:
 
 - Each horizontal run of dark pixels becomes a rectangle on the layer selected via `LAYER` (default `Metal4`, resolved to `50/0`)
 - Boundary layers `prBoundary` (189/0) and `NoMetFiller` (160/0) mark the block outline
@@ -105,19 +102,12 @@ The `script/img2lay.py` script converts a PNG image into a GDSII layout:
 
 ## Design Rule Check (DRC)
 
-Runs DRC on the GDS layout in `final/gds/`. Both flows use `sak-drc.sh` and write their reports into per-cell run folders: `verification/drc/<CELL>.magic.drc/` (Magic) and `verification/drc/<CELL>.klayout.drc/` (KLayout, `.lyrdb`).
-
-**KLayout DRC** uses `sak-drc.sh` at the selected `DRC_LEVEL` (`precheck`, `macro` [default], or `regular`):
+Runs `sak-drc.sh` on `final/gds/`. Reports go to `verification/drc/<CELL>.klayout.drc/` (`.lyrdb`) and `verification/drc/<CELL>.magic.drc/`. `DRC_LEVEL` (`precheck`, `macro` [default], or `regular`) applies to KLayout only.
 
 ```sh
 make klayout-drc
 make klayout-drc CELL=sg13cmos5l_ip__jku
 make klayout-drc DRC_LEVEL=regular
-```
-
-**Magic DRC** uses `sak-drc.sh`:
-
-```sh
 make magic-drc
 make magic-drc CELL=sg13cmos5l_ip__jku
 ```

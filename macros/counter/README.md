@@ -37,26 +37,7 @@
 │  └─ 📁 vh/
 │     └─ counter_top.vh
 ├─ 📁 flow/
-│  ├─ 📁 final/               # .gitignore'd: important files are copied to counter/final/ (listed here to document LibreLane output folders)
-│  │  ├─ 📁 def/              # Design Exchange Format: cell placement & routing (text-based)
-│  │  ├─ 📁 gds/              # GDSII layout: final tape-out file
-│  │  ├─ 📁 json_h/           # Yosys JSON headers: machine-readable netlist for internal scripts
-│  │  ├─ 📁 klayout_gds/      # KLayout GDS: with extra visual-debug metadata
-│  │  ├─ 📁 lef/              # Library Exchange Format: abstract pin & blockage view for P&R
-│  │  ├─ 📁 lib/              # Liberty timing files: timing, power & area models
-│  │  ├─ 📁 mag/              # Magic layout files: used for DRC & GDS generation
-│  │  ├─ 📁 mag_gds/          # GDS generated/processed by Magic
-│  │  ├─ 📁 nl/               # Netlist: gate-level Verilog after synthesis
-│  │  ├─ 📁 odb/              # OpenDB: internal OpenROAD binary database (LEF+DEF combined)
-│  │  ├─ 📁 pnl/              # Powered Netlist: gate-level Verilog with explicit VDD/VSS (for LVS)
-│  │  ├─ 📁 render/           # Layout render images
-│  │  ├─ 📁 sdc/              # Synopsys Design Constraints: clock periods & timing requirements
-│  │  ├─ 📁 sdf/              # Standard Delay Format: timing delays for gate-level simulation
-│  │  ├─ 📁 spef/             # Standard Parasitic Exchange Format: RC parasitics from layout
-│  │  ├─ 📁 spice/            # SPICE netlist: for LVS & transistor-level simulation
-│  │  ├─ 📁 vh/               # Verilog headers: for hierarchy management & simulation inclusion
-│  │  ├─ metrics.csv          # Design metrics (area, power, timing slack, DRC/LVS): spreadsheet
-│  │  └─ metrics.json         # Design metrics (area, power, timing slack, DRC/LVS): JSON summary
+│  ├─ 📁 final/               # .gitignore'd LibreLane views: def, gds, json_h, klayout_gds, lef, lib, mag, mag_gds, nl, odb, pnl, render, sdc, sdf, spef, spice, vh, metrics.csv/.json. Key ones are copied to counter/final/
 │  └─ 📁 librelane/
 │     ├─ config.yaml
 │     ├─ impl.sdc
@@ -149,7 +130,7 @@
 
 ### Show Available Targets
 
-The default Make target is `help`, so running `make` prints usage and all available targets with short descriptions.
+The default target is `help`, which prints all targets with short descriptions.
 
 ```sh
 make
@@ -159,16 +140,14 @@ make help
 
 ### PDK Guard
 
-Every target except `help` and `clean` needs the `ihp-sg13cmos5l` PDK. The container starts with `ihp-sg13g2` selected, so the wrong PDK is the default state here, and it silently mixes technologies: LibreLane hardens against the wrong tech LEF and standard cells, the DRC and LVS inside the flow run against the wrong rule deck, and the results look valid. The Makefile therefore compares `$PDK` against `REQUIRED_PDK` once when it is parsed, before any target runs:
+Every target except `help` and `clean` needs the `ihp-sg13cmos5l` PDK. The container starts with `ihp-sg13g2` selected, and a run under the wrong PDK hardens, DRCs and LVSes against the wrong technology while the results look valid. The Makefile checks `$PDK` against `REQUIRED_PDK` at parse time, before any target runs:
 
 ```sh
 $ make librelane
 Makefile:23: *** PDK is "ihp-sg13g2", but this macro needs "ihp-sg13cmos5l". Run `sak-pdk ihp-sg13cmos5l` in this shell and retry, or pass REQUIRED_PDK= to skip this check.  Stop.
 ```
 
-The check is a parse-time conditional at the top of the Makefile, not a prerequisite of each target, so it costs nothing and cannot be forgotten when a target is added. `help` and `clean` are exempt, so the usage text and the cleanup still work under any PDK. `open` is not exempt: it launches Xschem, KLayout and Magic, which all read the selected PDK.
-
-Switch the PDK with `sak-pdk ihp-sg13cmos5l`, which also sets `PDKPATH`, `KLAYOUT_PATH`, `SPICE_USERINIT_DIR` and `STD_CELL_LIBRARY`. To run a single target against another PDK anyway, pass an empty `REQUIRED_PDK`:
+`open` is not exempt, since Xschem, KLayout and Magic read the selected PDK. `sak-pdk ihp-sg13cmos5l` switches the PDK and also sets `PDKPATH`, `KLAYOUT_PATH`, `SPICE_USERINIT_DIR` and `STD_CELL_LIBRARY`. To run a target against another PDK anyway:
 
 ```sh
 make <target> REQUIRED_PDK=          # skip the check
@@ -178,13 +157,13 @@ make <target> REQUIRED_PDK=<pdk>     # require a different PDK
 
 ### Open the Design Files
 
-Opens a file browser for this folder with `sak-open.py` from the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS), one button per design file, grouped by directory:
+Opens a file browser for this folder with `sak-open.py` from the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS), one button per design file:
 
 ```sh
 make open
 ```
 
-Clicking a button launches the matching tool in the file's own directory, so Xschem finds its `simulations/` folder and KLayout its run outputs where they belong:
+A click launches the tool in the file's own directory:
 
 | File type | Tool |
 | --- | --- |
@@ -196,83 +175,54 @@ Clicking a button launches the matching tool in the file's own directory, so Xsc
 | `.png`, `.pdf` | the desktop's handler (`xdg-open`) |
 | `.sv`, `.svh`, `.v`, `.vh`, `.vhd`, `.vhdl`, `.spice`, `.cir`, `.sp`, `.cdl`, `.sdc`, `.lef`, `.lib`, `.tcl`, `.mk`, `.yaml`, `.json`, `.py`, `.qmd`, `.tex`, `.md` and `Makefile` | gvim |
 
-Only these types get a button. Files with any other extension (`.sh`, `.svg`, `.pcf`, `.save`, `.rpt`, `.txt`, `.csv` and so on) are not listed.
+Other extensions (`.sh`, `.svg`, `.pcf`, `.save`, `.rpt`, `.txt`, `.csv` and so on) get no button. Schematics and symbols of one design unit, the nearest ancestor holding a `Makefile`, share one tabbed Xschem instance that writes its netlists to the folder this macro's [`xschemrc`](schematic/xschem/xschemrc) pins.
 
-Schematics and symbols that belong to one design unit share a single tabbed Xschem instance instead of one process per click. The unit is the nearest ancestor holding a `Makefile`, so this macro gets its own instance and every tab writes its netlists to the folder this macro's `xschemrc` pins, see [Xschem Configuration](../../README.md#xschem-configuration).
-
-The tree is rescanned every 15 s, so files a running flow produces appear on their own and are highlighted for a minute. Generated directories are skipped by default: `runs/`, `sim_build/`, `obj_dir/`, `simulations/`, `__pycache__/`, `_freeze/` and `.git/`. The Xschem `simulations/` folder is one of them, so the `.raw` files show up only with `--all`. Pass extra options with `OPEN_ARGS`:
+The tree is rescanned every 15 s and new files are highlighted for a minute. Skipped by default: `runs/`, `sim_build/`, `obj_dir/`, `simulations/`, `__pycache__/`, `_freeze/` and `.git/`, so the Xschem `.raw` files show up only with `--all`.
 
 ```sh
 make open OPEN_ARGS=--all              # include the build outputs
 make open OPEN_ARGS="--prune backups"  # skip one more directory name
 ```
 
-At most 400 buttons are drawn at once, because each one is an X window, and what is left out is stated at the end of the list. That cap is easy to hit with `--all`: it pulls in roughly 19000 files at the top level and 5700 in the counter, against 66 in the inverter. Use `--all` from the folder you actually care about, or narrow it with `--prune`, rather than at the top level.
+At most 400 buttons are drawn, the rest is named at the end of the list. `--all` adds every build output, roughly 19000 files at the top level, 5700 in the counter and 66 in the inverter as counted in the chip template, so use it in the folder you need or narrow it with `--prune`.
 
 > [!NOTE]
-> This target needs a display. Run it inside the container's VNC/noVNC desktop or over X11 forwarding. In a shell-only container it stops with `cannot open a window`. The `.png` and `.pdf` buttons hand the file to the desktop's registered handler, so those two need the full VNC/noVNC session and do not work over a bare X forward.
+> Needs a display: the container's VNC/noVNC desktop or X11 forwarding. In a shell-only container it stops with `cannot open a window`. The `.png` and `.pdf` buttons need the full VNC/noVNC session and do not work over a bare X forward.
 
 
 ### Linting
 
-To lint the Verilog/SystemVerilog source files with [Verilator](https://www.veripool.org/verilator/), run:
+Lints with [Verilator](https://www.veripool.org/verilator/):
 
 ```sh
 make lint-verilog                # lint the full counter_top design
 make lint-verilog CELL=counter   # lint the standalone counter cell
-make lint-verilog-all            # lint counter and counter_top in sequence
+make lint-verilog-all            # lint counter, then counter_top
 ```
 
-When `CELL=counter_top` (the default), all synthesis sources (`constants.sv`, `counter.sv`, `counter_top.sv`) are passed to Verilator.
-For a single cell, `constants.sv` is always included first so the shared `` `COUNTER_MAX_DEFAULT `` and `` `CLK_FREQ_DEFAULT `` macros are in scope.
-
-[`rtl/constants.sv`](rtl/constants.sv) implements these constants as `` `define `` macros instead of a SystemVerilog package, because the Verilog frontend of Yosys 0.64 cannot parse `import pkg::*;` in a module header.
-Macros have no scope, so the file has to be compiled **before** any module that references them.
-That is why it is the first entry of `MODULES_SIM`, `_SIM_SRCS`, and `_LINT_SRCS` in the `Makefile`.
-
-The `lint-verilog-all` target runs these lint checks in sequence:
-
-1. `make lint-verilog CELL=counter`
-2. `make lint-verilog` (default: `counter_top`)
-
-This is also the lint step used by `make all`.
+`CELL=counter_top` (the default) passes all synthesis sources (`constants.sv`, `counter.sv`, `counter_top.sv`). [`rtl/constants.sv`](rtl/constants.sv) holds `` `COUNTER_MAX_DEFAULT `` and `` `CLK_FREQ_DEFAULT `` as `` `define `` macros, because Yosys 0.64 (the template's image) cannot parse `import pkg::*;` in a module header. Macros have no scope, so the file is compiled first: it is always included for a single cell and is the first entry of `MODULES_SIM`, `_SIM_SRCS` and `_LINT_SRCS` in the `Makefile`. `lint-verilog-all` is the lint step of `make all`.
 
 
 ### Verification and Simulation
 
-We use [cocotb](https://www.cocotb.org/), a Python-based testbench environment, and [Icarus Verilog](https://github.com/steveicarus/iverilog) for the verification of the macro.
-
-The simulation targets are unified and accept an optional `CELL` variable (default: `counter_top`).
-The waveform viewer can be changed with `WAVEFORM_VIEWER=<gtkwave|surfer>` (default: `gtkwave`).
+Uses [cocotb](https://www.cocotb.org/) and [Icarus Verilog](https://github.com/steveicarus/iverilog). The targets take `CELL` (default `counter_top`) and `WAVEFORM_VIEWER=<gtkwave|surfer>` (default `gtkwave`).
 
 > [!NOTE]
-> In the current repository state, the provided Verilog, cocotb, and Xschem testbench/viewer files are for `counter_top`.
-> Running simulation/view targets with another `CELL` requires corresponding testbench files (for example, `testbenches/verilog/<CELL>_tb.*`, `testbenches/cocotb/<CELL>_tb.py`, and `testbenches/xschem/<CELL>_tb_tran.sch`).
+> Testbench and viewer files exist only for `counter_top`. Another `CELL` needs its own, for example `testbenches/verilog/<CELL>_tb.*`, `testbenches/cocotb/<CELL>_tb.py` and `testbenches/xschem/<CELL>_tb_tran.sch`.
 
 #### RTL Verilog Simulation
 
-Compiles the RTL with Icarus Verilog and runs the simulation.
-When `CELL=counter_top` (the default), the full `MODULES_SIM` source list is used and `testbenches/verilog/counter_top_tb.sv` is picked up.
-For non-top cells, `constants.sv` is included first (so the shared `` `COUNTER_MAX_DEFAULT `` / `` `CLK_FREQ_DEFAULT `` macros are in scope), the RTL source is auto-selected as `rtl/<CELL>.sv` when present, otherwise `rtl/<CELL>.v`, and the testbench likewise as `testbenches/verilog/<CELL>_tb.sv` when present, otherwise `testbenches/verilog/<CELL>_tb.v`.
-The waveform is written to `testbenches/verilog/` (e.g. `testbenches/verilog/counter_top_tb.vcd`):
-
 ```sh
-make sim-rtl-verilog              # run counter_top RTL simulation
-```
-
-To view the waveform afterwards:
-
-```sh
+make sim-rtl-verilog                                   # writes testbenches/verilog/counter_top_tb.vcd
 make sim-view-verilog                                  # view counter_top waveform
 make sim-view-verilog WAVEFORM_VIEWER=surfer           # use Surfer instead
 ```
 
-The simulation folder contains a pre-configured waveform layout file (`counter_top_tb.gtkw` for GTKWave, `counter_top_tb.surf.ron` for Surfer).
-The view target loads it automatically together with the current `.vcd`, so signal formatting is preserved across runs.
+`counter_top` uses the full `MODULES_SIM` list and `testbenches/verilog/counter_top_tb.sv`. Another cell gets `constants.sv` first, then `rtl/<CELL>.sv` (else `.v`) and `testbenches/verilog/<CELL>_tb.sv` (else `.v`). The view target loads the saved layout (`counter_top_tb.gtkw` or `counter_top_tb.surf.ron`) with the current `.vcd`.
 
 #### RTL / GL cocotb Simulation
 
-The cocotb testbench is located in `testbenches/cocotb/counter_top_tb.py` and exercises:
+`testbenches/cocotb/counter_top_tb.py` checks that:
 
 - reset clears the counter to 0
 - the counter holds its value while `enable_i` is low
@@ -280,32 +230,15 @@ The cocotb testbench is located in `testbenches/cocotb/counter_top_tb.py` and ex
 - the counter wraps from `CTR_MAX` back to 0
 
 ```sh
-make sim-rtl-cocotb               # run counter_top RTL cocotb simulation
-```
-
-To run the gate-level (GL) cocotb simulation (sources the post-synthesis netlist from `final/nl/`):
-
-```sh
-make sim-gl-cocotb                # gate-level simulation of counter_top
-```
-
-> [!NOTE]
-> Gate-level simulation requires the latest implementation in `flow/final/` (and a `final/nl/counter_top.nl.v` copy via `make copy-final`).
-
-A waveform file is generated under `testbenches/cocotb/sim_build/counter_top.fst`.
-To view it:
-
-```sh
-make sim-view-cocotb                                  # view counter_top waveform
+make sim-rtl-cocotb                                   # RTL
+make sim-gl-cocotb                                    # gate level, netlist from final/nl/
+make sim-view-cocotb                                  # view testbenches/cocotb/sim_build/counter_top.fst
 make sim-view-cocotb WAVEFORM_VIEWER=surfer           # use Surfer instead
 ```
 
-The cocotb folder contains a pre-configured waveform layout file (`counter_top_tb.gtkw` for GTKWave, `counter_top_tb.surf.ron` for Surfer).
-The view target loads it automatically together with the current `.fst`, so signal formatting is preserved across runs.
+`sim-gl-cocotb` needs the latest implementation in `flow/final/` and `final/nl/counter_top.nl.v` from `make copy-final`. The view target loads the saved `.gtkw` or `.surf.ron` layout.
 
 #### Gate-Level Xschem Simulation
-
-Runs the mixed-signal gate-level transient simulation testbench in `testbenches/xschem/<CELL>_tb_tran.sch`:
 
 ```sh
 make sim-gl-xschem                # run counter_top gate-level Xschem simulation
@@ -313,16 +246,14 @@ make sim-gl-xschem CELL=<cell>    # run gate-level Xschem simulation for another
 make sim-gl-xschem TB=<tb>        # run another testbench (default: <CELL>_tb_tran)
 ```
 
-The testbench is selected with the `TB` variable, given without the `.sch` extension (default: `<CELL>_tb_tran`). All testbench schematics are located in `testbenches/xschem/`, and the generated netlists are written to `testbenches/xschem/simulations/`.
+`TB` is given without `.sch`. Testbenches are in `testbenches/xschem/`, netlists go to `testbenches/xschem/simulations/`.
 
-Every testbench pulls in a FET `.save` file through its `SAVE` code block (for example `.include counter_top_tb_tran.save`). That file lists the operating-point parameters of every transistor (`ids`, `gm`, `gds`, `vth` and so on), which the `annotate_fet_params` symbols and the `Annotate OP` launcher read back from the raw file. The include uses the bare file name, so it resolves inside `testbenches/xschem/simulations/`, where ngspice runs. Both `sim-gl-xschem` and the schematic's `Simulate` launcher write the file on every run, so it always matches the devices currently in the schematic and a fresh clone needs no manual export. Xschem's **IHP > Create FET .save file** menu entry writes the same file by hand.
+Each testbench's `SAVE` block includes a FET `.save` file by bare name (e.g. `counter_top_tb_tran.save`, resolved in `testbenches/xschem/simulations/`) with the operating point of every transistor for the `annotate_fet_params` symbols and the `Annotate OP` launcher. `sim-gl-xschem` and the `Simulate` launcher rewrite it on every run, **IHP > Create FET .save file** writes it by hand.
 
-The simulation runs in **batch mode**: the target netlists the testbench with `xschem netlist` and then invokes `ngspice -b` directly instead of using `xschem simulate`. `xschem simulate` would spawn an interactive ngspice in a terminal detached from `make`: the target would return immediately, the result would never be checked, and the process (with its X server) would leak. Running the simulator directly makes `make` block until the run finishes and see its exit status.
-
-Because the run is headless, the `plot` commands in a testbench's `.control` block are a no-op and no plot windows appear. Every testbench instead exports its results with `wrdata` to `testbenches/xschem/plot_simulations/data/`, from where they are plotted with `sim-view-xschem`.
+The target runs `xschem netlist` and then `ngspice -b`, so `make` waits for the run and sees its exit status. `plot` commands do nothing in batch mode, so testbenches write results with `wrdata` to `testbenches/xschem/plot_simulations/data/` for `sim-view-xschem`.
 
 > [!NOTE]
-> This flow expects the generated XSPICE model in `netlist/xspice/`. It is generated automatically by `make build-top` (right after `copy-netlist`), so it always matches the current LibreLane run. To regenerate it manually, run:
+> Needs the XSPICE model in `netlist/xspice/`, which `make build-top` generates after `copy-netlist`. To regenerate it by hand:
 >
 > ```sh
 > make generate-xspice
@@ -330,129 +261,60 @@ Because the run is headless, the `plot` commands in a testbench's `.control` blo
 
 #### View Xschem Simulation Results
 
-After the gate-level Xschem simulation has completed, plot the results with the script selected by `SCRIPT`, given without the `.py` extension (default: `plot_<CELL>`):
-
 ```sh
 make sim-view-xschem                      # run the default plotting script (plot_counter_top)
-make sim-view-xschem SCRIPT=<scriptname>  # run another plotting script
+make sim-view-xschem SCRIPT=<scriptname>  # run another plotting script, without .py
 ```
 
-The target runs `SHOW_PLOTS=1 python3 testbenches/xschem/plot_simulations/<SCRIPT>.py` and exports the figures and a CSV to `testbenches/xschem/plot_simulations/figures/`. Run through `sim-view-xschem`, the script additionally opens the plot windows when a display is available (e.g. the container's X/VNC session). Headless, only the figures are written.
-
-> [!NOTE]
-> `sim-view-xschem` is intentionally **not** called by `sim-all`. It opens an interactive plot window and must be called manually after the simulation has completed.
+Runs `SHOW_PLOTS=1 python3 testbenches/xschem/plot_simulations/<SCRIPT>.py`, which writes the figures and a CSV to `testbenches/xschem/plot_simulations/figures/` and opens plot windows when a display is available. Not part of `sim-all`.
 
 #### Run All Simulations
-
-To run all simulation targets in sequence:
 
 ```sh
 make sim-all
 ```
 
-This executes the following targets in order:
-
-1. `sim-rtl-verilog` (default: `counter_top`)
-2. `sim-rtl-cocotb` (default: `counter_top`)
-3. `sim-gl-cocotb` (default: `counter_top`)
-4. `sim-gl-xschem` (default: `counter_top`)
-
-> [!NOTE]
-> The `sim-view-verilog` and `sim-view-cocotb` targets are intentionally **not** called by `sim-all`.
-> Both open a waveform viewer GUI (GTKWave or Surfer), which blocks the shell until the window is closed.
-> They are designed for interactive use and must be called manually after the simulation has completed.
+Runs `sim-rtl-verilog`, `sim-rtl-cocotb`, `sim-gl-cocotb` and `sim-gl-xschem` in that order, for `counter_top`. The `sim-view-*` targets are not included, since their GUIs block the shell.
 
 
 ### LibreLane Flow
 
-Run the LibreLane flow with:
-
 ```sh
-make librelane
+make librelane                 # full flow
+make librelane-nodrc           # without DRC checks
+make librelane-magicdrc        # only Magic DRC checks
+make librelane-klayoutdrc      # only KLayout DRC checks
+make librelane-openroad        # view the result in the OpenROAD GUI
+make librelane-klayout         # view it in KLayout
 ```
 
-Additional targets are available for different DRC configurations:
-
-- `make librelane-nodrc` – run LibreLane without DRC checks
-- `make librelane-magicdrc` – run LibreLane with only Magic DRC checks
-- `make librelane-klayoutdrc` – run LibreLane with only KLayout DRC checks
-
-After the LibreLane flow completes successfully, the generated views are saved under `flow/final/`. `flow/final/` is included in `.gitignore`.
+The views are saved under `flow/final/`, which is git-ignored. DRC (Magic and KLayout) and LVS run inside the flow, and `copy-reports` saves them to `verification/`.
 
 
-### View the Design
+### Copy Run Outputs
 
-After completion, you can view the design using the OpenROAD GUI:
+`copy-reports` needs at least one run in `flow/librelane/runs/`, and the latest must have completed without errors. The other three need their views in `flow/final/`.
 
-```sh
-make librelane-openroad
-```
-
-Or using KLayout:
-
-```sh
-make librelane-klayout
-```
-
-
-### Copy Important Reports
-
-To copy the Yosys synthesis checks, antenna reports, post-PnR timing summary, per-corner power reports, IR-drop report, Magic/KLayout DRC results, LVS report, and manufacturability report from the latest run into `verification/`, run:
-
-```sh
-make copy-reports
-```
-
-This only works if at least one LibreLane run exists in `flow/librelane/runs/` and the latest run completed without errors.
-
-
-### Copy the Final Folders
-
-To copy the latest GDS, LEF, LIB, NL, PNL, SPEF, and VH from `flow/final/` into `final/`, run:
-
-```sh
-make copy-final
-```
-
-This assumes the final folders exist under `flow/final/` after a successful LibreLane run.
-
-
-### Copy the Final Netlist
-
-To copy the latest SPICE, PNL, and NL files from `flow/final/` into `netlist/`, run:
-
-```sh
-make copy-netlist
-```
-
-This only works if the required final views exist in `flow/final/spice/`, `flow/final/pnl/`, and `flow/final/nl/`.
-
-
-### Copy the Final Render
-
-To copy the latest LibreLane render from `flow/final/render/` into `render/img/`, run:
-
-```sh
-make copy-render
-```
-
-This only works if the final render exists in `flow/final/render/`.
+| Target | Copies | To |
+| --- | --- | --- |
+| `make copy-reports` | Yosys synthesis checks, antenna reports, post-PnR timing summary, per-corner power, IR drop, Magic/KLayout DRC, LVS, manufacturability, from `flow/librelane/runs/` | `verification/` |
+| `make copy-final` | GDS, LEF, LIB, NL, PNL, SPEF and VH from `flow/final/` | `final/` |
+| `make copy-netlist` | SPICE, PNL and NL from `flow/final/spice/`, `pnl/` and `nl/` | `netlist/` |
+| `make copy-render` | the render from `flow/final/render/` | `render/img/` |
 
 
 ### Render Top Layout
-
-Renders the final GDS from `final/gds/` with `sak-render.py` from the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) and saves the two images `counter_top_black.png` and `counter_top_white.png` (2048 px wide, 4x oversampling) in the `render/img/` folder:
 
 ```sh
 make render-gds
 ```
 
-This only works if the final GDS exists in `final/gds/`, so run `make copy-final` first.
+Renders `final/gds/` (run `make copy-final` first) with `sak-render.py` from the [IIC-OSIC-TOOLS](https://github.com/iic-jku/IIC-OSIC-TOOLS) to `render/img/counter_top_black.png` and `counter_top_white.png`, 2048 px wide, 4x oversampling.
 
 
 ### Build FPGA
 
-Emulates the macro on an FPGA. The flow supports three boards across two FPGA architectures, and `counter_top` is synthesized directly onto board pins, without a board-top wrapper:
+`counter_top` is synthesized directly onto board pins, without a board-top wrapper:
 
 | Board | FPGA | Toolchain |
 | --- | --- | --- |
@@ -460,15 +322,8 @@ Emulates the macro on an FPGA. The flow supports three boards across two FPGA ar
 | iCEBreaker | Lattice iCE40UP5K | Yosys -> nextpnr-ice40 -> icepack |
 | ULX3S | Lattice ECP5-85F | Yosys -> nextpnr-ecp5 -> ecppack |
 
-To run the full flow (clean -> lint -> synthesis -> place-and-route -> bitstream) on the default board, run:
-
 ```sh
-make build-fpga
-```
-
-This invokes `make -C fpga all`. `fpga/Makefile` is a dispatcher that forwards to the selected board, so individual steps and other boards are reached from `fpga/`:
-
-```sh
+make build-fpga                         # make -C fpga all: clean, lint, synthesis, place-and-route, bitstream
 make -C fpga synthesis                  # Yosys synthesis for the default board
 make -C fpga pr                         # nextpnr place-and-route
 make -C fpga gen_bitstream              # bitstream
@@ -477,28 +332,21 @@ make -C fpga BOARD=ulx3s all            # the whole flow on another board
 ```
 
 > [!NOTE]
-> IIC-OSIC-TOOLS carries the build chain for all three boards, so the bitstreams build inside the container. Only programming the board needs the host, since the container has no USB access: build the bitstream inside, then run `load_bitstream`/`flash_bitstream` from the host (`dfu-util` for the pico-ice, `iceprog` for the iCEBreaker, `openFPGALoader` for the ULX3S). See [`fpga/README.md`](fpga/README.md) for the toolchain notes, the pin assignments, and how to add a further board.
+> The bitstreams build inside the container. Programming needs the host, since the container has no USB access: run `load_bitstream`/`flash_bitstream` there (`dfu-util` for the pico-ice, `iceprog` for the iCEBreaker, `openFPGALoader` for the ULX3S). Toolchain notes, pin assignments and adding a board: [`fpga/README.md`](fpga/README.md).
 
 
 ### Build Top
-
-To build the macro with LibreLane, copy its reports, copy final folders, copy netlists, generate the XSPICE model, copy the render, and render the final GDS, run:
 
 ```sh
 make build-top
 ```
 
-
-### Design Rule Check (DRC) & Layout Versus Schematic (LVS)
-
-The LibreLane flow already includes DRC and LVS checks with Magic and KLayout, and they are saved in the `verification/` folder.
+Runs `librelane`, `copy-reports`, `copy-final`, `copy-netlist`, `generate-xspice`, `copy-render` and `render-gds`.
 
 
 ### Build the Xschem Symbol
 
-The macro is hardened by LibreLane, so it has no schematic, and Xschem's own "make symbol from a schematic" (key `a`) has nothing to work from. `schematic/xschem/<CELL>.sym` is written by hand instead, and the rest of the gate-level flow bends to it: `sak-pin-reorder.py` sorts the ports of the XSPICE model and of the extracted PEX netlists into its pin order, matching them by the `sim_pinname` property of each pin.
-
-That makes the symbol a source file, not a build product, which is why no target regenerates it during a build. The testbench schematics wire to pin **coordinates**, and a pin one grid step off its wire floats silently: Xschem gives the net an auto-generated name, the netlist stays valid, and the simulation runs and produces the wrong answer. A build that moved pins would introduce exactly that failure. The work is therefore split over two targets, one to scaffold a symbol that does not exist yet, one to check the one that does.
+The macro has no schematic, so `schematic/xschem/<CELL>.sym` is a hand-written source file. `sak-pin-reorder.py` sorts the ports of the XSPICE model and the PEX netlists into its pin order by `sim_pinname`. No build regenerates it, because testbenches wire to pin coordinates and a moved pin floats silently (auto-named net, valid netlist, wrong result). `symbol-gl` scaffolds a missing symbol, `symbol-check` checks an existing one.
 
 #### Scaffold a New Symbol
 
@@ -508,7 +356,7 @@ make symbol-gl CELL=<cellname>  # scaffold the symbol of another cell
 make symbol-gl FORCE=1          # overwrite an existing symbol
 ```
 
-`symbol-gl` reads the ports of the powered netlist `netlist/pnl/<CELL>.pnl.v` and writes a first-cut symbol with [`scripts/verilog2sym.py`](scripts/verilog2sym.py). Every port becomes a pin carrying its direction, its bus range and its `sim_pinname`:
+[`scripts/verilog2sym.py`](scripts/verilog2sym.py) reads the ports of `netlist/pnl/<CELL>.pnl.v` and writes one pin per port with its direction, bus range and `sim_pinname`:
 
 ```text
 B 5 -2.5 -82.5 2.5 -77.5 {name=VDD dir=inout sim_pinname=VDD}
@@ -516,13 +364,9 @@ B 5 -162.5 -42.5 -157.5 -37.5 {name=clock_i dir=in sim_pinname=clock_i}
 B 5 157.5 -42.5 162.5 -37.5 {name=counter_value_o[0..7] dir=out sim_pinname=counter_value_o}
 ```
 
-The powered netlist is the reference rather than the unpowered `netlist/nl/<CELL>.nl.v`, because it is the only one of the two that carries `VDD` and `VSS`, and rather than the RTL, because it is elaborated, so a bus is `[7:0]` instead of `[CTR_BW-1:0]`. Pointing the script at parameterised RTL is refused with that reason rather than guessed at. Both netlists come from `make copy-netlist`, so a new macro reaches its first symbol with `make build-top` followed by `make symbol-gl`.
+The powered netlist is the only one with `VDD` and `VSS`, and it is elaborated (`[7:0]`, not `[CTR_BW-1:0]`), so parameterised RTL is refused. A new macro gets its first symbol from `make build-top` then `make symbol-gl`. Geometry follows Xschem's `make_sym.awk` (inputs left, outputs and inouts right, 5x5 pin boxes on 20-unit stubs, labels at size 0.2), with supplies at top and bottom and a 40 pin pitch. Xschem loads and saves a generated symbol byte for byte. Without `FORCE=1` an existing symbol, the only copy of the hand work, is not overwritten.
 
-The geometry follows Xschem's own symbol generator (`make_sym.awk`): inputs on the left edge, outputs and any remaining bidirectional ports on the right, 5x5 pin boxes on 20-unit stubs, and pin labels inside the body at text size 0.2. Two house rules are added on top. Supplies leave the body at the top and at the bottom instead of the sides, and the pin pitch is 40, so every pin lands on a multiple of 20 whatever the pin count. Loading a generated symbol into Xschem and saving it again returns it byte for byte, which is the cheapest evidence that it is written the way Xschem writes symbols itself.
-
-The target refuses to overwrite an existing symbol unless `FORCE=1` is given, because the hand work lives in that file and there is no second copy of it.
-
-What the scaffold gets right is the tedious part: the pin set, the directions, the bus ranges and the `sim_pinname` of every pin. What it cannot know is house style. For the counter, that is the whole of the difference between the scaffold and the committed symbol:
+House style is left to you. For the counter:
 
 | | scaffold | committed `counter_top.sym` |
 | --- | --- | --- |
@@ -530,7 +374,7 @@ What the scaffold gets right is the tedious part: the pin set, the directions, t
 | pin order | netlist order, enable before reset | reset before enable |
 | body | 280 x 120, pins on a 40 pitch | 160 x 160, pins on a 60 pitch |
 
-Renaming the pins is safe because `sim_pinname` carries the binding to the netlist, which is what the property is for. Rename, arrange, redraw the body, then commit the result and treat it as a source file from then on.
+Renaming pins is safe because `sim_pinname` carries the binding to the netlist.
 
 #### Check the Symbol
 
@@ -539,22 +383,20 @@ make symbol-check                  # check counter_top.sym
 make symbol-check CELL=<cellname>  # check the symbol of another cell
 ```
 
-`symbol-check` compares the committed symbol against the same powered netlist and fails if it no longer describes the macro. It runs as the first step of `generate-xspice`, so every build that produces an XSPICE model has verified the symbol first, and a design that grew a port fails there instead of somewhere downstream.
+Compares the committed symbol against the powered netlist and fails if it no longer describes the macro. It is the first step of `generate-xspice`. `sak-pin-reorder.py` already fails on a pin count mismatch, on a `sim_pinname` naming a port the netlist does not have, and on two pins claiming the same port. `symbol-check` adds:
 
-`sak-pin-reorder.py` already refuses to reorder what it cannot map: it fails on a pin count mismatch, on a `sim_pinname` naming a port the netlist does not have, and on two pins claiming the same port. `symbol-check` adds the case it cannot see and two it has no data for:
+- **A pin without `sim_pinname`.** One such pin switches `sak-pin-reorder.py` to position matching for the whole symbol, wrong for Magic's alphabetically sorted ports. Here the fallback aborts only because its power map expects `a_VPWR`/`a_VGND` and the netlist has `a_VDD`/`a_VSS`. With other supply names it exits 0 having mapped `enable_i` onto `counter_value_o[0]` and `counter_value_o[7]` onto `reset_n_i`.
+- **A direction that disagrees with the netlist.** Nothing downstream reads `dir=`, so it would survive the whole flow.
+- **A port missing from the symbol**, reported before any conversion instead of as a pin count mismatch.
 
-- **A pin without `sim_pinname`.** This is the one that matters. A single pin missing the property switches `sak-pin-reorder.py` out of name matching for the whole symbol and into matching by position, which is correct only when the netlist keeps the symbol's port order. Magic sorts the ports of an extracted netlist alphabetically, so it does not. On this macro the fallback happens to abort, because the fixed power map it falls back to expects `a_VPWR` and `a_VGND` while the netlist has `a_VDD` and `a_VSS`. Take that accident away by naming the supplies anything else and the reorder exits 0 having mapped `enable_i` onto `counter_value_o[0]` and `counter_value_o[7]` onto `reset_n_i`. `symbol-check` makes the missing property itself the error, so the outcome no longer depends on what the supplies happen to be called.
-- **A direction that disagrees with the netlist.** Nothing downstream reads `dir=`, because a SPICE instance line is positional, so an input drawn as an output survives the whole flow and misleads every reader of the symbol.
-- **A port added to the RTL and forgotten in the symbol**, reported against the netlist before any conversion runs rather than as a pin count mismatch in the middle of one.
-
-Every problem names the file, the line and the pin, and the target exits non-zero:
+Each problem names the file, line and pin, and the target exits non-zero:
 
 ```text
 [ERROR] schematic/xschem/counter_top.sym:19: pin 'di_clock' is dir=out, but 'clock_i' is an input port of module 'counter_top'.
 [ERROR] schematic/xschem/counter_top.sym: module 'counter_top' has the port 'enable_i', but no pin declares sim_pinname=enable_i. Add the pin to the symbol.
 ```
 
-The script can also be run by hand on any symbol and netlist pair:
+By hand, on any symbol and netlist pair:
 
 ```sh
 python3 scripts/verilog2sym.py netlist/pnl/counter_top.pnl.v schematic/xschem/counter_top.sym --check
@@ -563,28 +405,22 @@ python3 scripts/verilog2sym.py netlist/pnl/counter_top.pnl.v schematic/xschem/co
 
 ### Build Xschem PEX Symbol
 
-Builds the Xschem symbol the PEX flow needs, `schematic/xschem/<CELL>_pex.sym`, from the regular cell symbol `schematic/xschem/<CELL>.sym`:
-
 ```sh
 make symbol-pex                  # build counter_top_pex.sym from counter_top.sym
 make symbol-pex CELL=<cellname>  # build the PEX symbol of another cell
 ```
 
-The generated symbol is a verbatim copy of `<CELL>.sym` with a single change: `type=subcircuit` becomes `type=primitive`. `counter_top.sym` is already `type=primitive`, because its subcircuit comes from the included XSPICE model and Xschem must not descend into a schematic of that name, so here the copy differs from its source in nothing but the file name. What carries the meaning is the rest, which is inherited:
+Writes `schematic/xschem/<CELL>_pex.sym` as a copy of `<CELL>.sym` with `type=subcircuit` changed to `type=primitive`. `counter_top.sym` is already `type=primitive` (its subcircuit comes from the XSPICE model), so only the file name differs. The inherited `format="@name @pinlist @symname"` makes the instance reference `<CELL>_pex`, the `.subckt` name the PEX flow writes, and the inherited pin order and `sim_pinname` are what `sak-pin-reorder.py` sorts the extracted netlist to.
 
-- **`format="@name @pinlist @symname"`** makes the instance reference `@symname`, which resolves to `<CELL>_pex`, exactly the `.subckt` name the PEX flow writes.
-- **The pin order and the `sim_pinname` of every pin** are what `sak-pin-reorder.py` sorts the extracted netlist to, so they have to be the ones of the cell symbol. The symbol names its pins `di_clock`, `do_b[0]` and so on, the layout names them `clock_i`, `counter_value_o[0]`, and `sim_pinname` is what connects the two.
-
-`symbol-pex` runs automatically at the start of `klayout-pex` and `magic-pex`, so the symbol is rebuilt from the current `<CELL>.sym` before every extraction and cannot go stale when a pin is added, removed or renamed. Calling it by hand is only needed to refresh the symbol without re-running an extraction. Anything added to the generated file by hand is lost at the next extraction, so make the change in `<CELL>.sym` instead.
+`klayout-pex` and `magic-pex` run `symbol-pex` first, so hand edits to the generated file are lost. Edit `<CELL>.sym` instead.
 
 > [!NOTE]
-> Every symbol in this project also carries `spectre_format="@name ( @pinlist ) @symname"`. Xschem writes that line itself whenever a symbol is built from a schematic's pin list (key `a`, `make_sym.awk`), and it is read **only** by the Spectre netlister, which is also the one that drives VACASK (`xschem.tcl` configures `vacask "$N"` as the default simulator for `netlist_type spectre`). The SPICE netlister used for ngspice ignores it, so it has no effect on any target in this Makefile.
-> Do not strip it: without it, instances of the symbol are **silently dropped** from a Spectre/VACASK netlist and the `subckt` line of the symbol itself comes out with an empty port list, with no warning at all.
+> Every symbol carries `spectre_format="@name ( @pinlist ) @symname"`, as Xschem writes it (key `a`, `make_sym.awk`). Only the Spectre netlister reads it, which also drives VACASK (`xschem.tcl` sets `vacask "$N"` for `netlist_type spectre`). No target here uses it, but do not strip it: without it a Spectre/VACASK netlist **silently drops** the symbol's instances and writes its `subckt` line with an empty port list.
 
 
 ### Parasitic Extraction (PEX)
 
-Extracts the parasitics of the hardened macro from the final GDS and writes a post-layout SPICE netlist to `netlist/pex/`. It is the transistor-level counterpart of the gate-level XSPICE model, not a replacement for it:
+Extracts R and C from the final GDS into a post-layout SPICE netlist in `netlist/pex/`, next to the XSPICE model:
 
 | | `generate-xspice` | `magic-pex` / `klayout-pex` |
 | --- | --- | --- |
@@ -593,16 +429,9 @@ Extracts the parasitics of the hardened macro from the final GDS and writes a po
 | parasitics | none, Liberty delays only | R and C from the layout |
 | speed | fast, digital event driven | slow, full analog solve |
 
-The extracted SPICE filenames include the selected extraction mode:
-- `klayout-pex` writes `netlist/pex/<CELL>_klayout_pex_<EXT_MODE>.spice`
-- `magic-pex` writes `netlist/pex/<CELL>_magic_pex_<EXT_MODE>.spice`
+`EXT_MODE` selects the extraction mode: `1` C-decoupled, `2` C-coupled, `3` full-RC (default). The outputs are `netlist/pex/<CELL>_magic_pex_<EXT_MODE>.spice` and `netlist/pex/<CELL>_klayout_pex_<EXT_MODE>.spice`.
 
-The `EXT_MODE` parameter selects the extraction mode:
-- `1` = C-decoupled
-- `2` = C-coupled
-- `3` = full-RC (default)
-
-**Magic PEX** uses `sak-pex.sh` (installed in the IIC-OSIC-TOOLS container):
+**Magic PEX** uses `sak-pex.sh` (in the IIC-OSIC-TOOLS container):
 
 ```sh
 make magic-pex
@@ -610,22 +439,21 @@ make magic-pex CELL=counter_top
 make magic-pex CELL=counter_top EXT_MODE=1
 ```
 
-**KLayout PEX** uses `kpex`, which runs Magic internally for the extraction itself:
+**KLayout PEX** uses `kpex`, which runs Magic internally:
 
 > [!WARNING]
-> `kpex` does not support the `ihp-sg13cmos5l` PDK yet, so the `klayout-pex` target currently fails. Use `magic-pex` for parasitic extraction until kpex gains CMOS5L support.
+> `kpex` does not support the `ihp-sg13cmos5l` PDK yet, so the `klayout-pex` target currently fails. Use `magic-pex` until kpex gains CMOS5L support.
 
 ```sh
 make klayout-pex
 make klayout-pex CELL=counter_top EXT_MODE=1
 ```
 
-> [!NOTE]
-> For `klayout-pex`, `EXT_MODE=1` (C-decoupled) is not yet supported by kpex and automatically falls back to `EXT_MODE=2` (CC) with a warning.
+kpex does not support `EXT_MODE=1` yet and falls back to `EXT_MODE=2` with a warning.
 
-Both targets read `final/gds/<CELL>.gds`, so **`make build-top` (or at least `make copy-final`) has to have run first**. They abort with a clear message if the GDS is missing, instead of failing somewhere inside the extractor. Unlike the analog macro there is no Xschem schematic to hand to kpex as the reference netlist, so `klayout-pex` passes the LibreLane-extracted `netlist/spice/<CELL>.spice` instead.
+Both read `final/gds/<CELL>.gds`, so run `make build-top` (or at least `make copy-final`) first. They stop if it is missing. `klayout-pex` hands kpex `netlist/spice/<CELL>.spice` as reference netlist, since there is no schematic.
 
-For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the three `extresist` tuning parameters of `sak-pex.sh`. They are ignored in `EXT_MODE=1`/`2`:
+For `EXT_MODE=3`, `magic-pex` exposes the `extresist` parameters of `sak-pex.sh` (ignored in `EXT_MODE=1`/`2`):
 
 | Variable | `sak-pex.sh` option | Default | Meaning |
 | --- | --- | --- | --- |
@@ -637,67 +465,51 @@ For full-RC extraction (`EXT_MODE=3`), `magic-pex` additionally exposes the thre
 make magic-pex CELL=counter_top EXT_MODE=3 THRESHOLD=5000 MINRES=500 MINDELAY=2
 ```
 
-The `.subckt` name in the extracted SPICE file is `<CELL>_pex`: `magic-pex` sets it directly via the `sak-pex.sh` option `-n <CELL>_pex`, while for `klayout-pex` it is automatically renamed from `<CELL>`, the name kpex writes.
+The `.subckt` is named `<CELL>_pex` (`magic-pex` passes `-n <CELL>_pex`, `klayout-pex` renames kpex's `<CELL>`). Its pins are reordered to `<CELL>_pex.sym` by `sim_pinname`, then [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py) fails the target if a pin does not reach the circuit, see [`macros/inverter/README.md`](../inverter/README.md) for the two cases it catches.
 
-Both targets start by running `symbol-pex` (see above), so `schematic/xschem/<CELL>_pex.sym` always reflects the current cell symbol. The `.subckt` pin order in the extracted SPICE file is then reordered with `sak-pin-reorder.py` (installed in the IIC-OSIC-TOOLS container) to match that symbol's pin positions, matching by `sim_pinname` because the symbol and the layout use different pin names. Both targets finish by running [`scripts/check_pex_ports.py`](scripts/check_pex_ports.py), which verifies that every pin of the `.subckt` really reaches the circuit and fails the target otherwise. It is the same check the analog macro runs, see [`macros/inverter/README.md`](../inverter/README.md) for the two cases it catches.
-
-For `counter_top` the full-RC default extracts 4401 transistors into a 630 KB netlist and takes a few seconds. `klayout-pex` finds the same 4401 transistors and splits the RC network differently.
+For `counter_top` the full-RC default takes a few seconds. The committed `netlist/pex/counter_top_magic_pex_3.spice` holds 4351 transistors, 2113 capacitors and 4705 resistors in 650 kB.
 
 > [!NOTE]
-> Magic's `extresist` step is not deterministic. Two `make magic-pex` runs on the same GDS give the same 4401 transistors, but the R and C counts move by around a percent (across four runs, 2079 to 2095 capacitors and 4609 to 4661 resistors), and the internal node names are renumbered. The committed `netlist/pex/counter_top_magic_pex_3.spice` therefore shows up as modified in `git status` after every run, even when nothing about the layout changed.
+> Magic's `extresist` step is not deterministic. Four `make magic-pex` runs on the same GDS of the SG13G2 template's counter gave 4401 transistors each, 2079 to 2095 capacitors and 4609 to 4661 resistors, with renumbered internal nodes. So the committed `netlist/pex/counter_top_magic_pex_3.spice` shows as modified in `git status` after every run.
 
-To run a **post-layout simulation**, open [`testbenches/xschem/counter_top_tb_tran.sch`](testbenches/xschem/counter_top_tb_tran.sch). It already `.include`s both the XSPICE model and `netlist/pex/counter_top_magic_pex_3.spice`, and above the testbench sit two spare instances, `x2` of `counter_top.sym` and `x3` of `counter_top_pex.sym`, both parked with `spice_ignore=true`. Swap the wired-up `x1` for the one you want. This is the same arrangement the analog testbenches use.
+For a **post-layout simulation**, open [`testbenches/xschem/counter_top_tb_tran.sch`](testbenches/xschem/counter_top_tb_tran.sch). It includes the XSPICE model and `netlist/pex/counter_top_magic_pex_3.spice`, and parks `x2` (`counter_top.sym`) and `x3` (`counter_top_pex.sym`) with `spice_ignore=true`. Swap the wired-up `x1` for the one you want.
 
-The testbench runs with `.options savecurrents klu method=gear reltol=1e-3 abstol=1e-12 gmin=1e-12 rshunt=1e14`. The looser tolerances and `rshunt` are what the extracted netlist needs. Full-RC extraction splits the nets into fragments, and some of the resulting nodes have no DC path to ground, so with the tighter settings the analog macro uses (`reltol=1e-4 abstol=1e-15 gmin=1e-15`) the post-layout run aborts at the initial timepoint with `Timestep too small; trouble with node ...`. The gate-level XSPICE run does not notice the change, its output is identical either way.
+It runs with `.options savecurrents klu method=gear reltol=1e-3 abstol=1e-12 gmin=1e-12 rshunt=1e14`. With the analog macro's `reltol=1e-4 abstol=1e-15 gmin=1e-15`, full-RC nodes without a DC path to ground abort the run at the initial timepoint with `Timestep too small; trouble with node ...`. The XSPICE output is identical either way.
 
 > [!WARNING]
-> A post-layout run simulates every transistor of the macro in ngspice. In the IIC-OSIC-TOOLS container, 60 ns of transient take about 80 s, while the full 10 µs gate-level XSPICE run of the same testbench finishes in under 2 s. Use the XSPICE model for functional runs, and the PEX netlist on short, targeted stimuli to check timing and signal integrity.
+> In the IIC-OSIC-TOOLS container, 60 ns of post-layout transient take about 80 s, the full 10 µs XSPICE run of the same testbench under 2 s. Use the PEX netlist only on short stimuli for timing and signal integrity.
 
 
 ### Lint, Build, Verify and Simulate All
-
-Lints, builds, verifies and simulates the whole macro:
-
-- `lint-verilog-all`
-- `build-fpga`
-- `build-top`
-- `magic-pex`
-- `sim-all`
-
-Linting runs first to fail fast on structural RTL issues. The simulations run **after** the build, so the gate-level simulations (`sim-gl-cocotb`, `sim-gl-xschem`) run on the netlists and the XSPICE model produced by this build, not on those of a previous one. `magic-pex` sits between the two, so the post-layout netlist the Xschem testbench includes is extracted from the GDS of this build as well. `klayout-pex` is commented out in the recipe: it works (see [Parasitic Extraction (PEX)](#parasitic-extraction-pex)), but it is a second full extraction that nothing in the flow consumes. The DRC and LVS verification is done within the LibreLane flow.
 
 ```sh
 make all
 ```
 
+Runs `lint-verilog-all`, `build-fpga`, `build-top`, `magic-pex` and `sim-all` in that order, so the gate-level simulations use the netlists, XSPICE model and PEX netlist of this build. `klayout-pex` is commented out in the recipe, since nothing in the flow consumes a second extraction and kpex does not support `ihp-sg13cmos5l` yet (see [Parasitic Extraction (PEX)](#parasitic-extraction-pex)). DRC and LVS run inside the LibreLane flow.
+
 
 ### Generate XSPICE File
-
-To generate an XSPICE file of the macro for mixed-signal simulation in Xschem, run:
 
 ```sh
 make generate-xspice
 ```
 
-This builds the XSPICE model **directly from the LibreLane-extracted SPICE netlist** in `netlist/spice/<TOP>.spice` (copied from the last run by `make copy-netlist`). Three steps do the work:
+Builds the XSPICE model for mixed-signal simulation in Xschem from the LibreLane-extracted `netlist/spice/<TOP>.spice` (copied by `make copy-netlist`):
 
-1. `symbol-check` verifies that `schematic/xschem/<TOP>.sym` still describes the ports of the macro, see [Check the Symbol](#check-the-symbol). It runs first so that a symbol which no longer matches the design fails the target before anything is converted.
-2. `spi2xspice.py` replaces every standard cell with an XSPICE primitive (`d_lut`, `d_dff`, …), taking the pin order from the inline black-box `.subckt` stubs in the extracted netlist and the logic functions from the Liberty file.
-3. `sak-pin-reorder.py` (installed in the IIC-OSIC-TOOLS container) reorders the resulting `.subckt` ports to match the Xschem symbol in `schematic/xschem/<TOP>.sym`.
+1. `symbol-check` fails the target first if `schematic/xschem/<TOP>.sym` no longer matches the ports, see [Check the Symbol](#check-the-symbol).
+2. `spi2xspice.py` replaces every standard cell with an XSPICE primitive (`d_lut`, `d_dff`, …), with the pin order from the black-box `.subckt` stubs in the netlist and the logic functions from the Liberty file.
+3. `sak-pin-reorder.py` reorders the `.subckt` ports to match `schematic/xschem/<TOP>.sym`.
 
-> [!NOTE]
-> This target runs automatically as part of `make build-top` (right after `copy-netlist`), so the XSPICE model always matches the netlists of the current LibreLane run. The simulation timing parameters (`-io_time`, `-time`, `-idelay`, `-odelay`, `-cload`) are pinned in the Makefile, so regeneration is deterministic.
-> Conversion pipeline: check the Xschem symbol → extracted SPICE (`.spice`) → XSPICE (`.xspice`) → reorder pins according to the Xschem symbol.
+`make build-top` runs it after `copy-netlist`. The timing parameters (`-io_time`, `-time`, `-idelay`, `-odelay`, `-cload`) are pinned in the Makefile, so regeneration is deterministic.
 
 #### What You Must Consider
 
-To get a working gate-level Xschem simulation from a LibreLane-generated netlist, two things must line up:
-
 **1. Power nets must not collide with the testbench `.GLOBAL` nets.**
-The extracted netlist names its supplies `VDD`/`VSS`, and the Xschem testbench declares `.GLOBAL VDD`. If the digital block exposed a node literally named `VDD`, ngspice would merge it with the analog global supply and abort with `singular matrix: check node auto_dac...`. `spi2xspice.py` avoids this by bridging every power (and otherwise unused) boundary net to a private `dig_<net>` node. Nothing is required from you here, but keep it in mind if you adapt the script or rename supplies.
+The testbench declares `.GLOBAL VDD`, and a digital node named `VDD` would merge with it and abort ngspice with `singular matrix: check node auto_dac...`. `spi2xspice.py` bridges every power (and otherwise unused) boundary net to a private `dig_<net>` node, mind this when adapting the script or renaming supplies.
 
 **2. Symbol pins must declare their netlist name via `sim_pinname`.**
-Magic sorts the top-level ports alphabetically, so their order in the extracted netlist does **not** match the symbol. `sak-pin-reorder.py` therefore maps pins **by name**: every pin in `schematic/xschem/<TOP>.sym` must carry a `sim_pinname=<netlist_name>` property, where the name is the RTL/netlist signal name, e.g.
+Magic sorts the top-level ports alphabetically, so `sak-pin-reorder.py` maps pins by name. Every pin in `schematic/xschem/<TOP>.sym` needs `sim_pinname=<netlist_name>`, for example:
 
 ```
 B 5 ... {name=di_clock   dir=in    sim_pinname=clock_i}
@@ -705,33 +517,28 @@ B 5 ... {name=do_b[0..7] dir=out   sim_pinname=counter_value_o}
 B 5 ... {name=VDD        dir=inout sim_pinname=VDD}
 ```
 
-The script derives the XSPICE pin from that name (`clock_i` → `a_clock_i`, `counter_value_o[0]` → `a_counter_value_o_0_`) and matches by it, independent of port order. A bus `sim_pinname` may be given as a bare base (`counter_value_o`). The symbol bus indices are applied to it.
+The XSPICE pin is derived from it (`clock_i` → `a_clock_i`, `counter_value_o[0]` → `a_counter_value_o_0_`). A bus `sim_pinname` may be the bare base (`counter_value_o`), the symbol's bus indices are applied.
 
 > [!NOTE]
-> When you add a port to the design, add the matching pin to the symbol **and** give it a `sim_pinname` equal to the netlist signal name. `make symbol-check` verifies both on every build, and `sak-pin-reorder.py` aborts with a clear `expects XSPICE pin ... which is not in the .subckt` error for anything that reaches it.
-> If any pin lacks `sim_pinname`, `sak-pin-reorder.py` falls back to positional matching (power by a fixed name-map, signals by position), which is only correct when the netlist keeps the symbol's port order (e.g. a Yosys `.nl.v` fed through `vlog2Verilog`). The Magic-extracted netlist used here never does, so `symbol-check` rejects a pin without `sim_pinname` outright rather than leaving the outcome to that fallback.
+> A new port needs a symbol pin with `sim_pinname` equal to the netlist signal name. `make symbol-check` checks this on every build, and `sak-pin-reorder.py` aborts with `expects XSPICE pin ... which is not in the .subckt`. A pin without `sim_pinname` triggers positional matching, which is correct only when the netlist keeps the symbol's port order (e.g. a Yosys `.nl.v` fed through `vlog2Verilog`), see [Check the Symbol](#check-the-symbol).
 
-Then run the gate-level simulation as usual (see [Gate-Level Xschem Simulation](#gate-level-xschem-simulation)):
-
-```sh
-make sim-gl-xschem
-```
+Then run `make sim-gl-xschem`, see [Gate-Level Xschem Simulation](#gate-level-xschem-simulation).
 
 
 ### Clean
 
-`make clean` deletes all generated files and folders. The sources stay untouched: the RTL, the schematics, symbols and testbenches, the scripts, the LibreLane and FPGA configurations, and `render/blender/`. Deleted are:
+`make clean` deletes all generated files and folders. It keeps the RTL, schematics, symbols, testbenches, scripts, the LibreLane and FPGA configurations and `render/blender/`. Deleted are:
 
-- `flow/librelane/runs/` and `flow/final/` (LibreLane run directories and the saved views)
+- `flow/librelane/runs/` and `flow/final/`
 - `final/` (GDS, LEF, Liberty, NL, PNL, SPEF and Verilog header deliverables)
 - `netlist/` (NL, PNL, SPICE, XSPICE and the extracted PEX netlists)
-- `render/img/` (the layout renders)
-- `verification/` (the reports copied from the last LibreLane run)
+- `render/img/`
+- `verification/`
 - `schematic/xschem/simulations/`, `testbenches/xschem/simulations/` and the `plot_simulations/` outputs (`data/`, `figures/`, `__pycache__/`)
 - `testbenches/cocotb/sim_build/`, the Icarus Verilog waveforms in `testbenches/verilog/`, and the `__pycache__` folders under `scripts/` and `testbenches/cocotb/`
-- the FPGA outputs of every board (`fpga/<board>/build/`), by calling `make clean` in [`fpga/`](fpga/)
+- the FPGA outputs of every board (`fpga/<board>/build/`), via `make clean` in [`fpga/`](fpga/)
 
-Every target recreates the folders it writes to, so a clean rebuild is:
+Every target recreates its output folders, so a clean rebuild is:
 
 ```sh
 make clean
@@ -739,12 +546,12 @@ make all
 ```
 
 > [!WARNING]
-> Most of these outputs are committed in this repository, so `make clean` leaves a large deletion set in `git status`. Run `git restore .` to get the tracked ones back if you did not mean to remove them. The LibreLane run directories under `flow/librelane/runs/` are **not** tracked and cannot be restored that way.
+> Most of these outputs are committed, so `make clean` leaves a large deletion set in `git status`. `git restore .` brings the tracked ones back. The run directories under `flow/librelane/runs/` are **not** tracked and cannot be restored that way.
 
 > [!NOTE]
-> The Xschem testbench `.include`s both the XSPICE model `netlist/xspice/counter_top.xspice` and the extracted netlist `netlist/pex/counter_top_magic_pex_3.spice`, and the gate-level cocotb run needs the netlists in `netlist/`. Directly after `make clean`, run `make build-top` **and** `make magic-pex` (or the full `make all`, which does both) once before `make sim-gl-xschem` or `make sim-gl-cocotb`, otherwise the includes fail.
+> The Xschem testbench `.include`s `netlist/xspice/counter_top.xspice` and `netlist/pex/counter_top_magic_pex_3.spice`, and the gate-level cocotb run needs `netlist/`. After `make clean`, run `make build-top` **and** `make magic-pex` (or `make all`) before `make sim-gl-xschem` or `make sim-gl-cocotb`.
 
 
 ## Start a New Digital Macro from This Template
 
-The counter is meant to be the starting point for a new digital macro. It already carries the full digital flow: SystemVerilog RTL, Verilator lint, Icarus Verilog and cocotb simulation, the LibreLane hardening flow with its SDC files and pin order, the XSPICE model generation for mixed-signal simulation in Xschem, and an FPGA emulation flow for three boards. `make macro FROM=counter NAME=<name>` in [`macros/`](../) copies and renames it, including `TOP` in every `fpga/<board>/Makefile` and `DESIGN_NAME` in the LibreLane config. See [Start a New Macro from an Existing One](../README.md#start-a-new-macro-from-an-existing-one) for what the target does, what is left to do afterwards, and where to register the macro at the chip top-level.
+The counter carries the full digital flow: SystemVerilog RTL, Verilator lint, Icarus Verilog and cocotb simulation, LibreLane hardening with its SDC files and pin order, XSPICE model generation for Xschem, and FPGA emulation on three boards. `make macro FROM=counter NAME=<name>` in [`macros/`](../) copies and renames it, including `TOP` in every `fpga/<board>/Makefile` and `DESIGN_NAME` in the LibreLane config. See [Start a New Macro from an Existing One](../README.md#start-a-new-macro-from-an-existing-one) for the remaining steps and the registration at the chip top-level.

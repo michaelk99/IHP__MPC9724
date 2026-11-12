@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # Bit-true models
 
-Reference models the RTL is gated against. The model is the specification here, not a check written after the fact: the decimator chain was designed and its alias and noise measured in a model first, so the RTL is correct only if it reproduces the model sample for sample.
+Reference models the RTL is gated against. The model is the specification: the decimator chain was designed and its alias and noise measured in the model first, so the RTL is correct only if it reproduces the model sample for sample.
 
 ## decimator_model.py
 
@@ -21,7 +21,7 @@ for bit in bits:                 # 1 is +1 into the CIC, 0 is -1
 
 `m.run(bits)` feeds a whole stream and returns one word per strobe.
 
-Pure Python, no dependencies. The host has neither numpy nor cocotb, and a gate that only runs inside the container is a gate that does not get run.
+Pure Python, no dependencies, so the gate also runs on the host, which has neither numpy nor cocotb.
 
 ### What it reproduces
 
@@ -35,7 +35,7 @@ Pure Python, no dependencies. The host has neither numpy nor cocotb, and a gate 
 | Compensator | the same five folded taps, six CSD terms each, on one shift-add engine, 35 of 128 cycles, rounded per tap at that tap's own scale |
 | Output | round 4 fraction bits, saturate to 22 bit |
 
-The compensator taps are not designed at run time. `COMP_TAPS` is the CSD term table copied from `comp_fir.sv`, so the model and the RTL agree by construction on the coefficients and only the arithmetic is being compared. `comp_tap_value(t)` reconstructs the rational for a check against a filter design.
+`COMP_TAPS` is the CSD term table copied from `comp_fir.sv`, not designed at run time, so model and RTL share the coefficients by construction and only the arithmetic is compared. `comp_tap_value(t)` reconstructs the rational for a check against a filter design.
 
 ### Gate against a simulated RTL run
 
@@ -43,7 +43,7 @@ The compensator taps are not designed at run time. `COMP_TAPS` is the CSD term t
 python3 models/decimator_model.py <stimulus.txt> <rtl_output.txt>
 ```
 
-Stimulus is the MATLAB bitstream export, one `time value` pair per line with value +-1. The RTL output is what `make -C macros/decimator sim-rtl-out` writes. A lag search absorbs the testbench's reset race, which is a constant offset, but not a decimation phase error, which is what the search would fail on.
+Stimulus is the MATLAB bitstream export, one `time value` pair per line with value +-1. The RTL output is what `make -C macros/decimator sim-rtl-out` writes. A lag search absorbs the testbench's reset race, a constant offset, but not a decimation phase error.
 
 Measured against the 4194304-sample DSM stimulus: 0 of 32768 output samples differ, at lag 0. About 65 s.
 
@@ -70,7 +70,7 @@ Levels are dBFS against `FULL`, so a full-scale sine is 0 dBFS. The tone metrics
 
 ## psd_param.py
 
-`calc_psd_param()` is `SKY130_CT-DSM/system-level/matlab/utility/calcPSDParam.m` ported, same inputs and outputs, equal to MATLAB R2024b to 1e-9 on a reference record in the self-test. `psd_param()` keeps its conventions and corrects what a review of it found:
+`calc_psd_param()` is `SKY130_CT-DSM/system-level/matlab/utility/calcPSDParam.m` ported, same inputs and outputs, equal to MATLAB R2024b to 1e-9 on a reference record in the self-test. `psd_param()` keeps its conventions and corrects these points:
 
 | | calcPSDParam.m | psd_param() |
 |---|---|---|
@@ -83,7 +83,7 @@ Levels are dBFS against `FULL`, so a full-scale sine is 0 dBFS. The tone metrics
 | the tone | given, assumed on a bin, signal +-1 bin | found, its offset from the bin measured, signal bins widened and a warning when off |
 | inputs | `fres` given though it is fs/N, `y` must be a row or `w'.*y` becomes N x N | from the record |
 
-The leakage search in the original sets `nb_leak`, which nothing reads after its temporary fix, so it is not ported. `python3 models/psd_param.py --self-test`.
+The original's leakage search sets `nb_leak`, which nothing reads after its temporary fix, so it is not ported. `python3 models/psd_param.py --self-test`.
 
 Measured on the Arty through the ESP32 host, 2026-09-29:
 
@@ -92,7 +92,7 @@ Measured on the Arty through the ESP32 host, 2026-09-29:
 
 ## stimulus.py
 
-The on-chip stimulus of `TEST_CTRL_0` bits 15:11, four patterns, each once or repeating every 64 conversions, as a bit generator that mirrors `p_stim` in `macros/dsa1_dig/rtl/dsa1_dig_top.vhd`. With `decimator_model.py` it predicts what the chip produces for each pattern, which turns an FPGA or silicon measurement into a sample-for-sample gate.
+The on-chip stimulus of `TEST_CTRL_0` bits 15:11, four patterns, each once or repeating every 64 conversions, as a bit generator that mirrors `p_stim` in `macros/dsa1_dig/rtl/dsa1_dig_top.vhd`. With `decimator_model.py` it predicts the chip's output for each pattern, so an FPGA or silicon measurement becomes a sample-for-sample gate.
 
 ```python
 from stimulus import predict, PAT_STEP_P, PAT_STEADY
@@ -100,9 +100,9 @@ predict(PAT_STEP_P)             # step +, 40 words from the fire
 predict(PAT_STEADY, opt=True)   # PRBS23
 ```
 
-The prediction is well defined even though the SPI write lands at an arbitrary moment, because the trigger only arms and the pattern fires at the next `valid_strobe`. Before that the stream is the idle alternation, which the filter rejects, so the filter is in the same settled state at every `valid_strobe` and the response does not depend on which one it was.
+The prediction holds although the SPI write lands at an arbitrary moment: the trigger only arms, the pattern fires at the next `valid_strobe`, and until then the idle alternation, which the filter rejects, keeps the filter in the same settled state at every `valid_strobe`.
 
-**`TOG_PHASE` is not cosmetic.** The idle toggle runs from `rst_b` but the decimator's clock-enable counter runs from `dec_rst_b`, which the three-flop `dec_en` synchronizer releases three clocks later. Three is odd, so the toggle is inverted relative to the decimation window. It sets the impulse polarity and the exact step overshoot, and it was measured against the RTL rather than assumed: with the wrong phase the step and step- peaks come out mirrored and the impulse sign flips.
+**`TOG_PHASE` matters.** The idle toggle runs from `rst_b`, the decimator's clock-enable counter from `dec_rst_b`, which the three-flop `dec_en` synchronizer releases three clocks later, so the toggle is inverted relative to the decimation window. It sets the impulse polarity and the exact step overshoot and was measured against the RTL: with the wrong phase the step and step- peaks come out mirrored and the impulse sign flips.
 
 ## gate_dsa1_dig_out.py
 
@@ -122,9 +122,9 @@ The same check without a stimulus file. It reproduces the stimulus of `macros/de
 make -C macros/decimator model-gate
 ```
 
-`make sim-gl` only says the hardened netlist and the RTL agree, and they would agree even if both were wrong, because they share a source. This says both are right. Measured on the 2026-09-22 run: 500 of 500 match at RTL and at gate level.
+`make sim-gl` only shows that the hardened netlist and the RTL agree, which they would even if both were wrong, since they share a source. This gate checks both against the model. Measured on the 2026-09-22 run: 500 of 500 match at RTL and at gate level.
 
-The constants at the top of the script track the testbench. If `N_STEP`, `N_PRBS` or the 64-edge delay change there, change them here or the gate fails for the wrong reason.
+The constants at the top of the script track the testbench: if `N_STEP`, `N_PRBS` or the 64-edge delay change there, change them here.
 
 ### Self-test
 
@@ -132,12 +132,12 @@ The constants at the top of the script track the testbench. If `N_STEP`, `N_PRBS
 python3 models/decimator_model.py --self-test
 ```
 
-Checks that `COMP_TAPS` still reconstructs the five tap values and that a held +-1 settles on the output the tap sum implies. No simulator, no cell library, about a second, so `.github/workflows/model-check.yml` runs it on every push. The nightly regression cannot build this chip's macros at all, since EZ130 lives outside the repository, so this is the only CI job that checks anything about the design rather than the toolchain.
+Checks that `COMP_TAPS` still reconstructs the five tap values and that a held +-1 settles on the output the tap sum implies. No simulator, no cell library, about a second, so `.github/workflows/model-check.yml` runs it on every push. The nightly regression cannot build this chip's macros, since EZ130 lives outside the repository, so this is the only CI job that checks the design rather than the toolchain.
 
 ### Where it is used
 
-`macros/decimator/testbenches/cocotb/decimator_top_tb.py` drives the model beside the DUT in both RTL and gate-level mode. `test_dc_gain` is the one absolute check in that file, a held +1 settling on 2^20 times the compensator dc gain: everything else asks whether the RTL equals the model, which cannot catch a scaling error the two would share.
+`macros/decimator/testbenches/cocotb/decimator_top_tb.py` drives the model beside the DUT in both RTL and gate-level mode. `test_dc_gain` is its one absolute check, a held +1 settling on 2^20 times the compensator dc gain. Everything else compares RTL and model and cannot catch a scaling error the two share.
 
 ### Origin
 
-Ported from `dec_sinc_bit_true.m` in the development repository, which is vectorised per stage and needs MATLAB. This version is per clock instead, which is slower but is what lets cocotb use it directly.
+Ported from `dec_sinc_bit_true.m` in the development repository (vectorised per stage, MATLAB). This version runs per clock, slower, but cocotb can use it directly.

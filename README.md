@@ -8,7 +8,7 @@ Institute for Integrated Circuits and Quantum Computing, Johannes Kepler Univers
 
 The chip carries the digital back end of the DSADC1 delta-sigma ADC: the 128x decimation filter, the SPI slave and the configuration register file, hardened on ETH Zurich's EZ130 8T standard cells. Next to it sits `dsm2_core`, a first-order delta-sigma modulator on its own 1.5 V supply, in a pad ring segment of its own. 21 bondpads on a 1.3 mm die, 20 of them bonded.
 
-The flow, the directory layout and the two example macros come from the [ihp-sg13cmos5l AMS chip template](https://github.com/iic-jku/ihp-sg13cmos5l-ams-chip-template) by Simon Dorrer and Harald Pretl, Apache-2.0 WITH SHL-2.1. `CITATION.cff` records that lineage and the per-file SPDX headers keep it accurate.
+The flow, the directory layout and the two example macros come from the [ihp-sg13cmos5l AMS chip template](https://github.com/iic-jku/ihp-sg13cmos5l-ams-chip-template) by Simon Dorrer and Harald Pretl, Apache-2.0 WITH SHL-2.1. `CITATION.cff` and the per-file SPDX headers record that lineage.
 
 > [!IMPORTANT]
 > The EZ130 8T v1.1 cell library (ETH Zurich, Apache-2.0) is in `ip/ez130_8t_v1p1`, and its thick-oxide decoupling in `ip/ez130_8t_decap_hv`. The builds read them through `EZ130_DIR` and `DECAPHV_DIR`, which default to those folders.
@@ -41,9 +41,9 @@ The flow, the directory layout and the two example macros come from the [ihp-sg1
 | Output rate | 512 Hz, read over SPI as a 22-bit word |
 | Power at typical | 3.075 uW, of which 1.171 uW leakage (`dsa1_dig_top`) |
 
-Fourteen signals leave the die: `clk`, `rst_n`, the 1-bit modulator bitstream, the four SPI lines and the conversion flag for the DSA1 back end, and `dsm_clk`, `do_q`, `do_q_b`, `vi`, `vcm` and `ibias_test` for dsm2. The 145 configuration register bits stay inside, except the 16 that control dsm2, the decimator input mux and the `adc_conv` gate. The register file is carried on purpose, so the taped area is comparable against the earlier `dsa1_dig_top`.
+Fourteen signals leave the die: `clk`, `rst_n`, the 1-bit modulator bitstream, the four SPI lines and the conversion flag for the DSA1 back end, and `dsm_clk`, `do_q`, `do_q_b`, `vi`, `vcm` and `ibias_test` for dsm2. The 145 configuration register bits stay inside, except the 16 that control dsm2, the decimator input mux and the `adc_conv` gate. The register file is kept so the taped area is comparable against the earlier `dsa1_dig_top`.
 
-The decimator also exists as a standalone macro under `macros/decimator`, for area, power and leakage numbers. It is **not** instantiated on this chip. `macros/counter` and `macros/inverter` are the template's example blocks, kept as archetypes for `make macro`, and are not on the die either.
+`macros/decimator` hardens the decimator alone for area, power and leakage numbers and is **not** on this chip. `macros/counter` and `macros/inverter` are the template's example blocks, kept as archetypes for `make macro`, and are not on the die either.
 
 
 ## Documentation
@@ -77,7 +77,7 @@ make sim-rtl-cocotb sim-gl-cocotb
 make bondplan
 ```
 
-The top level also builds for an FPGA, where the SPI slave is the readout, so the filter and the bring-up sequence are exercised over the chip's own interface. See [macros/dsa1_dig/fpga/README.md](macros/dsa1_dig/fpga/README.md). A second board drives it the way the chip's surroundings will, owning the sample clock and the bitstream, see [testbenches/fpga/README.md](testbenches/fpga/README.md).
+The top level also builds for an FPGA, read out over the chip's own SPI slave, see [macros/dsa1_dig/fpga/README.md](macros/dsa1_dig/fpga/README.md). A second board drives it as the chip's surroundings will, owning the sample clock and the bitstream, see [testbenches/fpga/README.md](testbenches/fpga/README.md).
 
 ```sh
 make -C macros/dsa1_dig synth-fpga   # resource report
@@ -92,19 +92,19 @@ make -C macros/decimator model-gate  # and both must equal the bit-true model
 make -C macros/decimator check-netlist power-vcd
 ```
 
-The generic "AMS CHIP" top-metal logo the template places is switched off. `scripts/add_logo_fill.sh` takes `CHIP_LOGO=1` to put it back. The author block, the JKU logo, the helmet chip art and the title block are separate: they are IP macros under `ip/`, placed by the floorplan. `ip/sg13cmos5l_ip__jku_names/script/make_names_png.py` regenerates the name, `ip/sg13cmos5l_ip__helm/script/make_helm_png.py` the helmet and `ip/sg13cmos5l_ip__title/script/make_title_png.py` the title.
+The template's generic "AMS CHIP" top-metal logo is off, `scripts/add_logo_fill.sh` takes `CHIP_LOGO=1` to put it back. The author block, the JKU logo, the helmet chip art and the title block are IP macros under `ip/`, placed by the floorplan. `ip/sg13cmos5l_ip__jku_names/script/make_names_png.py` regenerates the name, `ip/sg13cmos5l_ip__helm/script/make_helm_png.py` the helmet and `ip/sg13cmos5l_ip__title/script/make_title_png.py` the title.
 
 
 ## IHP submission
 
-The project name is MPC9724, a Mixed-Signal Multi Project Carrier in the IHP Open Source MPW run, repository `michaelk99/IHP__MPC9724`. Package: QFN24, 4 x 4 mm, 0.5 mm pitch, packaged by IHP. The metadata is in [doc/info.json](doc/info.json) and the maturity assessment in [doc/TRL-Mixed-Signal-IP.md](doc/TRL-Mixed-Signal-IP.md).
+The project name is MPC9724, a Mixed-Signal Multi Project Carrier in the IHP Open Source MPW run, repository `michaelk99/IHP__MPC9724`. The metadata is in [doc/info.json](doc/info.json) and the maturity assessment in [doc/TRL-Mixed-Signal-IP.md](doc/TRL-Mixed-Signal-IP.md).
 
 ```sh
 make release-ihp VERSION=1.2.1    # release/v.1.2.1 with gds/, netlist/, doc/ and ReleaseNote.md
 scripts/release_ihp.sh --self-test    # the zero-area check fails on a flat polygon
 ```
 
-`release/v.1.2.1/` also holds `img/` (renders), `packaging/` (the bond plan) and its `README.md`, added next to what the target writes. `release/v.<version>/gds/MPC9724.gds.gz` is a copy of the layout with the top cell renamed, saved with IHP's KLayout options and checked for zero-area polygons. The internal cell name stays `sg13cmos5l_dsa1_dig_top`.
+`release/v.1.2.1/` also holds `img/` (renders), `packaging/` (the bond plan) and its `README.md`, added next to what the target writes. `release/v.<version>/gds/MPC9724.gds.gz` is the layout with the top cell renamed, saved with IHP's KLayout options and checked for zero-area polygons. The internal cell name stays `sg13cmos5l_dsa1_dig_top`.
 
 
 IHP's template expects the sources under `MPC9724-main/`. This repository keeps the sources at the root, the mapping is in [doc/layout_index.md](doc/layout_index.md).

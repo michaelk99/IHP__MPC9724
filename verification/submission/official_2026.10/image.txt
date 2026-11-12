@@ -1,0 +1,4 @@
+sha256:cb3f3ec87e17d550c7112c880e053b06c8c4e53a8466992a6006426498c54820 arm64 2026-10-15T13:05:19.907974119Z [hpretl/iic-osic-tools@sha256:306585de35d198e70ea58950f77147c86f56c698726a19afea9f1c83009557be registry.iic.jku.at:5000/iic-osic-tools@sha256:306585de35d198e70ea58950f77147c86f56c698726a19afea9f1c83009557be]
+bd6439d7a428bef838033bcf48e580069b23b5d5 Records: IMAGE_ARM64 is the 2026-10-15 build with PDK a49358c
+7cf6da0e6ea7b6c2c473bff6e6093cd7  release/v.1.2.1/gds/MPC9724.gds.gz
+fb4d07f6471df30a646b7ba8c4a1c9b0  layout/sg13cmos5l_dsa1_dig_top_logo_fill.gds.gz

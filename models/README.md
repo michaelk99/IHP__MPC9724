@@ -132,7 +132,7 @@ The constants at the top of the script track the testbench: if `N_STEP`, `N_PRBS
 python3 models/decimator_model.py --self-test
 ```
 
-Checks that `COMP_TAPS` still reconstructs the five tap values and that a held +-1 settles on the output the tap sum implies. No simulator, no cell library, about a second, so `.github/workflows/model-check.yml` runs it on every push. The nightly regression cannot build this chip's macros, since EZ130 lives outside the repository, so this is the only CI job that checks the design rather than the toolchain.
+Checks that `COMP_TAPS` still reconstructs the five tap values and that a held +-1 settles on the output the tap sum implies. No simulator, no cell library, about a second, so `.github/workflows/model-check.yml` runs it on every push. The nightly regression builds the macros and the chip, see `make regression`.
 
 ### Where it is used
 

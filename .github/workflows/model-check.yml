@@ -1,12 +1,9 @@
 # SPDX-FileCopyrightText: 2026 Michael Koefinger
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 #
-# Self-test of the bit-true decimator model. The nightly regression cannot build
-# this chip's macros, because EZ130 lives outside the repository, so it proves
-# the toolchain and not the design. The model has no dependencies and no cell
-# library, so this one job does check something about the design on every push:
-# that the compensator term table still reconstructs its taps and that the chain
-# still has the dc gain those taps imply.
+# Self-test of the bit-true decimator model on every push, in about a second.
+# It checks that the compensator term table still reconstructs its taps and that the chain still has the dc gain those taps imply.
+# The nightly regression covers the rest.
 
 name: Model Check
 

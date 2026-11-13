@@ -35,7 +35,7 @@ A level counts only when every box of it and of the levels below is ticked. TRL1
 - [x] Is any verification procedure given to check the IP schematic performance figures? `ip/dsm2_core/doc/measurement_plan.md` (a simulated value for every lab number), `ip/dsm2_core/doc/dsm2_README.md`
 - [x] Are mixed-signal simulation results of the IP schematics reported for a typical case? `ip/dsm2_core/doc/dsm2_README.md` (SNDR at tt, one run), the start-up bench with dsm2 on by default passes at tt for `core_first`, `io_first` and `vdda_last` (2026-11-06 to 11-07), its record is `testbenches/startup/README.md` and `verification/startup/defon/`
 
-*Done at the block and chip level. The top schematic of dsm2 is delivered as a netlist, the dsm2 block schematics are in `ip/dsm2_core/schematic/`, 11 sheets. `testbenches/xschem` is still the template's stub.*
+*Done at the block and chip level. The top schematic of dsm2 is delivered as a netlist, the dsm2 block schematics are in `ip/dsm2_core/schematic/`, 11 sheets. The template's chip-level Xschem bench was deleted, the start-up transient is in `testbenches/startup/`.*
 
 ## TRL4 - Full design at schematic level
 

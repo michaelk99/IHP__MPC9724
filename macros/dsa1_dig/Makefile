@@ -216,9 +216,10 @@ lint-verilog: ## Lint Verilog source files with Verilator (usage: make lint-veri
 	verilator --lint-only -I"$(SRC_DIR)" $(_LINT_SRCS)
 .PHONY: lint-verilog
 
-lint-verilog-all: ## Lint all Verilog source files (decimator, dsa1_dig_top)
-	$(MAKE) lint-verilog CELL=decimator
-	$(MAKE) lint-verilog
+# The VHDL goes through GHDL, the decimator RTL through Verilator.
+lint-verilog-all: ## Lint the VHDL and the decimator RTL
+	$(MAKE) lint-vhdl
+	verilator --lint-only -I../decimator/rtl $(DEC_SRCS)
 .PHONY: lint-verilog-all
 # ================================================================================================
 

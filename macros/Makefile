@@ -33,7 +33,7 @@ MACROS := $(sort $(patsubst %/,%,$(dir $(wildcard */Makefile))))
 FROM := $(patsubst %/,%,$(FROM))
 NAME := $(patsubst %/,%,$(NAME))
 
-# Both names in their three spellings (inverter, Inverter, INVERTER): file names, file contents and GDS cell names are replaced in all three
+# Both names in their three spellings (decimator, Decimator, DECIMATOR): file names, file contents and GDS cell names are replaced in all three
 _FROM_TITLE := $(shell echo '$(FROM)' | sed 's/./\U&/')
 _FROM_UPPER := $(shell echo '$(FROM)' | tr a-z A-Z)
 _NAME_TITLE := $(shell echo '$(NAME)' | sed 's/./\U&/')

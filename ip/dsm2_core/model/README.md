@@ -14,7 +14,7 @@ Smoke runs on 2026-11-08 in the sign-off image: `dsm_system.py` (PSD and DC swee
 
 ## Setup
 
-The models need Python 3 with `numpy`, `matplotlib` and `python-deltasigma`. The sizing in `../sizing/` also needs `pygmid` and the gm/ID tables in `macros/inverter/scripts/sizing/data/`.
+The models need Python 3 with `numpy`, `matplotlib` and `python-deltasigma`. The sizing in `../sizing/` also needs `pygmid` and the gm/ID tables in `../sizing/data/`.
 
 The system-level spec is a battery monitor ADC on a 1.5 V supply from a DC/DC (1.45 to 1.55 V): 1 mV LSB, full scale `vdd` = 1.5 V, reference `vdd/2` = 0.75 V, band edge 1 kHz. The loop is a first-order single-bit CIFB modulator from `synthesizeNTF` with `H_inf` 1.2, so a1 = b1 = 1/3. OSR 512 is the first-order SQNR equation for 10.55 bit, rounded up to a power of 2 and times 4 margin, so fs = 1.024 MHz. C1 = 64 fF, C2 = 2 C1/a1 = 384 fF. Random draws use seed 1 (`rng_seed = 1`, `--seed 1`).
 

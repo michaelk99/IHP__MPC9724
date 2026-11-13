@@ -13,7 +13,6 @@ Macro-level verification lives with the macros: each runs one Verilog testbench 
 | Bench | Kind | State |
 |---|---|---|
 | `cocotb/sg13cmos5l_dsa1_dig_top_tb.py` | functional, Icarus | 14 tests, 13 pass at RTL and gate level and the PSD one is opt-in |
-| `xschem/sg13cmos5l_dsa1_dig_top_tb_tran.sch` | analog transient, ngspice | **stimulus still the template's**, DUT symbol now correct |
 | `fpga/` | two FPGA boards, Icarus | 9 programs pass the checker in simulation, the DUT build ran on hardware with the ESP32 host, see [fpga/README.md](fpga/README.md) |
 
 ## The cocotb bench
@@ -94,13 +93,9 @@ The layout extracts 277536 transistor-level devices. A schematic of pad cells an
 Final result: Circuits match uniquely.
 ```
 
-`verification/reports/lvs.netgen.rpt`, including the pad pin list. The template's own tutorial also calls top-level LVS "under construction" on `ihp-sg13cmos5l`, and the PDK ships no Xschem symbol for `sg13cmos5l_dfrbpq_1`, the flop synthesis used for the synchronizer, so the drawn sheet substitutes `dfrbp_1` with `Q_N` left open.
+`verification/reports/lvs.netgen.rpt`, including the pad pin list. The PDK ships no Xschem symbol for `sg13cmos5l_dfrbpq_1`, the flop synthesis used for the synchronizer, so the drawn sheet substitutes `dfrbp_1` with `Q_N` left open.
 
-The drawn schematic serves the transient testbench and the documentation, not sign-off. `make klayout-lvs` and `make magic-lvs` stay in place and still fail, which is not a layout defect.
-
-## The Xschem transient bench is still stale
-
-`testbenches/xschem/sg13cmos5l_dsa1_dig_top_tb_tran.sch` and `plot_simulations/plot_sg13cmos5l_dsa1_dig_top.py` still drive the template's counters. The DUT symbol underneath is correct, so only the stimulus needs rewriting. `make sim-gl-xschem` and `sim-all` are not meaningful until then.
+The drawn schematic serves the documentation, not sign-off. `make klayout-lvs` and `make magic-lvs` stay in place and still fail, which is not a layout defect.
 
 ## Summary of what is and is not verified
 

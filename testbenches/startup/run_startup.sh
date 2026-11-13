@@ -16,7 +16,7 @@ DSM2=${STARTUP_DSM2:-sch}
 OUT=${STARTUP_OUT:-verification/startup}
 
 python3 testbenches/startup/gen_startup.py --out $B --orders $RUN_ORDERS --dsm2 $DSM2 $TREE_ARGS
-python3 macros/counter/scripts/spi2xspice.py $B/cells.lib -io_time=500p -time=50p -idelay=5p -odelay=50p \
+python3 macros/dsa1_dig/scripts/spi2xspice.py $B/cells.lib -io_time=500p -time=50p -idelay=5p -odelay=50p \
     -cload=250f $B/core.spice $B/core.xspice > $B/spi2xspice.log 2>&1
 # CGX3 is the one cell spi2xspice.py cannot model, --patch-xspice adds it
 if grep "No output for" $B/spi2xspice.log | grep -v -w CGX3; then

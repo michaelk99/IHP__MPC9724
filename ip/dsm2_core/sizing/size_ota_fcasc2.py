@@ -12,8 +12,7 @@ import numpy as np
 import deltasigma as ds
 from pygmid import Lookup as lk
 
-REPO = Path(__file__).resolve().parents[3]
-TABLES = REPO / 'macros/inverter/scripts/sizing/data'
+TABLES = Path(__file__).resolve().parent / 'data'
 nmos = lk(str(TABLES / 'sg13cmos5l_lv_nmos.mat'))
 pmos = lk(str(TABLES / 'sg13cmos5l_lv_pmos.mat'))
 

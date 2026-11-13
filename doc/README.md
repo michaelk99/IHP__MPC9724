@@ -42,7 +42,7 @@ Reference material for this chip and for the IHP SG13CMOS5L Open-PDK it is built
 | [ihp-sg13cmos5l-Open-PDK/sg13cmos5l_os_process_spec.pdf](ihp-sg13cmos5l-Open-PDK/sg13cmos5l_os_process_spec.pdf) | The IHP process specification. |
 | [ihp-sg13cmos5l-Open-PDK/sg13cmos5l_os_layout_cheatsheet.xlsx](ihp-sg13cmos5l-Open-PDK/sg13cmos5l_os_layout_cheatsheet.xlsx) | One sheet of formulas for wire resistance, parasitic capacitance and DC current limits. Read the caveats below before using it. |
 | [ihp-sg13cmos5l-Open-PDK/sg13cmos5l_ngspice_mc_mm_guide.md](ihp-sg13cmos5l-Open-PDK/sg13cmos5l_ngspice_mc_mm_guide.md) | How the ngspice model files fit together, what `mm_ok` and `num_sigmas` do, and which corner, Monte Carlo and mismatch runs are possible per device family. |
-| [sizing/](sizing/) | gm/ID techsweep plot overviews for the LV and HV MOS devices, the data behind the sizing notebooks in [macros/inverter/scripts/sizing/](../macros/inverter/scripts/sizing/). |
+| [sizing/](sizing/) | gm/ID techsweep plot overviews for the LV and HV MOS devices, the data behind the dsm2 sizing in [ip/dsm2_core/sizing/](../ip/dsm2_core/sizing/). |
 
 ## Other
 
@@ -55,7 +55,7 @@ The two PDK PDFs are unchanged copies from `libs.doc/doc/` of the SG13CMOS5L PDK
 Three items come from the SG13G2 sibling of this template:
 
 - **The layout cheatsheet is the SG13G2 sheet**, byte-identical to `sg13g2_os_layout_cheatsheet.xlsx`. Its `M5`, `TM2` and `TV2` rows do not exist on this stack, the `M1`..`M4`, `TM1`, `Contact`, `Via 1/2/3` and `TV1` rows apply. On both PDKs the resistance columns use bulk-aluminium resistivity and are optimistic by roughly a factor of two against the tech LEF, and "min. Width" lists 0.42 µm for TopMetal1 where the LEF says 1.64 µm. Take widths from the DRC deck, resistance from the tech LEF or PEX, and current limits from the [LibreLane cheatsheet](librelane/librelane_cheatsheet.md) tables, read out of `sg13cmos5l_tech.lef`.
-- **The gm/ID techsweep plots are the SG13G2 sweep.** The LV and HV MOS ngspice models of this PDK are symbolic links into `ihp-sg13g2/libs.tech/ngspice/models/`, so the curves are the same. The `.mat` lookup tables under [macros/inverter/scripts/sizing/data/](../macros/inverter/scripts/sizing/data/) are byte-identical to the SG13G2 ones under a SG13CMOS5L name, and the PDF captions still read "SG13G2".
+- **The gm/ID techsweep plots are the SG13G2 sweep.** The LV and HV MOS ngspice models of this PDK are symbolic links into `ihp-sg13g2/libs.tech/ngspice/models/`, so the curves are the same. The `.mat` lookup tables under [ip/dsm2_core/sizing/data/](../ip/dsm2_core/sizing/data/) are byte-identical to the SG13G2 ones under a SG13CMOS5L name, and the PDF captions still read "SG13G2".
 - **The Verilog and SystemVerilog cheatsheets** are external documents with no PDK content at all.
 
 Only `regmap.md` is generated, by `make -C macros/dsa1_dig regmap`.

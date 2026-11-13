@@ -24,7 +24,7 @@ jupyter nbconvert --to notebook --execute --inplace size_bias_gm.ipynb
 python3 size_ota_fcasc2.py
 ```
 
-The tables are `macros/inverter/scripts/sizing/data/*.mat`, shared and not copied. The stored outputs were made from this tree on 2026-11-07, `size_quantizer2.ipynb` on 2026-11-08, and their text equals the delivered outputs. `data_README.md` is the designer's note on the tables, delivered as is, its `data/` folder is `macros/inverter/scripts/sizing/data/` here. The notebooks and the docs name files by their paths in the designer's tree (`macros/...`), which do not exist here. The `netlist/` files are the designer's exports without their `sch_path` and `sym_path` comment lines.
+The tables are `data/*.mat`, the gm/ID tables of the chip template, not the designer's. The stored outputs were made from this tree on 2026-11-07, `size_quantizer2.ipynb` on 2026-11-08, and their text equals the delivered outputs. `data_README.md` is the designer's note on the tables, delivered as is. The notebooks and the docs name files by their paths in the designer's tree (`macros/...`), which do not exist here. The `netlist/` files are the designer's exports without their `sch_path` and `sym_path` comment lines.
 
 `python-deltasigma` is not in the sign-off image, and 0.2 does not import on current numpy, scipy and Python 3.12 as it is. The 2026-11-07 rerun of the `.py` and of `size_sc_int2.ipynb` (which runs the script, text outputs equal to the delivered ones) used a throwaway first-order stand-in for the script's four calls (`synthesizeNTF`, `realizeNTF`, `undbv`, `simulateDSM`), not the library. The stand-in is not kept, so repeating this rerun needs a working `python-deltasigma`.
 

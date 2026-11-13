@@ -60,7 +60,7 @@ The pad ring has 660 um between the corner cells on every side. `PAD_SPACING_MUL
 
 Everything else in the core is the glue logic: the three-flop synchronizer on the bitstream, the `DEC_SRC` mux, and two `AND2X1` gates, one for `do_q_dec` and one for `adc_conv`. With the channel east of `dsa1_dig` gone they sit in the VDD strips: the gates and the mux in row 10 (y 379.68, x 475 to 728), the synchronizer in rows 170 and 171. dsm2's analog nets, its VDDA strap and the two straps of `decap_vdda` are drawn after the power grid as special nets, on Metal3 under the core ring.
 
-The template's two counters, two inverters and the SRAM are gone from the die. Their macros remain in `macros/` as the archetypes they are.
+The template's two counters, two inverters and the SRAM are gone from the die. Their counter and inverter macros were deleted from `macros/` on 2026-11-13.
 
 ## Power distribution
 

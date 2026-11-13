@@ -43,7 +43,7 @@ The flow, the directory layout and the two example macros come from the [ihp-sg1
 
 Fourteen signals leave the die: `clk`, `rst_n`, the 1-bit modulator bitstream, the four SPI lines and the conversion flag for the DSA1 back end, and `dsm_clk`, `do_q`, `do_q_b`, `vi`, `vcm` and `ibias_test` for dsm2. The 145 configuration register bits stay inside, except the 16 that control dsm2, the decimator input mux and the `adc_conv` gate. The register file is kept so the taped area is comparable against the earlier `dsa1_dig_top`.
 
-`macros/decimator` hardens the decimator alone for area, power and leakage numbers and is **not** on this chip. `macros/counter` and `macros/inverter` are the template's example blocks, kept as archetypes for `make macro`, and are not on the die either.
+`macros/decimator` hardens the decimator alone for area, power and leakage numbers and is **not** on this chip.
 
 
 ## Documentation
@@ -122,7 +122,6 @@ IHP's template expects the sources under `MPC9724-main/`. This repository keeps 
 | Chip cocotb, RTL and gate level | 13 tests pass, the PSD one opt-in with `PSD=1` |
 | HBM ESD, 2 kV | model result at RON 1 and 4 on the tape-out layout: 1.2 V nodes (3.87 V), the VDDA rail (4.38 V), dsm2's analog pins behind its protection (4.41 V) and HV (8.84 V) inside the indicative limits, see [doc/esd_hbm.md](doc/esd_hbm.md) |
 | Transistor-level LVS against a drawn schematic | not achievable on this PDK, see [testbenches/README.md](testbenches/README.md) |
-| Xschem transient bench | stimulus still the template's, not meaningful yet |
 
 
 ## License

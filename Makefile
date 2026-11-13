@@ -111,11 +111,9 @@ CHIP_FRAGS   = $(EZ130_SCL) $(CHIP_FRAG)
 
 # Folder structure
 XSCHEM_SCH_DIR  		:= schematic/xschem
-XSCHEM_TB_DIR   		:= testbenches/xschem
 COCOTB_DIR      		:= testbenches/cocotb
 LAY_DIR         		:= layout
 SCRIPTS_DIR     		:= scripts
-SIM_PLOT_DIR    		:= testbenches/xschem/plot_simulations
 RENDER_IMG_DIR  		:= render/img
 SRC_DIR         		:= rtl
 IP_DIR          		:= ip
@@ -140,7 +138,7 @@ FLOW_FINAL_DIR  		:= flow/final
 
 # Help Target
 help: ## Show this help message
-	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [PEX_MERGED_PINS="<pin> ..."] [EV_PRECISION=<digits>] [WAVEFORM_VIEWER=<gtkwave|surfer>] [TB=<testbenchname>] [SCRIPT=<scriptname>] [VERSION=<version>] [OPEN_ARGS=<options>]'
+	@echo 'Usage: make <target> [CELL=<cellname>] [EXT_MODE=<1|2|3>] [THRESHOLD=<mOhm>] [MINRES=<mOhm>] [MINDELAY=<ps>] [DRC_LEVEL=<precheck|macro|regular>] [PEX_MERGED_PINS="<pin> ..."] [EV_PRECISION=<digits>] [WAVEFORM_VIEWER=<gtkwave|surfer>] [VERSION=<version>] [OPEN_ARGS=<options>]'
 	@echo ''
 	@echo 'Available targets:'
 	@grep -E '^[a-zA-Z0-9_.-]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -152,8 +150,6 @@ help: ## Show this help message
 	@echo 'PEX_MERGED_PINS defaults to IOVSS. Lists the supply pins that the flat extraction merges, they are dropped from the generated PEX symbol.'
 	@echo 'EV_PRECISION defaults to 5 significant digits for Xschem ev function.'
 	@echo 'WAVEFORM_VIEWER defaults to gtkwave. Use surfer to launch Surfer instead.'
-	@echo 'TB selects the Xschem testbench for sim-gl-xschem (default: <CELL>_tb_tran).'
-	@echo 'SCRIPT selects the plotting script for sim-view-xschem (default: plot_<CELL>).'
 	@echo 'VERSION defaults to $(VERSION). Used by the release target.'
 	@echo 'OPEN_ARGS passes extra options to sak-open.py for the open target (e.g. --all).'
 	@echo 'REQUIRED_PDK defaults to $(REQUIRED_PDK). Every target except help, clean and clean-all aborts if $$PDK differs.'
@@ -176,13 +172,6 @@ init-submodules: ## Initialize and update git submodules (e.g. flow/artistic)
 
 
 # Simulation Targets
-# Testbench for the Xschem simulation targets (default: <CELL>_tb_tran)
-# Override with: make <target> TB=<testbenchname>
-TB ?= $(CELL)_tb_tran
-# Plotting script for sim-view-xschem (default: plot_<CELL>)
-# Override with: make <target> SCRIPT=<scriptname>
-SCRIPT ?= plot_$(CELL)
-
 sim-rtl-cocotb: ## Run RTL simulation of CELL cell with cocotb (usage: make sim-rtl-cocotb [CELL=<cellname>])
 	cd $(COCOTB_DIR) && python3 $(CELL)_tb.py
 .PHONY: sim-rtl-cocotb
@@ -201,27 +190,9 @@ sim-view-cocotb: ## View CELL cell cocotb simulation waveforms (usage: make sim-
 	fi
 .PHONY: sim-view-cocotb
 
-sim-gl-xschem: ## Run gate-level simulation of CELL cell with Xschem in batch mode (usage: make sim-gl-xschem [CELL=<cellname>] [TB=<testbenchname>])
-	mkdir -p $(XSCHEM_TB_DIR)/simulations
-	mkdir -p $(SIM_PLOT_DIR)/data
-	cd $(XSCHEM_TB_DIR) && xschem -r -x -q --rcfile xschemrc --command ' \
-		xschem set netlist_type spice; \
-		set netlist_dir $(abspath $(XSCHEM_TB_DIR)/simulations); \
-		xschem save; \
-		write_data [save_params] $(abspath $(XSCHEM_TB_DIR)/simulations)/$(TB).save; \
-		xschem netlist \
-	' $(TB).sch
-	cd $(XSCHEM_TB_DIR)/simulations && ngspice -b $(TB).spice
-.PHONY: sim-gl-xschem
-
-sim-view-xschem: ## Plot Xschem simulation results (usage: make sim-view-xschem [SCRIPT=<scriptname>])
-	SHOW_PLOTS=1 python3 $(SIM_PLOT_DIR)/$(SCRIPT).py
-.PHONY: sim-view-xschem
-
-sim-all: ## Simulate the chip (RTL/GL cocotb + GL Xschem)
+sim-all: ## Simulate the chip (RTL and GL cocotb)
 	$(MAKE) sim-rtl-cocotb
 	$(MAKE) sim-gl-cocotb
-	$(MAKE) sim-gl-xschem
 .PHONY: sim-all
 # ================================================================================================
 
@@ -364,16 +335,8 @@ build-dsa1-dig: ## Build the DSADC1 digital back end, the one macro on the die
 	@$(MAKE) -C $(MACROS_DIR)/dsa1_dig all
 .PHONY: build-dsa1-dig
 
-build-counter: ## Build the counter macro (template archetype, not on the die)
-	@$(MAKE) -C $(MACROS_DIR)/counter all
-.PHONY: build-counter
-
-build-inverter: ## Build the inverter macro (template archetype, not on the die)
-	@$(MAKE) -C $(MACROS_DIR)/inverter all
-.PHONY: build-inverter
-
 # Only dsa1_dig is instantiated in the core, so only it has to be built before
-# the top. The decimator, counter and inverter are kept and built on request.
+# the top. The decimator is built on request.
 build-macros: ## Build the macros the die needs (dsa1_dig)
 	$(MAKE) build-dsa1-dig
 .PHONY: build-macros
@@ -655,36 +618,43 @@ release-ihp: release ## The release in IHP's Open-Silicon-MPW layout, GDS rename
 # ================================================================================================
 
 
-# Regression Target
-regression: ## Regression test target for IIC-OSIC-TOOLS
-# 	Analog macro: inverter (Xschem + CACE + DRC/LVS/PEX + build-top)
-	$(MAKE) -C $(MACROS_DIR)/inverter sim-xschem TB=inverter_tb_dc_vout
-# 	ONE CACE run: the lightweight AC VDD sweep (no Monte-Carlo) to keep runtime short.
-	cd $(MACROS_DIR)/inverter/verification/cace && cace inverter.yaml -p ac_params && rm -rf _runs _docs netlist
-# 	KLayout & Magic DRC, LVS and PEX of the inverter_top cell.
-	$(MAKE) -C $(MACROS_DIR)/inverter klayout-verify CELL=inverter_top
-	$(MAKE) -C $(MACROS_DIR)/inverter magic-verify CELL=inverter_top
-	$(MAKE) -C $(MACROS_DIR)/inverter build-top
+# Regression Targets
+# CI runs the three parts as parallel jobs, each under GitHub's 6 h job limit. LEC (4.5 h, 5 GB) and the FPGA builds stay local.
+# The macro parts check the views in flow/final and leave the committed final/ alone.
+regression-dsa1-dig: ## Regression of dsa1_dig: regmap check, lint, harden, banned cells, gate level against RTL and model
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig regmap-check
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig lint-verilog-all
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig librelane-nodrc
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig check-netlist FINAL_DIR=flow/final
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig sim-gl FINAL_DIR=flow/final
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig model-gate
+.PHONY: regression-dsa1-dig
 
-# 	Digital macro: counter (Verilator, Icarus, cocotb, yosys/FPGA, LibreLane, xspice)
-	$(MAKE) -C $(MACROS_DIR)/counter lint-verilog-all
-	$(MAKE) -C $(MACROS_DIR)/counter sim-rtl-verilog
-	$(MAKE) -C $(MACROS_DIR)/counter sim-rtl-cocotb
-	$(MAKE) -C $(MACROS_DIR)/counter build-fpga
-# 	librelane-magicdrc: full RTL-to-GDS. KLayout DRC skipped for runtime.
-	$(MAKE) -C $(MACROS_DIR)/counter librelane-magicdrc
-	$(MAKE) -C $(MACROS_DIR)/counter copy-final
-# 	Gate-level flows that depend on the LibreLane outputs above.
-	$(MAKE) -C $(MACROS_DIR)/counter sim-gl-cocotb
-	$(MAKE) -C $(MACROS_DIR)/counter generate-xspice
-	$(MAKE) -C $(MACROS_DIR)/counter sim-gl-xschem
+regression-decimator: ## Regression of the standalone decimator: lint, RTL sim, harden, banned cells, gate level against RTL and model
+	$(MAKE) -C $(MACROS_DIR)/decimator lint-verilog-all
+	$(MAKE) -C $(MACROS_DIR)/decimator sim-rtl-cocotb
+	$(MAKE) -C $(MACROS_DIR)/decimator librelane-nodrc
+	$(MAKE) -C $(MACROS_DIR)/decimator check-netlist FINAL_DIR=flow/final
+	$(MAKE) -C $(MACROS_DIR)/decimator sim-gl FINAL_DIR=flow/final
+	$(MAKE) -C $(MACROS_DIR)/decimator model-gate
+.PHONY: regression-decimator
 
-# 	Top-level assembly
+# The chip uses the committed dsa1_dig views, the ones that taped out. build-top rewrites the tracked layout/, netlist/ and reports.
+regression-top: ## Regression of the chip: build, banned cells, dsm2 keepout, foundry precheck, RTL and GL cocotb (rewrites tracked outputs)
 	$(MAKE) init-submodules
 	$(MAKE) build-bondpad
-	$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__jku all
-# 	librelane-nodrc: full RTL-to-GDS. DRC is skipped for runtime.
-	$(MAKE) librelane-nodrc
+	$(MAKE) build-logos
+	$(MAKE) build-top
+	$(MAKE) check-netlist
+	$(MAKE) check-keepout
+	$(MAKE) mpw-precheck
+	$(MAKE) sim-all
+.PHONY: regression-top
+
+regression: ## Run all three regression parts in sequence
+	$(MAKE) regression-dsa1-dig
+	$(MAKE) regression-decimator
+	$(MAKE) regression-top
 .PHONY: regression
 # ================================================================================================
 
@@ -696,8 +666,7 @@ clean: ## Delete all generated chip top-level files and folders (LibreLane runs,
 	rm -rf $(NET_SCH_DIR) $(NET_LAY_DIR) $(NET_PEX_DIR) $(NET_PNL_DIR) $(NET_NL_DIR) $(NET_SPICE_DIR)
 	rm -rf $(RENDER_IMG_DIR)
 	rm -rf $(DRC_RPT_DIR) $(LVS_RPT_DIR) $(REPORT_DIR)
-	rm -rf $(XSCHEM_SCH_DIR)/simulations $(XSCHEM_TB_DIR)/simulations
-	rm -rf $(SIM_PLOT_DIR)/data $(SIM_PLOT_DIR)/figures $(SIM_PLOT_DIR)/__pycache__
+	rm -rf $(XSCHEM_SCH_DIR)/simulations
 	rm -rf $(COCOTB_DIR)/sim_build
 	rm -rf $(SCRIPTS_DIR)/__pycache__ $(COCOTB_DIR)/__pycache__ $(PACKAGING_DIR)/scripts/__pycache__
 	rm -rf $(PACKAGING_RENDER_DIR)
@@ -715,7 +684,5 @@ clean-all: ## Delete all generated files of the chip top-level, the IPs and the 
 	$(MAKE) -C $(IP_DIR)/sg13cmos5l_ip__title clean
 	$(MAKE) -C $(MACROS_DIR)/decimator clean
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig clean
-	$(MAKE) -C $(MACROS_DIR)/counter clean
-	$(MAKE) -C $(MACROS_DIR)/inverter clean
 .PHONY: clean-all
 # ================================================================================================

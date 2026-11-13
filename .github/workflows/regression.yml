@@ -1,13 +1,9 @@
 # SPDX-FileCopyrightText: 2026 Simon Dorrer and Harald Pretl
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
-# What this does and does not cover.
-#
-# It runs the template's counter and inverter archetypes, so it proves the
-# container and the toolchain still work. It does NOT build this chip's macros
-# and cannot: decimator and dsa1_dig harden on the EZ130 8T cells, which are read
-# from EZ130_DIR, which the workflow does not set, so the real design is
-# verified locally instead. See doc/rtl2gds.md.
+# Runs `make regression-<part>` for dsa1_dig, the decimator and the chip as parallel jobs.
+# The macros harden on the EZ130 copies in ip/. The chip uses the committed dsa1_dig views.
+# LEC and the FPGA builds stay local, see the regression targets in the Makefile.
 
 name: regression
 
@@ -60,17 +56,20 @@ jobs:
           fi
 
   regression:
-    name: Run make regression
+    name: make regression-${{ matrix.part }}
     needs: gate
     if: needs.gate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
-    # The full end-to-end tool/flow regression (analog + digital macros and the
-    # chip top-level LibreLane run) is long-running; give it ample headroom.
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [dsa1-dig, decimator, top]
+    # GitHub's job limit
     timeout-minutes: 360
     container:
       # IIC-OSIC-TOOLS ships the complete toolchain the regression exercises
-      # (xschem, ngspice, cace, magic, klayout, yosys, verilator, icarus,
-      # cocotb, librelane, ...) together with the IHP SG13CMOS5L PDK.
+      # (ghdl, yosys, verilator, icarus, cocotb, librelane, magic, klayout, ...)
+      # together with the IHP SG13CMOS5L PDK.
       image: hpretl/iic-osic-tools:latest
       options: --user root
     env:
@@ -125,19 +124,19 @@ jobs:
       - name: Show tool environment
         run: |
           echo "PDK=$PDK  PDK_ROOT=$PDK_ROOT"
-          for tool in xschem ngspice cace magic klayout yosys verilator iverilog librelane; do
+          for tool in ghdl yosys verilator iverilog magic klayout librelane; do
             echo "$tool -> $(command -v "$tool" || echo NOT FOUND)"
           done
           ls "$PDK_ROOT" || true
 
       - name: Run regression
-        run: make regression
+        run: make regression-${{ matrix.part }}
 
       - name: Upload regression logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: regression-logs
+          name: regression-logs-${{ matrix.part }}
           path: |
             **/runs/**
             **/flow/**/*.log

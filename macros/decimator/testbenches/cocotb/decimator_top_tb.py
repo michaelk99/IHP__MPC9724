@@ -26,6 +26,7 @@ sim = os.getenv("SIM", "icarus")
 # GL=1 selects the gate-level netlist; anything else (unset, "0", "") stays in RTL mode.
 gl = os.getenv("GL", "0").strip().lower() in ("1", "true", "yes", "on")
 ez130_dir = Path(os.getenv("EZ130_DIR", str(_REPO / "ip/ez130_8t_v1p1"))).expanduser()
+final_dir = Path(os.getenv("FINAL_DIR", str(_REPO / "macros/decimator/final")))
 
 hdl_toplevel = "decimator_top"
 
@@ -142,7 +143,7 @@ def decimator_top_runner():
         sources.append(proj_path / "../../../scripts/ez130_phys_stubs.v")
         # Unpowered netlist: USE_POWER_PINS must NOT be defined at all
         # (passing USE_POWER_PINS=False would still define the macro).
-        sources.append(proj_path / f"../../final/nl/{hdl_toplevel}.nl.v")
+        sources.append(final_dir / "nl" / f"{hdl_toplevel}.nl.v")
     else:
         # Listed, not globbed, so the order is the same every run.
         for name in ("ce_generator", "cic_n6_d32", "sinc2_chain", "comp_fir",
@@ -151,7 +152,7 @@ def decimator_top_runner():
 
     build_args = []
     if sim == "icarus":
-        # -gno-specify: skip specify blocks, which iverilog cannot parse here.
+        # -gno-specify: zero delay, ignore the cell timing.
         build_args = ["-DSIM", "-gno-specify"]
     if sim == "verilator":
         build_args = ["--timing", "--trace", "--trace-fst", "--trace-structs"]

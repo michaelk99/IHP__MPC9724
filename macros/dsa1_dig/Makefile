@@ -248,12 +248,12 @@ sim-view-verilog: ## View CELL cell Verilog simulation waveforms (usage: make si
 	fi
 .PHONY: sim-view-verilog
 
-sim-rtl-cocotb: ## Run RTL simulation of CELL cell with cocotb (usage: make sim-rtl-cocotb [CELL=<cellname>])
+sim-rtl-cocotb: $(RTL_GEN) ## Run RTL simulation of CELL cell with cocotb (usage: make sim-rtl-cocotb [CELL=<cellname>])
 	cd $(COCOTB_DIR) && python3 $(CELL)_tb.py
 .PHONY: sim-rtl-cocotb
 
 sim-gl-cocotb: ## Run gate-level simulation of CELL cell with cocotb (usage: make sim-gl-cocotb [CELL=<cellname>])
-	cd $(COCOTB_DIR) && GL=1 python3 $(CELL)_tb.py
+	cd $(COCOTB_DIR) && GL=1 FINAL_DIR=$(abspath $(FINAL_DIR)) python3 $(CELL)_tb.py
 .PHONY: sim-gl-cocotb
 
 sim-view-cocotb: ## View CELL cell cocotb simulation waveforms (usage: make sim-view-cocotb [CELL=<cellname>] [WAVEFORM_VIEWER=<gtkwave|surfer>])

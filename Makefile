@@ -621,21 +621,24 @@ release-ihp: release ## The release in IHP's Open-Silicon-MPW layout, GDS rename
 # Regression Targets
 # CI runs the three parts as parallel jobs, each under GitHub's 6 h job limit. LEC (4.5 h, 5 GB) and the FPGA builds stay local.
 # The macro parts check the views in flow/final and leave the committed final/ alone.
-regression-dsa1-dig: ## Regression of dsa1_dig: regmap check, lint, harden, banned cells, gate level against RTL and model
+regression-dsa1-dig: ## Regression of dsa1_dig: regmap check, lint, RTL cocotb, harden, banned cells, gate level against RTL, model and cocotb
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig regmap-check
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig lint-verilog-all
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig sim-rtl-cocotb
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig librelane-nodrc
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig check-netlist FINAL_DIR=flow/final
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig sim-gl FINAL_DIR=flow/final
+	$(MAKE) -C $(MACROS_DIR)/dsa1_dig sim-gl-cocotb FINAL_DIR=flow/final
 	$(MAKE) -C $(MACROS_DIR)/dsa1_dig model-gate
 .PHONY: regression-dsa1-dig
 
-regression-decimator: ## Regression of the standalone decimator: lint, RTL sim, harden, banned cells, gate level against RTL and model
+regression-decimator: ## Regression of the standalone decimator: lint, RTL cocotb, harden, banned cells, gate level against RTL, model and cocotb
 	$(MAKE) -C $(MACROS_DIR)/decimator lint-verilog-all
 	$(MAKE) -C $(MACROS_DIR)/decimator sim-rtl-cocotb
 	$(MAKE) -C $(MACROS_DIR)/decimator librelane-nodrc
 	$(MAKE) -C $(MACROS_DIR)/decimator check-netlist FINAL_DIR=flow/final
 	$(MAKE) -C $(MACROS_DIR)/decimator sim-gl FINAL_DIR=flow/final
+	$(MAKE) -C $(MACROS_DIR)/decimator sim-gl-cocotb FINAL_DIR=flow/final
 	$(MAKE) -C $(MACROS_DIR)/decimator model-gate
 .PHONY: regression-decimator
 

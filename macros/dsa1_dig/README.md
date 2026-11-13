@@ -100,6 +100,7 @@ LibreLane run of 2026-10-31 (`RUN_2026-10-31_16-16-30`), the image of `scripts/i
 | `sim-gl` | 1343 samples identical to RTL |
 | `model-gate` | all 8 stimulus patterns match the model, RTL and gate level |
 | `sim-cdc` | 24 sweeps, 0 of 48 words stale in each |
+| `sim-rtl-cocotb`, `sim-gl-cocotb` | 6 of 6 on 2026-11-13, gate level on this netlist: reset values, write and read back with the port mapping, `adc_conv` cadence, decimator enable, `data_in` bit-exact against the model, full scale |
 | `lec` | open: EQY timed out at 10800 s with 946 of 1325 partitions proved and 0 failed, under a load of about 25 on 12 threads. Its work dir passed 5 GB, so it was not rerun |
 
 Detailed placement runs without cell padding (`DPL_CELL_PADDING` 1, which is 0 per side). With padding the 404.88 x 504 um try failed legalization, without it the router reached 0.

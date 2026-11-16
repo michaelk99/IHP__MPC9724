@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # Runs `make regression-<part>` for dsa1_dig, the decimator and the chip as parallel jobs.
-# The macros harden on the EZ130 copies in ip/. The chip uses the committed dsa1_dig views.
+# The macros harden on the EZ130 copies in ip/. The chip part checks the delivered GDS and the committed netlist, then rebuilds on the committed dsa1_dig views.
 # LEC and the FPGA builds stay local, see the regression targets in the Makefile.
 
 name: regression
@@ -66,71 +66,50 @@ jobs:
         part: [dsa1-dig, decimator, top]
     # GitHub's job limit
     timeout-minutes: 360
-    container:
-      # IIC-OSIC-TOOLS ships the complete toolchain the regression exercises
-      # (ghdl, yosys, verilator, icarus, cocotb, librelane, magic, klayout, ...)
-      # together with the IHP SG13CMOS5L PDK.
-      image: hpretl/iic-osic-tools:latest
-      options: --user root
+    # IIC-OSIC-TOOLS ships the toolchain and the IHP SG13CMOS5L PDK.
+    # It runs with docker run, not as a job container: a job container is pulled before the first step, and on private-repo runners the pull filled the disk.
     env:
-      PDK: ihp-sg13cmos5l
-      PDK_ROOT: /foss/pdks
+      # 2026.10 pinned by digest, so a new image cannot change results without a commit. The sign-off digests in scripts/image.env sit on a registry GitHub cannot reach.
+      IMAGE: hpretl/iic-osic-tools:2026.10@sha256:306585de35d198e70ea58950f77147c86f56c698726a19afea9f1c83009557be
     steps:
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache /usr/share/swift /usr/local/share/boost
+          sudo docker image prune -af > /dev/null
+          df -h /
+
       - name: Check out repository
         uses: actions/checkout@v5
         with:
-          # The regression assembles the chip top-level, which needs the
-          # git submodules (e.g. flow/artistic). `make init-submodules` also
-          # runs inside the target, but fetch them up front as well.
+          # The chip top-level needs flow/artistic.
           submodules: recursive
 
-      - name: Mark workspace as safe for git
-        # The container runs as root while the checkout is owned by a different
-        # UID, so git refuses to operate ("detected dubious ownership"). This
-        # breaks `make init-submodules` and any other git calls. The regression
-        # runs git across the top-level repo, its submodules and the macro/IP
-        # subdirectories, so whitelist all paths rather than a single one.
-        run: git config --global --add safe.directory '*'
-
-      - name: Set up IIC-OSIC-TOOLS environment
-        # GitHub Actions bypasses the container entrypoint, so the image's tool
-        # environment is never initialised: $PATH is overridden with the runner
-        # host's PATH and LD_LIBRARY_PATH/PYTHONPATH/KLAYOUT_PATH/... are unset.
-        # Several tools (notably klayout, which lives in /foss/tools/klayout and
-        # not in a bin/ dir) are then "not found". Replicate the entrypoint by
-        # sourcing the image's single source of truth for the environment and
-        # persist the result so every subsequent step sees the full toolchain.
-        shell: bash
-        run: |
-          set -a
-          source /etc/profile.d/iic-osic-tools-setup.sh
-          set +a
-          {
-            echo "PATH=$PATH"
-            echo "PYTHONPATH=$PYTHONPATH"
-            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-            echo "LIBRARY_PATH=$LIBRARY_PATH"
-            echo "CPATH=$CPATH"
-            echo "SAK=$SAK"
-            echo "KLAYOUT_HOME=$KLAYOUT_HOME"
-            echo "KLAYOUT_PATH=$KLAYOUT_PATH"
-            echo "PDK=$PDK"
-            echo "PDKPATH=$PDKPATH"
-            echo "PDK_ROOT=$PDK_ROOT"
-            echo "STD_CELL_LIBRARY=$STD_CELL_LIBRARY"
-            echo "SPICE_USERINIT_DIR=$SPICE_USERINIT_DIR"
-          } >> "$GITHUB_ENV"
-
-      - name: Show tool environment
-        run: |
-          echo "PDK=$PDK  PDK_ROOT=$PDK_ROOT"
-          for tool in ghdl yosys verilator iverilog magic klayout librelane; do
-            echo "$tool -> $(command -v "$tool" || echo NOT FOUND)"
-          done
-          ls "$PDK_ROOT" || true
+      - name: Pull IIC-OSIC-TOOLS
+        run: docker pull -q "$IMAGE"
 
       - name: Run regression
-        run: make regression-${{ matrix.part }}
+        # The entrypoint is skipped, so source the image's environment script.
+        # It picks STD_CELL_LIBRARY from PDK, so PDK has to be set before it runs.
+        # Root in the container does not own the checkout, hence safe.directory.
+        # OpenROAD uses every core, nice keeps the runner agent responsive.
+        run: |
+          docker run --rm --user root --entrypoint bash \
+            -v "$GITHUB_WORKSPACE:/w" -w /w \
+            -e PDK=ihp-sg13cmos5l -e PDK_ROOT=/foss/pdks \
+            -e LIBRELANE_ARGS="-c OPENROAD_THREADS=$(nproc)" \
+            "$IMAGE" -c '
+              set -e
+              set -a; source /etc/profile.d/iic-osic-tools-setup.sh; source /w/.designinit; set +a
+              echo "PDK=$PDK STD_CELL_LIBRARY=$STD_CELL_LIBRARY PDKPATH=$PDKPATH"
+              git config --global --add safe.directory "*"
+              for tool in ghdl yosys verilator iverilog magic klayout librelane; do echo "$tool -> $(command -v $tool || echo NOT FOUND)"; done
+              nice -n 10 make regression-${{ matrix.part }}'
+
+      - name: Hand the workspace back to the runner user
+        # The upload runs as runner and cannot read files root wrote with mode 600.
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" "$GITHUB_WORKSPACE"
 
       - name: Upload regression logs
         if: always()

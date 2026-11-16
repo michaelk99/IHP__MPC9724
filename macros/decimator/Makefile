@@ -40,6 +40,8 @@ EZ130_SCL    = $(shell python3 $(EZ130_DIR)/scripts/librelane_scl.py $(LIBRELANE
 # config: it rewrites LIB to carry both liberties per corner, and a later
 # file replaces that key rather than merging into it.
 DECAP_FRAG   = $(shell python3 ../scripts/decaphv_frag.py --ez130 $(EZ130_DIR) --decap $(DECAPHV_DIR) $(LIBRELANE_DIR))
+# Extra librelane-nodrc flags. CI sets -c OPENROAD_THREADS=<n>, unset OpenROAD runs on one thread.
+LIBRELANE_ARGS ?=
 
 check-ez130: ## Fail early if EZ130_DIR does not hold the cell library
 	@test -f $(EZ130_DIR)/scripts/librelane_scl.py || \
@@ -347,7 +349,7 @@ librelane: rtl-gen check-ez130 ## Run LibreLane with Magic and KLayout DRC check
 .PHONY: librelane
 
 librelane-nodrc: rtl-gen check-ez130 ## Run LibreLane without DRC checks
-	librelane $(EZ130_SCL) $(DECAP_FRAG) $(LIBRELANE_DIR)/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --save-views-to $(FLOW_FINAL_DIR)/ --skip KLayout.DRC --skip Magic.DRC
+	librelane $(EZ130_SCL) $(DECAP_FRAG) $(LIBRELANE_DIR)/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --save-views-to $(FLOW_FINAL_DIR)/ --skip KLayout.DRC --skip Magic.DRC $(LIBRELANE_ARGS)
 .PHONY: librelane-nodrc
 
 librelane-magicdrc: rtl-gen check-ez130 ## Run LibreLane with only Magic DRC checks

@@ -642,16 +642,36 @@ regression-decimator: ## Regression of the standalone decimator: lint, RTL cocot
 	$(MAKE) -C $(MACROS_DIR)/decimator model-gate
 .PHONY: regression-decimator
 
-# The chip uses the committed dsa1_dig views, the ones that taped out. build-top rewrites the tracked layout/, netlist/ and reports.
-regression-top: ## Regression of the chip: build, banned cells, dsm2 keepout, foundry precheck, RTL and GL cocotb (rewrites tracked outputs)
+# The taped-out chip, frozen: the md5 values are pinned here, so a commit that changes the delivery GDS or the chip netlist fails.
+# The keepout boxes are the ones of the delivery, not the live ones in add_logo_fill.sh.
+RELEASE_GDS     := $(RELEASE_DIR)/v.1.2.1/gds/MPC9724.gds.gz
+RELEASE_GDS_MD5 := 7cf6da0e6ea7b6c2c473bff6e6093cd7
+RELEASE_PNL     := $(RELEASE_DIR)/v.1.2.1/netlist/pnl/MPC9724.pnl.v
+RELEASE_NL_MD5  := 04f51fb545387285fd0cbedf61927fdf
+
+check-release: ## The taped-out chip: delivery GDS and committed netlist md5, dsm2 keepout and foundry precheck on the delivery GDS
+	echo "$(RELEASE_GDS_MD5)  $(RELEASE_GDS)" | md5sum -c
+	echo "$(RELEASE_NL_MD5)  $(NET_NL_DIR)/$(TOP).nl.v" | md5sum -c
+	sed 's/\b$(TOP)\b/MPC9724/g' $(NET_PNL_DIR)/$(TOP).pnl.v | cmp - $(RELEASE_PNL)
+	python3 $(SCRIPTS_DIR)/check_keepout.py $(RELEASE_GDS) 784.5,375,935,553
+	python3 $(SCRIPTS_DIR)/check_keepout.py $(RELEASE_GDS) 774.5,365,945,563 --datatypes 22 --edge 0
+	python3 $(SCRIPTS_DIR)/check_keepout.py $(RELEASE_GDS) 784.5,375,935,553 --layers feol --datatypes 22 --edge 0
+	$(MAKE) mpw-precheck PRECHECK_GDS=$(RELEASE_GDS) PRECHECK_DIR=runs/precheck_release
+.PHONY: check-release
+
+# The taped-out state first, before build-top overwrites netlist/. The rebuild after it uses the committed dsa1_dig views and only shows that the repo still builds a clean chip.
+regression-top: ## Regression of the chip: the taped-out GDS and netlist (md5, banned cells, keepout, precheck, RTL and GL cocotb), then a rebuild (banned cells, keepout, precheck, GL cocotb). Rewrites tracked outputs
 	$(MAKE) init-submodules
+	$(MAKE) check-release
+	$(MAKE) check-netlist
+	$(MAKE) sim-all
 	$(MAKE) build-bondpad
 	$(MAKE) build-logos
 	$(MAKE) build-top
 	$(MAKE) check-netlist
 	$(MAKE) check-keepout
 	$(MAKE) mpw-precheck
-	$(MAKE) sim-all
+	$(MAKE) sim-gl-cocotb
 .PHONY: regression-top
 
 regression: ## Run all three regression parts in sequence

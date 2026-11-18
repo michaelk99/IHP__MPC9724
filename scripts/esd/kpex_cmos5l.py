@@ -85,7 +85,7 @@ def build_overlay(dst):
     ml = {l["name"]: l for l in t["process_stack"]["layers"]}
     m4 = ml["Metal4"]["metal_layer"]
     if m4.get("contact_above"):
-        # kpex 0.6.x names it (checked in the :next image), nothing to add
+        # kpex 0.6.x names it (checked with 0.6.3), nothing to add
         if m4["contact_above"].get("metal_above") != "topmetal1_con":
             sys.exit("kpex_cmos5l: Metal4's contact above is not to TopMetal1, re-check")
     else:

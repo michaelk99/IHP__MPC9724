@@ -15,7 +15,7 @@ an area-scaled rs of kilohms and a high-injection knee near 5 uA, so at HBM
 current they read kilovolts forward.
 
 Needs the IO netlist with the substrate (`sub!`) and its ties drawn in, which
-ships as `.spice` in the pinned :next image (scripts/image.env). The 2026.08
+ships as `.spice` in the pinned images of scripts/image.env. The 2026.08
 image ships a `.spi` without either and with another port order, so the bench
 reads the port order from the file.
 
@@ -162,7 +162,7 @@ def build(run):
                        os.environ.get("PDK", "ihp-sg13cmos5l"))
     spi = os.path.join(pdk, "libs.ref", "sg13cmos5l_io", "spice", "sg13cmos5l_io.spice")
     if not os.path.isfile(spi):
-        die(f"no {spi}: run in the pinned :next image (see the docstring)")
+        die(f"no {spi}: run in the pinned image of scripts/image.env (see the docstring)")
     lines = open(spi).readlines()
     if not any("ptap1" in ln for ln in lines):
         die(f"{spi} carries no substrate ties: not the netlist this was written for")

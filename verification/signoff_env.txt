@@ -1,4 +1,5 @@
 # v1.1.1 baseline. The v1.2.1 environment is the pinned image of scripts/image.env, see verification/submission/README.md.
+# Added 2026-11-17: the OpenROAD line below is the standalone binary. LibreLane runs /foss/tools/openroad-librelane, 26Q1-1024-gdcf36133a in this image.
 # Sign-off environment, written by scripts/signoff_env.sh
 date: 2026-10-08T23:50Z
 git: 0df5f3c43274c21c81d51179009248fb16571a27 on tapeout/v1.1.1, clean

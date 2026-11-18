@@ -5,7 +5,7 @@
 # Run it inside the container, at the repo root. The container cannot see its
 # own image digest, so the host passes it:
 #
-#   d=$(docker image inspect --format '{{index .RepoDigests 0}}' registry.iic.jku.at:5000/iic-osic-tools:next)
+#   d=$(. scripts/image.env && echo "$IMAGE_AMD64")
 #   docker exec <container> bash -lc "cd <repo> && scripts/signoff_env.sh $d" > verification/signoff_env.txt
 set -u
 digest=${1:-"not given, pass it from the host"}
@@ -23,7 +23,9 @@ echo "KLayout: $(klayout -v | sed 's/^KLayout //')"
 echo "Magic: $(magic --version 2>/dev/null)"
 echo "Netgen: $(netgen -batch quit 2>&1 | sed -n 's/^Netgen \([^ ]*\).*/\1/p' | head -1)"
 echo "Yosys: $(yosys -V | sed 's/^Yosys //')"
-echo "OpenROAD: $(openroad -version 2>/dev/null | tail -1 | sed "s/ *$//")"
+# The librelane wrapper puts openroad-librelane first in PATH, so the flow runs that build, not the standalone one.
+echo "OpenROAD (LibreLane): $(/foss/tools/openroad-librelane/bin/openroad -version 2>/dev/null | tail -1 | sed "s/ *$//")"
+echo "OpenROAD (standalone): $(openroad -version 2>/dev/null | tail -1 | sed "s/ *$//")"
 echo "LibreLane: $(python3 -c 'import librelane; print(librelane.__version__)' 2>/dev/null)"
 echo "Icarus: $(iverilog -V 2>/dev/null | head -1 | sed 's/^Icarus Verilog version //')"
 echo "GHDL: $(ghdl --version 2>/dev/null | head -1)"

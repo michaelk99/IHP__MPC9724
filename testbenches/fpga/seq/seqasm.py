@@ -97,27 +97,9 @@ def _lines(path: Path, depth: int = 0):
             yield f"{path.name}:{n}", toks
 
 
-_B0 = {f["name"]: f for f in regmap.REGS["BIAS_CFG_0"]["fields"]}
-_B1 = {f["name"]: f for f in regmap.REGS["BIAS_CFG_1"]["fields"]}
-OSC_EN = 1 << _B0["DSM_SPARE"]["lsb"]
-CLK_SEL = OSC_EN << 1
-TRIM = 0xF << _B0["DSM_TRIM"]["lsb"]
-DSM_EN = 1 << _B1["DSM_EN"]["lsb"]          # 1 is dsm2 off on this die
-DSM_RST_B = 1 << _B1["DSM_RST_B"]["lsb"]    # 1 holds dsm2 in reset
-BIAS_CFG_0, BIAS_CFG_1 = regmap.ADDR["BIAS_CFG_0"], regmap.ADDR["BIAS_CFG_1"]
+BIAS_CFG_0, BIAS_CFG_1 = regmap.BIAS_CFG_0, regmap.BIAS_CFG_1
 NAME = {a: n for n, a in regmap.ADDR.items()}
-
-
-def dsm2_violation(cfg0: int, cfg1: int, reg: int, data: int) -> str | None:
-    """Why writing data to reg breaks a dsm2 rule, with cfg0 and cfg1 the values the chip holds."""
-    if reg == BIAS_CFG_0:
-        if data & CLK_SEL and not data & OSC_EN:
-            return "sets di_clk_sel without di_osc_en, dsm2 then drives dsm_clk low"
-        if (data ^ cfg0) & (TRIM | OSC_EN | CLK_SEL) and not cfg1 & DSM_EN:
-            return "changes the trim or the oscillator bits while dsm2 is on, write DSM_EN 1 first"
-    if reg == BIAS_CFG_1 and cfg1 & DSM_EN and not data & (DSM_EN | DSM_RST_B):
-        return "switches dsm2 on and releases its reset in one write, DSM_RST_B 0 needs 130 us more"
-    return None
+dsm2_violation = regmap.dsm2_violation
 
 
 def parse(path: Path) -> dict[int, tuple[str, list[int]]]:

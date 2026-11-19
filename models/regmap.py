@@ -74,6 +74,39 @@ def test_ctrl_transition(prev: int, value: int) -> str | None:
     return None
 
 
+def _bit(reg: str, name: str) -> int:
+    """The mask of a bit by its name, per-bit names included."""
+    for f in REGS[reg]["fields"]:
+        if name in f["bit_names"]:
+            return 1 << (f["msb"] - f["bit_names"].index(name))
+    raise KeyError(f"{reg} has no bit {name}")
+
+
+BIAS_CFG_0, BIAS_CFG_1 = ADDR["BIAS_CFG_0"], ADDR["BIAS_CFG_1"]
+DSM_TRIM = sum(_bit("BIAS_CFG_0", f"DSM_TRIM{i}") for i in range(4))
+DSM_OSC_EN = _bit("BIAS_CFG_0", "DSM_OSC_EN")
+DSM_CLK_SEL = _bit("BIAS_CFG_0", "DSM_CLK_SEL")
+DSM_EN = _bit("BIAS_CFG_1", "DSM_EN")          # inverted on this chip, 1 is dsm2 off
+DSM_RST_B = _bit("BIAS_CFG_1", "DSM_RST_B")    # inverted, 1 holds dsm2 in reset
+
+
+def dsm2_violation(cfg0: int, cfg1: int, reg: int, data: int) -> str | None:
+    """Why writing data to reg breaks a dsm2 rule on this chip, with cfg0 and cfg1 the values it holds, or None."""
+    if reg == BIAS_CFG_0:
+        if data & DSM_CLK_SEL and not data & DSM_OSC_EN:
+            return "sets di_clk_sel without di_osc_en, dsm2 then drives dsm_clk low"
+        if (data ^ cfg0) & (DSM_TRIM | DSM_OSC_EN | DSM_CLK_SEL) and not cfg1 & DSM_EN:
+            return "changes the trim or the oscillator bits while dsm2 is on, write DSM_EN 1 first"
+    if reg == BIAS_CFG_1 and cfg1 & DSM_EN and not data & (DSM_EN | DSM_RST_B):
+        return "switches dsm2 on and releases its reset in one write, DSM_RST_B 0 needs 130 us more"
+    return None
+
+
+def dsm_clk_sel_rises(prev: int, value: int) -> bool:
+    """The write makes dsm2 drive the dsm_clk pad, so the host must have stopped driving it."""
+    return bool(value & DSM_CLK_SEL and not prev & DSM_CLK_SEL)
+
+
 def _selftest():
     assert ADDR["TEST_CTRL_0"] == 9 and ADDR["CHIP_ID"] == 15 and ADDR["ADC_DATA_CH0_HIGH"] == 0
     assert RESET[2] == 0x0024 and RESET[3] == 0x0040 and RESET[6] == 0x00FF and RESET[9] == 0x0500 and RESET[12] == 0xFF00
@@ -87,6 +120,14 @@ def _selftest():
         assert got and why in got, (hex(v), got)
     assert test_ctrl_transition(0x0511, 0x0512) and test_ctrl_transition(0x0511, 0x0510) is None
     assert test_ctrl_transition(0x0510, 0x0512) is None and test_ctrl_transition(0x0520, 0x0511)
+    assert (DSM_TRIM, DSM_OSC_EN, DSM_CLK_SEL, DSM_EN, DSM_RST_B) == (0x000F, 0x0080, 0x0100, 0x0001, 0x0002)
+    on, off = 0x0040, 0x0041
+    assert dsm2_violation(0x0024, on, 2, 0x0025) and dsm2_violation(0x0024, off, 2, 0x0025) is None
+    assert dsm2_violation(0x0024, on, 2, 0x0034) is None                    # dither is free
+    assert dsm2_violation(0x0024, off, 2, 0x0124) and dsm2_violation(0x0024, off, 2, 0x01A4) is None
+    assert dsm2_violation(0x0024, on, 2, 0x00A4)                            # oscillator only with dsm2 off
+    assert dsm2_violation(0x0024, off, 3, 0x0040) and dsm2_violation(0x0024, off, 3, 0x0042) is None
+    assert dsm_clk_sel_rises(0x0024, 0x0124) and not dsm_clk_sel_rises(0x0124, 0x0124) and not dsm_clk_sel_rises(0x0124, 0x0024)
     print("regmap.py selftest: OK")
 
 

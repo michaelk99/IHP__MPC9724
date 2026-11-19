@@ -19,6 +19,8 @@ def main():
     reset, f = fields("cmos5l", "BIAS_CFG_0")
     assert reset == 0x0024, hex(reset)
     assert f == {"DSM_SPARE": (9, 7, 0), "DSM_DITH_AMP": (6, 5, 1), "DSM_DITH_EN": (4, 4, 0), "DSM_TRIM": (3, 0, 4)}, f
+    spare = next(x for x in next(r for r in defs.REGISTERS["cmos5l"] if r["name"] == "BIAS_CFG_0")["fields"] if x["name"] == "DSM_SPARE")
+    assert spare["used"] and spare["bit_names"] == ["DSM_SPARE2", "DSM_CLK_SEL", "DSM_OSC_EN"], spare   # bits 8 and 7 reach dsm2
     reset, f = fields("cmos5l", "BIAS_CFG_1")
     assert reset == 0x0040, hex(reset)
     assert f == {"ADC_CONV_EN": (6, 6, 1), "DSM_QOUT_EN": (5, 5, 0), "DSM_VCM_EXT": (4, 4, 0), "DSM_BTEST_EN": (3, 3, 0),
